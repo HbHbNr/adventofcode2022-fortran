@@ -1,3 +1,3 @@
 program helloworld
-write(*,*) 'Hello, world!'
+write(*,'(Aa)') 'Hello, world!'
 end program helloworld
