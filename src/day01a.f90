@@ -3,9 +3,9 @@
 subroutine printresultline_integer(day, intresult)
     implicit none
 
-    character(len=*)  :: day
-    integer(kind=4)   :: intresult
-    character(len=11) :: result
+    character(len=*), intent(in) :: day
+    integer(kind=4) , intent(in) :: intresult
+    character(len=11)            :: result
 
     write(result, '(I11)') intresult
     call printresultline(day, result)
@@ -14,8 +14,8 @@ end subroutine
 subroutine printresultline(day, result)
     implicit none
 
-    character(len=*) :: day
-    character(len=*) :: result
+    character(len=*), intent(in) :: day
+    character(len=*), intent(in) :: result
 
     print '(A, A, A, A)', 'Day ', day, ': ', adjustl(result)
 end subroutine
@@ -23,14 +23,12 @@ end subroutine
 integer function scan_calories(filename)
     implicit none
 
-    character(len=*) :: filename
-    character(len=5) :: line
-    integer          :: linecalories, sumcalories, maxcalories
-    integer          :: io, iostat
+    character(len=*), intent(in) :: filename
+    character(len=5)             :: line
+    integer                      :: linecalories, sumcalories = 0, maxcalories = 0
+    integer                      :: io, iostat
 
     open(newunit=io, file=filename, status='old', action='read')
-    sumcalories = 0
-    maxcalories = 0
     do
         read(io, '(A)', iostat=iostat) line
         if (iostat /= 0) then
