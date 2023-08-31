@@ -1,3 +1,16 @@
+!!! Solution for https://adventofcode.com/2021/day/1 part a !!!
+
+subroutine printresultline_integer(day, intresult)
+    implicit none
+
+    character(len=*)  :: day
+    integer(kind=4)   :: intresult
+    character(len=11) :: result
+
+    write(result, '(I11)') intresult
+    call printresultline(day, result)
+end subroutine
+
 subroutine printresultline(day, result)
     implicit none
 
@@ -24,7 +37,8 @@ integer function scan_calories(filename)
             ! end of file or I/O error -> exit loop
             exit
         end if
-        ! print '(A5, A2, I1)', line, ': ', len_trim(line)  ! debug: output line and its length
+        ! debug: output line from file and its length
+        ! print '(A5, A2, I1)', line, ': ', len_trim(line)
         if (len_trim(line) == 0) then
             ! reset sum for a new Elf
             sumcalories = 0
@@ -43,12 +57,9 @@ end function
 program day01a
     implicit none
 
-    integer      :: intresult, scan_calories
-    character(len=10) :: result
+    integer :: intresult, scan_calories
+
     ! intresult = scan_calories('inputfiles/day01_example.txt')
     intresult = scan_calories('inputfiles/day01_input.txt')
-    ! print *, intresult
-    ! result = '42'
-    write(result, '(I10)') intresult
-    call printresultline('01a', result)
+    call printresultline_integer('01a', intresult)
 end program day01a
