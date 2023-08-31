@@ -1,4 +1,4 @@
-!!! Solution for https://adventofcode.com/2021/day/1 part a !!!
+!!! Solution for https://adventofcode.com/2021/day/1 part a
 
 subroutine printresultline_integer(day, intresult)
     implicit none
