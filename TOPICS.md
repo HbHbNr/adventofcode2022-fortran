@@ -5,4 +5,4 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 ## Days
 
 ### Day 01
-* Fortran: the basics, like statements, variables, I/O, functions and subroutines, loops, etc.
+* Fortran: the basics like statements, variables, I/O, functions and subroutines, loops, modules, etc.

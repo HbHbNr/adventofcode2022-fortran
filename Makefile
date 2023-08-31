@@ -1,12 +1,19 @@
 .PHONY: all clean
 
-all: bin/day01a bin/day01b
+BIN = bin
+OBJ = obj
+SRC = src
 
-bin/day01a: src/day01a.f90
-	gfortran -o bin/day01a src/day01a.f90
+all: $(BIN)/day01a $(BIN)/day01b
 
-bin/day01b: src/day01b.f90
-	gfortran -o bin/day01b src/day01b.f90
+$(BIN)/day01a: $(SRC)/day01a.f90 $(OBJ)/util.o
+	gfortran -I $(OBJ) -o $(BIN)/day01a $(SRC)/day01a.f90 $(OBJ)/util.o
+
+$(BIN)/day01b: $(SRC)/day01b.f90 $(OBJ)/util.o
+	gfortran -I $(OBJ) -o $(BIN)/day01b $(SRC)/day01b.f90 $(OBJ)/util.o
+
+$(OBJ)/util.o: $(SRC)/util.f90
+	gfortran -c -J $(OBJ) -o $(OBJ)/util.o $(SRC)/util.f90
 
 clean:
-	rm -f bin/*
+	rm -f $(BIN)/* $(OBJ)/*

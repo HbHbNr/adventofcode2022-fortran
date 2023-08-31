@@ -1,25 +1,5 @@
 !!! Solution for https://adventofcode.com/2021/day/1 part a
 
-subroutine printresultline_integer(day, intresult)
-    implicit none
-
-    character(len=*), intent(in) :: day
-    integer(kind=4) , intent(in) :: intresult
-    character(len=11)            :: result
-
-    write(result, '(I11)') intresult
-    call printresultline(day, result)
-end subroutine
-
-subroutine printresultline(day, result)
-    implicit none
-
-    character(len=*), intent(in) :: day
-    character(len=*), intent(in) :: result
-
-    print '(A, A, A, A)', 'Day ', day, ': ', adjustl(result)
-end subroutine
-
 integer function scan_calories(filename)
     implicit none
 
@@ -53,6 +33,7 @@ integer function scan_calories(filename)
 end function
 
 program day01a
+    use util
     implicit none
 
     integer :: intresult, scan_calories
