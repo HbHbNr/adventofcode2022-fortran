@@ -65,13 +65,13 @@ integer function scan_calories(filename)
     scan_calories = top1 + top2 + top3
 end function
 
-program day01a
+program day01b
     use util
     implicit none
 
-    integer :: intresult, scan_calories
+    integer :: result, scan_calories
 
-    ! intresult = scan_calories('inputfiles/day01_example.txt')
-    intresult = scan_calories('inputfiles/day01_input.txt')
-    call printresultline_integer('02a', intresult)
-end program day01a
+    ! result = scan_calories('inputfiles/day01_example.txt')
+    result = scan_calories('inputfiles/day01_input.txt')
+    call printresultline_integer('02b', result)
+end program day01b

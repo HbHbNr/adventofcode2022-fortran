@@ -36,9 +36,9 @@ program day01a
     use util
     implicit none
 
-    integer :: intresult, scan_calories
+    integer :: result, scan_calories
 
-    ! intresult = scan_calories('inputfiles/day01_example.txt')
-    intresult = scan_calories('inputfiles/day01_input.txt')
-    call printresultline_integer('01a', intresult)
+    ! result = scan_calories('inputfiles/day01_example.txt')
+    result = scan_calories('inputfiles/day01_input.txt')
+    call printresultline_integer('01a', result)
 end program day01a
