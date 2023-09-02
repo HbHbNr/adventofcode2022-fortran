@@ -4,46 +4,33 @@ integer function round_score(line)
     implicit none
 
     character(len=3), intent(in) :: line
-    character(len=1)             :: opponent, space, me
+    character(len=1)             :: mychoice
     integer                      :: score
 
-    ! draw:
-    ! A X
-    ! B Y
-    ! C Z
-    !
-    ! I win:
-    ! A Z
-    ! B X
-    ! C Y
-    !
-    ! I lose:
-    ! A Y
-    ! B Z
-    ! C X
+    ! draw:  I win:  I lose:
+    ! A X    A Y     A Z
+    ! B Y    B Z     B X
+    ! C Z    C X     C Y
     if (line == 'A X' .or. line == 'B Y' .or. line == 'C Z') then
         ! draw
-        print *, 'draw'
         score = 3
-    else if (line == 'A Z' .or. line == 'B X' .or. line == 'C Y') then
+    else if (line == 'A Y' .or. line == 'B Z' .or. line == 'C X') then
         ! win
-        print *, 'win'
         score = 6
     else
         ! lose
-        print *, 'lose'
         score = 0
     end if
-    read(line, '(A1, A1, A1)') opponent, space, me
-    if (me == 'X') then
+    ! get mychoice from third column
+    read(line, '(2X, A1)') mychoice
+    if (mychoice == 'X') then
         score = score + 1
-    else if (me == 'Y') then
+    else if (mychoice == 'Y') then
         score = score + 2
     else
         score = score + 3
     end if
     ! return round score
-    print *, score
     round_score = score
 end function
 
@@ -63,7 +50,7 @@ integer function scan_strategy(filename)
             exit
         end if
         ! debug: output line from file and its length
-        print '(A3, A2, I1)', line, ': ', len_trim(line)
+        ! print '(A3, A2, I1)', line, ': ', len_trim(line)
         totalscore = totalscore + round_score(line)
     end do
     close(io)
