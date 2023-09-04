@@ -11,7 +11,7 @@ FFLAGS := -J $(OBJ)
 SOURCES := $(wildcard $(SRC)/*.f90)
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(BIN)/day01a $(BIN)/day01b $(BIN)/day02a
-TESTS := $(BIN)/day02a_test
+TESTS := $(BIN)/day02a_test_driver
 
 all: $(BINARIES)
 
@@ -26,12 +26,13 @@ runtests: $(TESTS)
 $(BIN)/day01a: $(OBJ)/day01a.o $(OBJ)/util.o
 $(BIN)/day01b: $(OBJ)/day01b.o $(OBJ)/util.o
 $(BIN)/day02a: $(OBJ)/day02a_main.o $(OBJ)/day02a.o $(OBJ)/util.o
-$(BIN)/day02a_test: $(OBJ)/day02a_test.o $(OBJ)/day02a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day02a_test_driver: $(OBJ)/day02a_test_driver.o $(OBJ)/day02a_test.o $(OBJ)/day02a.o $(OBJ)/util.o $(OBJ)/fruit.o
 
 $(OBJ)/day01a.o: $(OBJ)/util.o
 $(OBJ)/day02a.o: $(OBJ)/util.o
 $(OBJ)/day02a_main.o: $(OBJ)/day02a.o $(OBJ)/util.o
 $(OBJ)/day02a_test.o: $(OBJ)/day02a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day02a_test_driver.o: $(OBJ)/day02a_test.o $(OBJ)/day02a.o $(OBJ)/util.o $(OBJ)/fruit.o
 
 $(BIN)/%: $(OBJ)/%.o
 	$(FC) -o $@ $^
