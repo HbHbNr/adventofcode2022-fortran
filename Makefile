@@ -37,22 +37,6 @@ $(BIN)/%: $(OBJ)/%.o
 $(OBJ)/%.o: $(SRC)/%.f90
 	$(FC) $(FFLAGS) -c -o $@ $<
 
-# $(BIN)/day01a: $(SRC)/day01a.f90 $(OBJ)/util.o
-# 	gfortran -I $(OBJ) -o $(BIN)/day01a $(SRC)/day01a.f90 $(OBJ)/util.o
-
-# $(BIN)/day01b: $(SRC)/day01b.f90 $(OBJ)/util.o
-# 	gfortran -I $(OBJ) -o $(BIN)/day01b $(SRC)/day01b.f90 $(OBJ)/util.o
-
-# $(BIN)/day02a: $(SRC)/day02a_run.f90 $(SRC)/day02a.f90 $(OBJ)/util.o
-# 	gfortran -I $(OBJ) -o $(BIN)/day02a $(SRC)/day02a_run.f90 $(SRC)/day02a.f90 $(OBJ)/util.o
-
-
-# $(OBJ)/day02a.o: $(SRC)/day02a.f90
-# 	gfortran -c -J $(OBJ) -o $(OBJ)/day02a.o $(SRC)/day02a.f90
-
-# $(OBJ)/util.o: $(SRC)/util.f90
-# 	gfortran -c -J $(OBJ) -o $(OBJ)/util.o $(SRC)/util.f90
-
 info:
 	@echo 'SOURCES="$(SOURCES)"'
 	@echo 'OBJECTS="$(OBJECTS)"'
