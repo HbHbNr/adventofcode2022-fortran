@@ -18,6 +18,8 @@ all: $(BINARIES)
 run: $(BINARIES)
 	for BINARY in $(BINARIES); do $${BINARY}; done
 
+alltests: $(TESTS)
+
 runtests: $(TESTS)
 	for TEST in $(TESTS); do $${TEST}; done
 
