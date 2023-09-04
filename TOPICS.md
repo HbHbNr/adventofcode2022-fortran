@@ -6,3 +6,7 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 01
 * Fortran: the basics like statements, variables, I/O, functions and subroutines, loops, modules, etc.
+
+### Day 02
+* Fortran: unit testing with FRUIT
+* Techniques: make and Makefile recap
