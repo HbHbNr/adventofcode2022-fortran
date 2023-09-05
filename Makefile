@@ -21,7 +21,7 @@ run: $(BINARIES)
 alltests: $(TESTS)
 
 runtests: $(TESTS)
-	for TEST in $(TESTS); do $${TEST}; done
+	cd $(BIN) && for TEST in $(TESTS); do ../$${TEST}; done
 
 $(BIN)/day01a: $(OBJ)/day01a.o $(OBJ)/util.o
 $(BIN)/day01b: $(OBJ)/day01b.o $(OBJ)/util.o

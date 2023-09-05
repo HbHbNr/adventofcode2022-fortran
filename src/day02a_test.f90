@@ -12,7 +12,7 @@ contains
 
         integer :: result
 
-        result = scan_strategy('inputfiles/day02_example.txt')
+        result = scan_strategy('../inputfiles/day02_example.txt')
         call assert_equals (15, result)
     end subroutine
 
@@ -22,7 +22,7 @@ contains
 
         integer :: result
 
-        result = scan_strategy('inputfiles/day02_input.txt')
+        result = scan_strategy('../inputfiles/day02_input.txt')
         call assert_equals (13052, result)
     end subroutine
 
