@@ -8,5 +8,5 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 * Fortran: the basics like statements, variables, I/O, functions and subroutines, loops, modules, etc.
 
 ### Day 02
-* Fortran: unit testing with FRUIT
+* Fortran: unit testing with FRUIT and FRUITpy
 * Techniques: make and Makefile recap
