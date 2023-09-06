@@ -13,8 +13,8 @@ program tests
 
   call init_fruit
 
-  call run_test_case(test_scan_strategy_example,"test_scan_strategy_example")
-  call run_test_case(test_scan_strategy_input,"test_scan_strategy_input")
+  call run_test_case(test_solve_example,"test_solve_example")
+  call run_test_case(test_solve_input,"test_solve_input")
 
   call get_failed_count(failed_count)
   call fruit_summary

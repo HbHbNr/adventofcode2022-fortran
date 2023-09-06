@@ -3,11 +3,11 @@ module day01a
     implicit none
     private
 
-    public :: scan_calories
+    public :: solve
 
 contains
 
-    integer function scan_calories(filename)
+    integer function solve(filename)
         implicit none
 
         character(len=*), intent(in) :: filename
@@ -36,7 +36,7 @@ contains
         end do
         close(io)
         ! return maximum calories
-        scan_calories = maxcalories
+        solve = maxcalories
     end function
 
 end module day01a

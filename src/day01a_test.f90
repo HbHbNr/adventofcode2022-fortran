@@ -6,23 +6,23 @@ module day01a_test
 
 contains
 
-    subroutine test_scan_calories_example
-        use day01a, only : scan_calories
+    subroutine test_solve_example
+        use day01a, only : solve
         implicit none
 
         integer :: result
 
-        result = scan_calories('../inputfiles/day01_example.txt')
+        result = solve('../inputfiles/day01_example.txt')
         call assert_equals (24000, result)
     end subroutine
 
-    subroutine test_scan_calories_input
-        use day01a, only : scan_calories
+    subroutine test_solve_input
+        use day01a, only : solve
         implicit none
 
         integer :: result
 
-        result = scan_calories('../inputfiles/day01_input.txt')
+        result = solve('../inputfiles/day01_input.txt')
         call assert_equals (69528, result)
     end subroutine
 

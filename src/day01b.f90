@@ -26,7 +26,7 @@ subroutine top_calories(newsum, top1, top2, top3)
     ! print *, top1, top2, top3
 end subroutine
 
-integer function scan_calories(filename)
+integer function solve(filename)
     implicit none
 
     character(len=*), intent(in) :: filename
@@ -62,16 +62,16 @@ integer function scan_calories(filename)
     end if
     close(io)
     ! return sum of top 3 calory sums
-    scan_calories = top1 + top2 + top3
+    solve = top1 + top2 + top3
 end function
 
 program day01b
     use util
     implicit none
 
-    integer :: result, scan_calories
+    integer :: result, solve
 
-    ! result = scan_calories('inputfiles/day01_example.txt')
-    result = scan_calories('inputfiles/day01_input.txt')
+    ! result = solve('inputfiles/day01_example.txt')
+    result = solve('inputfiles/day01_input.txt')
     call printresultline_integer('02b', result)
 end program day01b

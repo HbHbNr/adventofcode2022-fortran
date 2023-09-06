@@ -4,7 +4,7 @@ module day02a
     private
 
     public :: round_score
-    public :: scan_strategy
+    public :: solve
 
 contains
 
@@ -42,7 +42,7 @@ contains
         round_score = score
     end function
 
-    integer function scan_strategy(filename)
+    integer function solve(filename)
         implicit none
 
         character(len=*), intent(in) :: filename
@@ -64,7 +64,7 @@ contains
         end do
         close(io)
         ! return total score
-        scan_strategy = totalscore
+        solve = totalscore
     end function
 
 end module day02a

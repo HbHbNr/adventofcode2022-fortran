@@ -6,23 +6,23 @@ module day02a_test
 
 contains
 
-    subroutine test_scan_strategy_example
-        use day02a, only : scan_strategy
+    subroutine test_solve_example
+        use day02a, only : solve
         implicit none
 
         integer :: result
 
-        result = scan_strategy('../inputfiles/day02_example.txt')
+        result = solve('../inputfiles/day02_example.txt')
         call assert_equals (15, result)
     end subroutine
 
-    subroutine test_scan_strategy_input
-        use day02a, only : scan_strategy
+    subroutine test_solve_input
+        use day02a, only : solve
         implicit none
 
         integer :: result
 
-        result = scan_strategy('../inputfiles/day02_input.txt')
+        result = solve('../inputfiles/day02_input.txt')
         call assert_equals (13052, result)
     end subroutine
 
