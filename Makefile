@@ -11,7 +11,7 @@ FFLAGS := -J $(OBJ)
 SOURCES := $(wildcard $(SRC)/*.f90)
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(BIN)/day01a $(BIN)/day01b $(BIN)/day02a
-TESTS := $(BIN)/day01a_test_driver $(BIN)/day02a_test_driver
+TESTS := $(BIN)/day01a_test_driver $(BIN)/day01b_test_driver $(BIN)/day02a_test_driver
 FRUITPYTESTS := $(TESTS:$(BIN)/%_test_driver=fruitpy/%.py)
 
 all: $(BINARIES)
@@ -30,7 +30,8 @@ fruitpytests: $(FRUITPYTESTS)
 $(BIN)/day01a: $(OBJ)/day01a_main.o $(OBJ)/day01a.o $(OBJ)/util.o
 $(BIN)/day01a_test_driver: $(OBJ)/day01a_test_driver.o $(OBJ)/day01a_test.o $(OBJ)/day01a.o $(OBJ)/util.o $(OBJ)/fruit.o
 
-$(BIN)/day01b: $(OBJ)/day01b.o $(OBJ)/util.o
+$(BIN)/day01b: $(OBJ)/day01b_main.o $(OBJ)/day01b.o $(OBJ)/util.o
+$(BIN)/day01b_test_driver: $(OBJ)/day01b_test_driver.o $(OBJ)/day01b_test.o $(OBJ)/day01b.o $(OBJ)/util.o $(OBJ)/fruit.o
 
 $(BIN)/day02a: $(OBJ)/day02a_main.o $(OBJ)/day02a.o $(OBJ)/util.o
 $(BIN)/day02a_test_driver: $(OBJ)/day02a_test_driver.o $(OBJ)/day02a_test.o $(OBJ)/day02a.o $(OBJ)/util.o $(OBJ)/fruit.o
@@ -39,8 +40,11 @@ $(OBJ)/day01a_main.o: $(OBJ)/day01a.o $(OBJ)/util.o
 $(OBJ)/day01a_test.o: $(OBJ)/day01a.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day01a_test_driver.o: $(OBJ)/day01a_test.o $(OBJ)/day01a.o $(OBJ)/util.o $(OBJ)/fruit.o
 
-$(OBJ)/day02a.o: $(OBJ)/util.o
+$(OBJ)/day01b_main.o: $(OBJ)/day01b.o $(OBJ)/util.o
+$(OBJ)/day01b_test.o: $(OBJ)/day01b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day01b_test_driver.o: $(OBJ)/day01b_test.o $(OBJ)/day01b.o $(OBJ)/util.o $(OBJ)/fruit.o
 
+$(OBJ)/day02a.o: $(OBJ)/util.o
 $(OBJ)/day02a_main.o: $(OBJ)/day02a.o $(OBJ)/util.o
 $(OBJ)/day02a_test.o: $(OBJ)/day02a.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day02a_test_driver.o: $(OBJ)/day02a_test.o $(OBJ)/day02a.o $(OBJ)/util.o $(OBJ)/fruit.o
@@ -50,6 +54,28 @@ $(BIN)/%: $(OBJ)/%.o
 
 $(OBJ)/%.o: $(SRC)/%.f90
 	$(FC) $(FFLAGS) -c -o $@ $<
+
+# source code creating rules - using day01 a as a template
+
+$(SRC)/day%_main.f90: $(SRC)/day01a_main.f90
+	day0number=$$(echo day$(*) | head -c 5); \
+	sed -e 's/day01a/day$(*)/g' \
+	    -e 's#inputfiles/day01#inputfiles/'$${day0number}'#' \
+		-e "s/'01a'/'$(*)'/" \
+		$(SRC)/day01a_main.f90 > $@
+
+$(SRC)/day%_test.f90: $(SRC)/day01a_test.f90
+	day0number=$$(echo day$(*) | head -c 5); \
+	daynumber=$$(echo $$day0number | sed -E -e 's/^0//'); \
+	sed -e 's/day01a/day$(*)/g' \
+	    -e 's#inputfiles/day01#inputfiles/'$${day0number}'#' \
+		-e "s/'01a'/'$(*)'/" \
+		$(SRC)/day01a_test.f90 > $@
+
+fruitpy/day%.py: fruitpy/day01a.py
+	day0number=$$(echo day$(*) | head -c 5); \
+	sed -e 's/day01a/day$(*)/g' \
+		fruitpy/day01a.py > $@
 
 info:
 	@echo 'SOURCES="$(SOURCES)"'
