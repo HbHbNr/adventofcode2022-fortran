@@ -11,7 +11,7 @@ RUN mkdir bin obj
 COPY fruitpy fruitpy
 COPY inputfiles inputfiles
 COPY src src
-COPY fruitpy.sh Makefile .
+COPY fruitpy.sh Makefile ./
 
 RUN make all
 
