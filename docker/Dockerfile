@@ -2,7 +2,7 @@ FROM debian:bookworm-slim
 
 RUN apt-get update && \
     apt-get upgrade && \
-    apt-get install --yes make gfortran && \
+    apt-get install --yes --no-install-recommends make gfortran && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app/adventofcode2022-fortran
