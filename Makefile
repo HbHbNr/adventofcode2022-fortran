@@ -1,7 +1,7 @@
 # disable default rules and default variables
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
-.PHONY: all run runtests fruitpytests info clean
+.PHONY: all runall tests runtests fruitpytests info clean
 
 SRC := src
 OBJ := obj
@@ -16,10 +16,10 @@ FRUITPYTESTS := $(TESTS:$(BIN)/%_test_driver=fruitpy/%.py)
 
 all: $(BINARIES)
 
-run: $(BINARIES)
+runall: $(BINARIES)
 	for BINARY in $(BINARIES); do $${BINARY}; done
 
-alltests: $(TESTS)
+tests: $(TESTS)
 
 runtests: $(TESTS)
 	cd $(BIN) && for TEST in $(TESTS); do ../$${TEST}; done
