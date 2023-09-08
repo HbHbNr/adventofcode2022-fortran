@@ -1,4 +1,4 @@
-from FRUIT import *
+from FRUIT import test_suite
 
 day = 'day02a'
 
