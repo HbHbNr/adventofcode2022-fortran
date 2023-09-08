@@ -57,6 +57,9 @@ $(OBJ)/%.o: $(SRC)/%.f90
 
 # source code creating rules - using day01 a as a template
 
+$(SRC)/day01a_main.f90 $(SRC)/day01a_test.f90 fruitpy/day01a.py:
+	# prevent circular dependency
+
 $(SRC)/day%_main.f90: $(SRC)/day01a_main.f90
 	day0number=$$(echo day$(*) | head -c 5); \
 	sed -e 's/day01a/day$(*)/g' \
