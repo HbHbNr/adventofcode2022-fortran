@@ -12,8 +12,8 @@ contains
 
         character(len=*), intent(in) :: filename
         character(len=5)             :: line
-        integer                      :: linecalories, sumcalories = 0, maxcalories = 0
         integer                      :: io, iostat
+        integer                      :: linecalories, sumcalories = 0, maxcalories = 0
 
         open(newunit=io, file=filename, status='old', action='read')
         do

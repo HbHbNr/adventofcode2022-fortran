@@ -39,9 +39,9 @@ contains
 
         character(len=*), intent(in) :: filename
         character(len=5)             :: line
+        integer                      :: io, iostat
         integer                      :: linecalories, sumcalories = 0
         integer                      :: top1 = 0, top2 = 0, top3 = 0
-        integer                      :: io, iostat
 
         open(newunit=io, file=filename, status='old', action='read')
         do
