@@ -8,10 +8,10 @@ OBJ := obj
 BIN := bin
 FC := gfortran
 FFLAGS := -J $(OBJ)
-SOURCES := $(wildcard $(SRC)/*.f90)
+SOURCES := $(sort $(wildcard $(SRC)/*.f90))
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
-BINARIES := $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90))
-TESTS := $(BINARIES:%=%_test_driver)
+BINARIES := $(sort $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90)))
+TESTS := $(sort $(BINARIES:%=%_test_driver))
 FRUITPYTESTS := $(TESTS:$(BIN)/%_test_driver=fruitpy/%.py)
 
 all: $(BINARIES)
@@ -52,6 +52,13 @@ $(OBJ)/day02b_test.o: $(OBJ)/day02b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day02b_test_driver.o: $(OBJ)/day02b_test.o $(OBJ)/day02b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day02b: $(OBJ)/day02b_main.o $(OBJ)/day02b.o $(OBJ)/util.o
 $(BIN)/day02b_test_driver: $(OBJ)/day02b_test_driver.o $(OBJ)/day02b_test.o $(OBJ)/day02b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day03a.o: $(OBJ)/util.o
+$(OBJ)/day03a_main.o: $(OBJ)/day03a.o $(OBJ)/util.o
+$(OBJ)/day03a_test.o: $(OBJ)/day03a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day03a_test_driver.o: $(OBJ)/day03a_test.o $(OBJ)/day03a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day03a: $(OBJ)/day03a_main.o $(OBJ)/day03a.o $(OBJ)/util.o
+$(BIN)/day03a_test_driver: $(OBJ)/day03a_test_driver.o $(OBJ)/day03a_test.o $(OBJ)/day03a.o $(OBJ)/util.o $(OBJ)/fruit.o
 
 $(BIN)/%: $(OBJ)/%.o
 	$(FC) -o $@ $^

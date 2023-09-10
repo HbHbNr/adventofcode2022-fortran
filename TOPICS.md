@@ -9,4 +9,7 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 02
 * Fortran: unit testing with FRUIT and FRUITpy
-* Techniques: make and Makefile recap
+* Techniques: make and Makefile recap, Rock paper scissors
+
+### Day 02
+* Fortran: select case
