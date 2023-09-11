@@ -11,7 +11,7 @@ FFLAGS := -J $(OBJ)
 SOURCES := $(sort $(wildcard $(SRC)/*.f90))
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(sort $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90)))
-TESTS := $(sort $(BINARIES:%=%_test_driver))
+TESTS := $(BINARIES:%=%_test_driver)
 FRUITPYTESTS := $(TESTS:$(BIN)/%_test_driver=fruitpy/%.py)
 
 all: $(BINARIES)
@@ -78,6 +78,12 @@ $(SRC)/day%_main.f90: $(SRC)/day01a_main.f90
 		-e "s/'01a'/'$(*)'/" \
 		$(SRC)/day01a_main.f90 > $@
 
+$(SRC)/day%b_main.f90: $(SRC)/day%a_main.f90
+	day0number=day$(*); \
+	sed -e 's/day$(*)a/day$(*)b/g' \
+		-e "s/'$(*)a'/'$(*)b'/" \
+		$< > $@
+
 $(SRC)/day%_test.f90: $(SRC)/day01a_test.f90
 	day0number=$$(echo day$(*) | head -c 5); \
 	daynumber=$$(echo $$day0number | sed -E -e 's/^0//'); \
@@ -86,10 +92,20 @@ $(SRC)/day%_test.f90: $(SRC)/day01a_test.f90
 		-e "s/'01a'/'$(*)'/" \
 		$(SRC)/day01a_test.f90 > $@
 
-fruitpy/day%.py: fruitpy/day01a.py
-	day0number=$$(echo day$(*) | head -c 5); \
-	sed -e 's/day01a/day$(*)/g' \
-		fruitpy/day01a.py > $@
+$(SRC)/day%b_test.f90: $(SRC)/day%a_test.f90
+	day0number=day$(*); \
+	daynumber=$$(echo $$day0number | sed -E -e 's/^0//'); \
+	sed -e 's/day$(*)a/day$(*)b/g' \
+		-e "s/'$(*)a'/'$(*)b'/" \
+		$(SRC)/day01a_test.f90 > $@
+
+fruitpy/day%a.py: fruitpy/day01a.py
+	sed -e 's/day01a/day$(*)a/g' \
+		$< > $@
+
+fruitpy/day%b.py: fruitpy/day%a.py
+	sed -e 's/day$(*)a/day$(*)b/g' \
+		$< > $@
 
 info:
 	@echo 'SOURCES="$(SOURCES)"'
