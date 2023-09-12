@@ -25,38 +25,31 @@ contains
     integer function solve(filename)
         implicit none
 
-        type :: sectionline
-            ! example:
-            ! 2-4,6-8
-            integer :: section1a
-            character(len=1) :: dash1
-            integer :: section1b
-            character(len=1) :: comma
-            integer :: section2a
-            character(len=1) :: dash2
-            integer :: section2b
-        end type
-
         character(len=*), intent(in) :: filename
-        type(sectionline)            :: line
+        character(len=5)             :: sections1, sections2
+        integer                      :: dashpos, section1a, section1b, section2a, section2b
         integer                      :: io, iostat
-        character(len=1000)          :: iomsg
+        character(len=80)            :: iomsg
         integer                      :: line_fully_contains, sum_fully_contains
 
-        print *, filename
         sum_fully_contains = 0
         open(newunit=io, file=filename, status='old', action='read')
         do
-            read(io, *, iostat=iostat, iomsg=iomsg) line
+            read(io, *, iostat=iostat, iomsg=iomsg) sections1, sections2
             if (iostat /= 0) then
                 ! end of file or I/O error -> exit loop
-                print *, 'error: ', iostat, iomsg
+                ! print *, 'error: ', iostat, iomsg
                 exit
             end if
-            ! debug: output line from file and its length
-            print *, line
-            ! print *, line%section1a, line%section1b, line%section2a, line%section2b
-            line_fully_contains = fully_contains(line%section1a, line%section1b, line%section2a, line%section2b)
+            ! debug: output line after parsing
+            ! print *, sections1, ',', sections2
+            dashpos = index(sections1, '-')
+            sections1(dashpos:dashpos) = ','
+            dashpos = index(sections2, '-')
+            sections2(dashpos:dashpos) = ','
+            read(sections1, *) section1a, section1b
+            read(sections2, *) section2a, section2b
+            line_fully_contains = fully_contains(section1a, section1b, section2a, section2b)
             sum_fully_contains = sum_fully_contains + line_fully_contains
         end do
         close(io)

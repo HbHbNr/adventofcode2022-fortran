@@ -11,5 +11,9 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 * Fortran: unit testing with FRUIT and FRUITpy
 * Techniques: make and Makefile recap, Rock paper scissors
 
-### Day 02
+### Day 03
 * Fortran: select case
+* Techniques: order-only prerequisites in Makefile recap
+
+### Day 04
+* Fortran: derived types, CSV parsing

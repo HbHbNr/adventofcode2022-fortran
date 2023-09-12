@@ -35,7 +35,7 @@ contains
         integer :: result
 
         result = solve('../inputfiles/day04_input.txt')
-        call assert_equals (-1, result)
+        call assert_equals (556, result)
     end subroutine
 
 end module day04a_test
