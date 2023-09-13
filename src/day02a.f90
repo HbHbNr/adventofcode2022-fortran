@@ -1,5 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/2 part a
 module day02a
+    use util, only : printioerror
     implicit none
     private
 
@@ -46,16 +47,21 @@ contains
         implicit none
 
         character(len=*), intent(in) :: filename
-        character(len=3)             :: line
         integer                      :: io, iostat
+        character(len=512)           :: iomsg
+        character(len=3)             :: line
         integer                      :: totalscore
 
         totalscore = 0
-        open(newunit=io, file=filename, status='old', action='read')
+        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
+        if (iostat /= 0) then
+            call printioerror(iostat, iomsg, .true.)
+        end if
         do
-            read(io, '(A3)', iostat=iostat) line
+            read(io, '(A3)', iostat=iostat, iomsg=iomsg) line
             if (iostat /= 0) then
                 ! end of file or I/O error -> exit loop
+                call printioerror(iostat, iomsg)
                 exit
             end if
             ! debug: output line from file and its length
