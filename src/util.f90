@@ -5,6 +5,7 @@ module util
 
     public :: printresultline_integer
     public :: printresultline
+    public :: printioerror
 
 contains
 
@@ -28,6 +29,24 @@ contains
         character(len=*), intent(in) :: result
 
         print '(A, A, A, A)', 'Day ', day, ': ', adjustl(result)
+    end subroutine
+
+    !> print an I/O error message, and stop program on serious I/O error or by request
+    subroutine printioerror(iostat, iomsg, alwaysstop)
+        implicit none
+
+        integer, intent(in)           :: iostat
+        character(len=*), intent(in)  :: iomsg
+        logical, intent(in), optional :: alwaysstop
+        character(len=80)             :: iostatstr
+
+        if (iostat > 0) then
+            write (iostatstr, *) iostat
+            print '(A, A, A, A, A)', 'I/O error: ', trim(adjustl(iostatstr)), ' (', trim(iomsg), ')'
+        end if
+        if ((iostat > 0) .or. (present(alwaysstop) .and. alwaysstop)) then
+            stop
+        end if
     end subroutine
 
 end module util
