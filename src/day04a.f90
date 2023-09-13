@@ -22,6 +22,23 @@ contains
         end if
     end function
 
+    subroutine printioerror(iostat, iomsg, alwaysstop)
+        implicit none
+
+        integer, intent(in)           :: iostat
+        character(len=*), intent(in)  :: iomsg
+        logical, intent(in), optional :: alwaysstop
+        character(len=80)             :: iostatstr
+
+        if (iostat > 0) then
+            write (iostatstr, *) iostat
+            print '(A, A, A, A, A)', 'I/O error: ', trim(adjustl(iostatstr)), ' (', trim(iomsg), ')'
+        end if
+        if ((iostat > 0) .or. (present(alwaysstop) .and. alwaysstop)) then
+            stop
+        end if
+    end subroutine
+
     integer function solve(filename)
         implicit none
 
@@ -29,16 +46,19 @@ contains
         character(len=5)             :: sections1, sections2
         integer                      :: dashpos, section1a, section1b, section2a, section2b
         integer                      :: io, iostat
-        character(len=80)            :: iomsg
+        character(len=512)           :: iomsg
         integer                      :: line_fully_contains, sum_fully_contains
 
         sum_fully_contains = 0
-        open(newunit=io, file=filename, status='old', action='read')
+        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
+        if (iostat /= 0) then
+            call printioerror(iostat, iomsg, .true.)
+        end if
         do
             read(io, *, iostat=iostat, iomsg=iomsg) sections1, sections2
             if (iostat /= 0) then
                 ! end of file or I/O error -> exit loop
-                ! print *, 'error: ', iostat, iomsg
+                call printioerror(iostat, iomsg)
                 exit
             end if
             ! debug: output line after parsing
