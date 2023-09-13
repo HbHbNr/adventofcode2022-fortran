@@ -67,7 +67,7 @@ contains
         character(len=*), intent(in) :: filename
         integer                      :: io, iostat
         character(len=512)           :: iomsg
-        character(len=64)            :: line1, line2, line3
+        character(len=64)            :: line(3)
         integer                      :: priority, prioritysum
 
         prioritysum = 0
@@ -76,17 +76,18 @@ contains
             call printioerror(iostat, iomsg, .true.)
         end if
         do
-            read(io, '(A)', iostat=iostat, iomsg=iomsg) line1
+            ! read the next 3 lines into the array
+            read(io, '(A)', iostat=iostat, iomsg=iomsg) line
             if (iostat /= 0) then
                 ! end of file or I/O error -> exit loop
                 call printioerror(iostat, iomsg)
                 exit
             end if
-            read(io, '(A)', iostat=iostat) line2
-            read(io, '(A)', iostat=iostat) line3
             ! debug: output line from file and its length
-            ! print '(A, A2, I1)', line, ': ', len_trim(line)
-            priority = find_badge(line1, line2, line3)
+            ! print '(A, A2, I2)', line(1), ': ', len_trim(line(1))
+            ! print '(A, A2, I2)', line(2), ': ', len_trim(line(2))
+            ! print '(A, A2, I2)', line(3), ': ', len_trim(line(3)) 
+            priority = find_badge(line(1), line(2), line(3))
             prioritysum = prioritysum + priority
         end do
         close(io)
