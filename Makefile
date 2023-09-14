@@ -27,6 +27,70 @@ runtests: $(TESTS)
 fruitpytests: $(FRUITPYTESTS)
 	for FRUITPYTEST in $(FRUITPYTESTS); do python3 $${FRUITPYTEST}; done
 
+info:
+	@echo 'SOURCES="$(SOURCES)"'
+	@echo 'OBJECTS="$(OBJECTS)"'
+	@echo 'BINARIES="$(BINARIES)"'
+	@echo 'TESTS="$(TESTS)"'
+	@echo 'FRUITPYTESTS="$(FRUITPYTESTS)"'
+
+clean:
+	rm -f bin/* obj/*
+
+# pattern rules
+$(BIN)/%: $(OBJ)/%.o
+	$(FC) -o $@ $^
+
+$(OBJ)/%.o: $(SRC)/%.f90
+	$(FC) $(FFLAGS) -c -o $@ $<
+
+# source code cloning rules
+# - using day01a as a template for day##a
+# - using day##a as a template for day##b
+$(SRC)/day01a_main.f90 $(SRC)/day01a_test.f90 $(SRC)/day01a.f90 fruitpy/day01a.py:
+	# prevent circular dependency
+
+$(SRC)/day%a_main.f90: | $(SRC)/day01a_main.f90
+	sed -e 's/day01a/day$(*)a/g' \
+	    -e 's#inputfiles/day01#inputfiles/day$(*)#' \
+		-e "s/'01a'/'$(*)a'/" \
+		$(SRC)/day01a_main.f90 > $@
+
+$(SRC)/day%b_main.f90: | $(SRC)/day%a_main.f90
+	sed -e 's/day$(*)a/day$(*)b/g' \
+		-e "s/'$(*)a'/'$(*)b'/" \
+		$(SRC)/day$(*)a_main.f90 > $@
+
+$(SRC)/day%a_test.f90: | $(SRC)/day01a_test.f90
+	sed -e 's/day01a/day$(*)a/g' \
+	    -e 's#inputfiles/day01#inputfiles/day$(*)#' \
+		-e "s/'01a'/'$(*)a'/" \
+		$(SRC)/day01a_test.f90 > $@
+
+$(SRC)/day%b_test.f90: | $(SRC)/day%a_test.f90
+	sed -e 's/day$(*)a/day$(*)b/g' \
+		-e "s/'$(*)a'/'$(*)b'/" \
+		$(SRC)/day$(*)a_test.f90 > $@
+
+$(SRC)/day%a.f90: | $(SRC)/day01a.f90
+	sed -e 's/day01a/day$(*)a/g' \
+		-e "s#day/1 part a#day/$(*:0%=%) part a#" \
+		$(SRC)/day01a.f90 > $@
+
+$(SRC)/day%b.f90: | $(SRC)/day%a.f90
+	sed -e 's/day$(*)a/day$(*)b/g' \
+		-e "s#day/$(*:0%=%) part a#day/$(*:0%=%) part b#" \
+		$(SRC)/day$(*)a.f90 > $@
+
+fruitpy/day%a.py: | fruitpy/day01a.py
+	sed -e 's/day01a/day$(*)a/g' \
+		fruitpy/day01a.py > $@
+
+fruitpy/day%b.py: | fruitpy/day%a.py
+	sed -e 's/day$(*)a/day$(*)b/g' \
+		fruitpy/day$(*)a.py > $@
+
+# dependencies
 $(OBJ)/day01a.o: $(OBJ)/util.o
 $(OBJ)/day01a_main.o: $(OBJ)/day01a.o $(OBJ)/util.o
 $(OBJ)/day01a_test.o: $(OBJ)/day01a.o $(OBJ)/util.o $(OBJ)/fruit.o
@@ -82,63 +146,3 @@ $(OBJ)/day04b_test.o: $(OBJ)/day04b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day04b_test_driver.o: $(OBJ)/day04b_test.o $(OBJ)/day04b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day04b: $(OBJ)/day04b_main.o $(OBJ)/day04b.o $(OBJ)/util.o
 $(BIN)/day04b_test_driver: $(OBJ)/day04b_test_driver.o $(OBJ)/day04b_test.o $(OBJ)/day04b.o $(OBJ)/util.o $(OBJ)/fruit.o
-
-$(BIN)/%: $(OBJ)/%.o
-	$(FC) -o $@ $^
-
-$(OBJ)/%.o: $(SRC)/%.f90
-	$(FC) $(FFLAGS) -c -o $@ $<
-
-# source code creating rules
-# - using day01a as a template for day##a
-# - using day##a as a template for day##b
-$(SRC)/day01a_main.f90 $(SRC)/day01a_test.f90 $(SRC)/day01a.f90 fruitpy/day01a.py:
-	# prevent circular dependency
-
-$(SRC)/day%a_main.f90: | $(SRC)/day01a_main.f90
-	sed -e 's/day01a/day$(*)a/g' \
-	    -e 's#inputfiles/day01#inputfiles/day$(*)#' \
-		-e "s/'01a'/'$(*)a'/" \
-		$(SRC)/day01a_main.f90 > $@
-
-$(SRC)/day%b_main.f90: | $(SRC)/day%a_main.f90
-	sed -e 's/day$(*)a/day$(*)b/g' \
-		-e "s/'$(*)a'/'$(*)b'/" \
-		$(SRC)/day$(*)a_main.f90 > $@
-
-$(SRC)/day%a_test.f90: | $(SRC)/day01a_test.f90
-	sed -e 's/day01a/day$(*)a/g' \
-	    -e 's#inputfiles/day01#inputfiles/day$(*)#' \
-		-e "s/'01a'/'$(*)a'/" \
-		$(SRC)/day01a_test.f90 > $@
-
-$(SRC)/day%b_test.f90: | $(SRC)/day%a_test.f90
-	sed -e 's/day$(*)a/day$(*)b/g' \
-		-e "s/'$(*)a'/'$(*)b'/" \
-		$(SRC)/day$(*)a_test.f90 > $@
-
-$(SRC)/day%a.f90: | $(SRC)/day01a.f90
-	sed -e 's/day01a/day$(*)a/g' \
-		$(SRC)/day01a.f90 > $@
-
-$(SRC)/day%b.f90: | $(SRC)/day%a.f90
-	sed -e 's/day$(*)a/day$(*)b/g' \
-		$(SRC)/day$(*)a.f90 > $@
-
-fruitpy/day%a.py: | fruitpy/day01a.py
-	sed -e 's/day01a/day$(*)a/g' \
-		fruitpy/day01a.py > $@
-
-fruitpy/day%b.py: | fruitpy/day%a.py
-	sed -e 's/day$(*)a/day$(*)b/g' \
-		fruitpy/day$(*)a.py > $@
-
-info:
-	@echo 'SOURCES="$(SOURCES)"'
-	@echo 'OBJECTS="$(OBJECTS)"'
-	@echo 'BINARIES="$(BINARIES)"'
-	@echo 'TESTS="$(TESTS)"'
-	@echo 'FRUITPYTESTS="$(FRUITPYTESTS)"'
-
-clean:
-	rm -f bin/* obj/*
