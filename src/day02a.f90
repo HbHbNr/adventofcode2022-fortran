@@ -20,25 +20,27 @@ contains
         ! A X    A Y     A Z
         ! B Y    B Z     B X
         ! C Z    C X     C Y
-        if (line == 'A X' .or. line == 'B Y' .or. line == 'C Z') then
+        select case (line)
+        case ('A X', 'B Y', 'C Z')
             ! draw
             score = 3
-        else if (line == 'A Y' .or. line == 'B Z' .or. line == 'C X') then
+        case ('A Y', 'B Z', 'C X')
             ! win
             score = 6
-        else
+        case default
             ! lose
             score = 0
-        end if
+        end select
         ! get mychoice from third column
         read(line, '(2X, A1)') mychoice
-        if (mychoice == 'X') then
+        select case(mychoice)
+        case ('X')
             score = score + 1
-        else if (mychoice == 'Y') then
+        case ('Y')
             score = score + 2
-        else
+        case default
             score = score + 3
-        end if
+        end select
         ! return round score
         round_score = score
     end function

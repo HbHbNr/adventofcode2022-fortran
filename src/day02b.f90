@@ -23,37 +23,41 @@ contains
         ! get our choices from first and third column
         read(line, '(A1, 1X, A1)') hiscoice, mychoice
 
-        if (mychoice == 'Y') then
+        select case (mychoice)
+        case ('Y')
             ! draw
             score = 3
-            if (hiscoice == 'A') then
+            select case (hiscoice)
+            case ('A')
                 score = score + 1
-            else if (hiscoice == 'B') then
+            case ('B')
                 score = score + 2
-            else
+            case default
                 score = score + 3
-            end if
-        else if (mychoice == 'Z') then
+            end select
+        case ('Z')
             ! win
             score = 6
-            if (hiscoice == 'A') then
+            select case (hiscoice)
+            case ('A')
                 score = score + 2
-            else if (hiscoice == 'B') then
+            case ('B')
                 score = score + 3
-            else
+            case default
                 score = score + 1
-            end if
-        else
+            end select
+        case default
             ! lose
             score = 0
-            if (hiscoice == 'A') then
+            select case (hiscoice)
+            case ('A')
                 score = score + 3
-            else if (hiscoice == 'B') then
+            case ('B')
                 score = score + 1
-            else
+            case default
                 score = score + 2
-            end if
-        end if
+            end select
+        end select
         ! return round score
         round_score = score
     end function
