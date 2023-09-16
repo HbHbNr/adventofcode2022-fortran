@@ -40,12 +40,19 @@ contains
         logical, intent(in), optional :: alwaysstop
         character(len=80)             :: iostatstr
 
+        ! iostat:
+        !   ==  0 -> no error
+        !   == -1 -> end of file
+        !    >  0 -> serious I/O error
         if (iostat > 0) then
             write (iostatstr, *) iostat
             print '(A, A, A, A, A)', 'I/O error: ', trim(adjustl(iostatstr)), ' (', trim(iomsg), ')'
-        end if
-        if ((iostat > 0) .or. (present(alwaysstop) .and. alwaysstop)) then
             stop
+        end if
+        if (present(alwaysstop)) then
+            if (alwaysstop .eqv. .true.) then
+                stop
+            end if
         end if
     end subroutine
 
