@@ -28,7 +28,7 @@ jobs:
     - name: Check out fruit.f90
       uses: actions/checkout@v3
       with:
-        repository: https://github.com/mortele/FRUIT
+        repository: mortele/FRUIT
         ref: 3d7f353
         sparse-checkout: src/fruit.f90
         sparse-checkout-cone-mode: false
