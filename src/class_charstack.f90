@@ -1,9 +1,6 @@
-module class_CharStack
+module class_charstack
     implicit none
     private
-
-    public :: charstack_push
-    public :: charstack_print
 
     integer, parameter :: capacity = 32
 
@@ -53,39 +50,12 @@ contains
 
         class(CharStack), intent(in) :: this
 
-        print *, 'start'
-        print *, this%top
+        ! print *, this%top
         if (this%top == 0) then
             print *, ''
         else
             print *, this%content(:this%top)
         end if
-        print *, 'end'
     end subroutine
 
-end module class_CharStack
-
-program CharStack_test
-    use class_CharStack  !, only : CharStack, charstack_push
-    implicit none
-
-    type(CharStack)  :: stack
-    character(len=1) :: char
-
-    stack = CharStack('ABC', 3)
-    call stack%print
-    char = stack%pop()
-    print *, char
-    call stack%print
-    char = stack%pop()
-    print *, char
-    call stack%print
-    char = stack%pop()
-    print *, char
-    call stack%print
-    ! stack%push(char)
-    ! stack%push('B')
-    ! stack%push('C')
-    charstack_push(stack, 'A')
-    call charstack_print(stack)
-end program CharStack_test
+end module class_charstack
