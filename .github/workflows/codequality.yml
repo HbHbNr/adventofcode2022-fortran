@@ -9,10 +9,10 @@ jobs:
     steps:
     - name: Install GFortran
       run: |
-        apt-get update && \
-        apt-get upgrade && \
-        apt-get install --yes --no-install-recommends make gfortran && \
-        rm -rf /var/lib/apt/lists/* 
+        sudo apt-get update && \
+        sudo apt-get upgrade && \
+        sudo apt-get install --yes --no-install-recommends make gfortran && \
+        sudo rm -rf /var/lib/apt/lists/* 
     - name: Install FRUITpy
       run: |
         python -m pip install --upgrade FRUITPy pip pkg_resources setuptools
