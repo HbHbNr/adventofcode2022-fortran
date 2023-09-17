@@ -9,13 +9,13 @@ jobs:
     steps:
     - name: Install GFortran
       run: |
-        sudo apt-get update && \
-        sudo apt-get upgrade && \
-        sudo apt-get install --yes --no-install-recommends make gfortran && \
-        sudo rm -rf /var/lib/apt/lists/* 
+        sudo apt-get update && sudo apt-get upgrade
+        sudo apt-get install --yes --no-install-recommends make gfortran
+    - name: Test GFortran
+      run: gfortran --version
     - name: Install FRUITpy
       run: |
-        python -m pip install --upgrade FRUITPy pip pkg_resources setuptools
+        python -m pip install --upgrade FRUITPy pip setuptools
     - uses: actions/checkout@v3
     - name: Make and run all binaries
       run: |
