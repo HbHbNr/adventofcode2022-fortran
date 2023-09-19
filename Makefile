@@ -25,7 +25,10 @@ runtests: $(TESTS)
 	cd $(BIN) && for TEST in $(TESTS); do ../$${TEST}; done
 
 fruitpytests: $(FRUITPYTESTS)
-	for FRUITPYTEST in $(FRUITPYTESTS); do python3 $${FRUITPYTEST}; done
+	@for FRUITPYTEST in $(FRUITPYTESTS); do \
+	    echo "******************** $${FRUITPYTEST} ********************"; \
+		python3 $${FRUITPYTEST}; \
+	done
 
 info:
 	@echo 'SOURCES="$(SOURCES)"'
@@ -152,9 +155,9 @@ $(OBJ)/day04b_test_driver.o: $(OBJ)/day04b_test.o $(OBJ)/day04b.o $(OBJ)/util.o 
 $(BIN)/day04b: $(OBJ)/day04b_main.o $(OBJ)/day04b.o $(OBJ)/util.o
 $(BIN)/day04b_test_driver: $(OBJ)/day04b_test_driver.o $(OBJ)/day04b_test.o $(OBJ)/day04b.o $(OBJ)/util.o $(OBJ)/fruit.o
 
-$(OBJ)/day05a.o: $(OBJ)/util.o
+$(OBJ)/day05a.o: $(OBJ)/util.o $(OBJ)/class_charstack.o
 $(OBJ)/day05a_main.o: $(OBJ)/day05a.o $(OBJ)/util.o
 $(OBJ)/day05a_test.o: $(OBJ)/day05a.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day05a_test_driver.o: $(OBJ)/day05a_test.o $(OBJ)/day05a.o $(OBJ)/util.o $(OBJ)/fruit.o
-$(BIN)/day05a: $(OBJ)/day05a_main.o $(OBJ)/day05a.o $(OBJ)/util.o
-$(BIN)/day05a_test_driver: $(OBJ)/day05a_test_driver.o $(OBJ)/day05a_test.o $(OBJ)/day05a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day05a: $(OBJ)/day05a_main.o $(OBJ)/day05a.o $(OBJ)/util.o $(OBJ)/class_charstack.o
+$(BIN)/day05a_test_driver: $(OBJ)/day05a_test_driver.o $(OBJ)/day05a_test.o $(OBJ)/day05a.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_charstack.o
