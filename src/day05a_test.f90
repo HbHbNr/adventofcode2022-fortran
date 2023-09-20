@@ -40,7 +40,7 @@ contains
         character(len=9) :: result
 
         result = solve('../inputfiles/day05_input.txt')
-        call assert_equals ('XXXXXXXXX', result)
+        call assert_equals ('VJSFHWGFT', result)
     end subroutine
 
 end module day05a_test

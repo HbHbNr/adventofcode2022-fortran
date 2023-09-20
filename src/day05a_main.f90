@@ -3,9 +3,9 @@ program day05a_main
     use day05a, only : solve
     implicit none
 
-    character(len=9) :: result
+    character(len=:), allocatable :: result
 
-    result = solve('inputfiles/day05_example.txt')
-    ! result = solve('inputfiles/day05_input.txt')
+    ! result = solve('inputfiles/day05_example.txt')
+    result = solve('inputfiles/day05_input.txt')
     call printresultline('05a', result)
 end program day05a_main
