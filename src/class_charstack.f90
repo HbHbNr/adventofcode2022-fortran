@@ -2,7 +2,7 @@ module class_charstack
     implicit none
     private
 
-    integer, parameter :: capacity = 32
+    integer, parameter :: capacity = 128
 
     type, public :: CharStack
         character(len=capacity) :: content
@@ -10,12 +10,14 @@ module class_charstack
     contains
         procedure :: push  => charstack_push
         procedure :: pop   => charstack_pop
+        procedure :: peek  => charstack_peek
+        procedure :: size  => charstack_size
         procedure :: print => charstack_print
     end type CharStack
 
 contains
 
-    character(len=1) function charstack_push(this, char)
+    subroutine charstack_push(this, char)
         implicit none
 
         class(CharStack)             :: this
@@ -28,8 +30,7 @@ contains
         end if
         this%top = this%top + 1
         this%content(this%top:this%top) = char
-        charstack_push = char
-    end function
+    end subroutine
 
     character(len=1) function charstack_pop(this)
         implicit none
@@ -42,7 +43,29 @@ contains
             stop
         end if
         charstack_pop = this%content(this%top:this%top)
+        this%content(this%top:this%top) = ' '
         this%top = this%top - 1
+    end function
+
+    character(len=1) function charstack_peek(this)
+        implicit none
+
+        class(CharStack) :: this
+
+        if (this%top == 0) then
+            ! stack is empty, write error to stderr
+            write (0, *) 'Peek failed: stack is empty!'
+            stop
+        end if
+        charstack_peek = this%content(this%top:this%top)
+    end function
+
+    integer function charstack_size(this)
+        implicit none
+
+        class(CharStack) :: this
+
+        charstack_size = this%top
     end function
 
     subroutine charstack_print(this)

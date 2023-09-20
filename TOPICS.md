@@ -17,3 +17,7 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 04
 * Fortran: derived types, CSV parsing
+
+### Day 05
+* Fortran: classes, allocation at runtime
+* Techniques: stacks
