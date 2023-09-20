@@ -13,7 +13,9 @@ contains
         type(CharStack)  :: stack
         character(len=1) :: char
 
-        stack = CharStack('ABC', 3)
+        call stack%push('A')
+        call stack%push('B')
+        call stack%push('C')
         call assert_equals(3, stack%size())
         char = stack%peek()
         call assert_equals ('C', char)
