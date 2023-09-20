@@ -43,6 +43,7 @@ contains
             stop
         end if
         charstack_pop = this%content(this%top:this%top)
+        this%content(this%top:this%top) = ' '
         this%top = this%top - 1
     end function
 
