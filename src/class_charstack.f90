@@ -2,7 +2,7 @@ module class_charstack
     implicit none
     private
 
-    integer, parameter :: capacity = 32
+    integer, parameter :: capacity = 128
 
     type, public :: CharStack
         character(len=capacity) :: content
