@@ -11,6 +11,7 @@ module class_charstack
         procedure :: push  => charstack_push
         procedure :: pop   => charstack_pop
         procedure :: peek  => charstack_peek
+        procedure :: size  => charstack_size
         procedure :: print => charstack_print
     end type CharStack
 
@@ -56,6 +57,14 @@ contains
             stop
         end if
         charstack_peek = this%content(this%top:this%top)
+    end function
+
+    integer function charstack_size(this)
+        implicit none
+
+        class(CharStack) :: this
+
+        charstack_size = this%top
     end function
 
     subroutine charstack_print(this)
