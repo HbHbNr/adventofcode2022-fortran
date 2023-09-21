@@ -76,6 +76,10 @@ contains
         character(len=64)              :: line
         character                      :: char
 
+        ! call init subroutine for every stack
+        do stackno = 1, size(stacks)
+            call stacks(stackno)%init()
+        end do
         ! iterate through all lines in reverse order and fill the stacks accordingly
         do lineno = size(lines), 1, -1
             line = lines(lineno)
@@ -180,7 +184,7 @@ contains
         lines = read_init_block(io, linecount)
 
         ! allocate and initialise stacks with the lines from the initial block
-        allocate(stacks(stackcount), source=CharStack('', 0))
+        allocate(stacks(stackcount))
         call init_stacks(lines, stacks)
 
         ! execute the steps of the rearrangement procedure

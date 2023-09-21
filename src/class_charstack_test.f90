@@ -13,6 +13,7 @@ contains
         type(CharStack)  :: stack
         character(len=1) :: char
 
+        call stack%init()
         call stack%push('A')
         call stack%push('B')
         call stack%push('C')

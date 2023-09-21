@@ -12,8 +12,12 @@ contains
         implicit none
 
         character(len=64) :: lines(3) = (/ '    [D]    ', '[N] [C]    ', '[Z] [M] [P]' /)
-        type(CharStack)   :: stacks(3) = (/ CharStack('', 0), CharStack('', 0), CharStack('', 0) /)
+        type(CharStack)   :: stacks(3)
+        integer           :: i
 
+        do i = 1, size(stacks)
+            call stacks(i)%init()
+        end do
         call init_stacks(lines, stacks)
         call assert_equals('N', stacks(1)%pop())
         call assert_equals('Z', stacks(1)%pop())

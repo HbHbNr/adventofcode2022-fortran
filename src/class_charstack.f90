@@ -5,9 +5,12 @@ module class_charstack
     integer, parameter :: capacity = 128
 
     type, public :: CharStack
+        private
+
         character(len=capacity) :: content
         integer                 :: top
     contains
+        procedure :: init  => charstack_init
         procedure :: push  => charstack_push
         procedure :: pop   => charstack_pop
         procedure :: peek  => charstack_peek
@@ -16,6 +19,15 @@ module class_charstack
     end type CharStack
 
 contains
+
+    subroutine charstack_init(this)
+        implicit none
+
+        class(CharStack) :: this
+
+        this%content = ''
+        this%top = 0
+    end subroutine
 
     subroutine charstack_push(this, char)
         implicit none
