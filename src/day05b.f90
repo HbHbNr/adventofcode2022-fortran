@@ -1,5 +1,5 @@
-!> Solution for https://adventofcode.com/2021/day/5 part a
-module day05a
+!> Solution for https://adventofcode.com/2021/day/5 part b
+module day05b
     use class_CharStack, only : CharStack
     use util, only : printioerror
     implicit none
@@ -93,12 +93,14 @@ contains
         implicit none
 
         type(CharStack), intent(inout) :: stacks(:)
+        type(CharStack)                :: tempstack
         integer                        :: io, iostat
         character(len=512)             :: iomsg
         character(len=64)              :: line, move*4, from*4, to*2, char*1
         integer                        :: amount, fromstack, tostack
         integer                        :: skiplines
 
+        tempstack = CharStack('', 0)
         skiplines = 2
         do
             read(io, '(A)', iostat=iostat, iomsg=iomsg) line
@@ -118,10 +120,15 @@ contains
             ! split line into step details
             read(line, *) move, amount, from, fromstack, to, tostack
             ! execute step details
+            ! call tempstack%print()
             do while (amount > 0)
                 char = stacks(fromstack)%pop()
-                call stacks(tostack)%push(char)
+                call tempstack%push(char)
                 amount = amount - 1
+            end do
+            do while (tempstack%size() > 0)
+                char = tempstack%pop()
+                call stacks(tostack)%push(char)
             end do
         end do
     end subroutine
@@ -191,4 +198,4 @@ contains
         result = peek_stacks(stacks)
     end function
 
-end module day05a
+end module day05b

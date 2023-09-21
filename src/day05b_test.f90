@@ -1,7 +1,7 @@
-module day05a_test
+module day05b_test
     use fruit
     use class_CharStack, only : CharStack
-    use day05a, only : init_stacks
+    use day05b, only : init_stacks
     implicit none
 
     ! all tests will be public
@@ -24,23 +24,23 @@ contains
     end subroutine
 
     subroutine test_solve_example
-        use day05a, only : solve
+        use day05b, only : solve
         implicit none
 
         character(len=9) :: result
 
         result = solve('../inputfiles/day05_example.txt')
-        call assert_equals ('CMZ', result)
+        call assert_equals ('MCD', result)
     end subroutine
 
     subroutine test_solve_input
-        use day05a, only : solve
+        use day05b, only : solve
         implicit none
 
         character(len=9) :: result
 
         result = solve('../inputfiles/day05_input.txt')
-        call assert_equals ('VJSFHWGFT', result)
+        call assert_equals ('LCTQFBVZV', result)
     end subroutine
 
-end module day05a_test
+end module day05b_test
