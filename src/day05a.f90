@@ -78,7 +78,7 @@ contains
 
         ! call init subroutine for every stack
         do stackno = 1, size(stacks)
-            call stacks(stackno)%init()
+            call stacks(stackno)%init(128)
         end do
         ! iterate through all lines in reverse order and fill the stacks accordingly
         do lineno = size(lines), 1, -1

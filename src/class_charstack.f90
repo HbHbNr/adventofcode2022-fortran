@@ -2,13 +2,11 @@ module class_charstack
     implicit none
     private
 
-    integer, parameter :: capacity = 128
-
     type, public :: CharStack
         private
 
-        character(len=capacity) :: content
-        integer                 :: top
+        character(len=:), allocatable :: content
+        integer                       :: top
     contains
         procedure :: init  => charstack_init
         procedure :: push  => charstack_push
@@ -20,20 +18,23 @@ module class_charstack
 
 contains
 
-    subroutine charstack_init(this)
+    subroutine charstack_init(this, stacksize)
         implicit none
 
-        class(CharStack) :: this
+        class(CharStack), intent(inout) :: this
+        integer, intent(in)             :: stacksize
 
-        this%content = ''
+        allocate(character(len=stacksize) :: this%content)
+        ! initialize the string with blanks
+        this%content(:) = ''
         this%top = 0
     end subroutine
 
     subroutine charstack_push(this, char)
         implicit none
 
-        class(CharStack)             :: this
-        character(len=1), intent(in) :: char
+        class(CharStack), intent(inout) :: this
+        character(len=1), intent(in)    :: char
 
         if (this%top == len(this%content)) then
             ! stack is full, write error to stderr
@@ -47,7 +48,7 @@ contains
     character(len=1) function charstack_pop(this)
         implicit none
 
-        class(CharStack) :: this
+        class(CharStack), intent(inout) :: this
 
         if (this%top == 0) then
             ! stack is empty, write error to stderr
@@ -62,7 +63,7 @@ contains
     character(len=1) function charstack_peek(this)
         implicit none
 
-        class(CharStack) :: this
+        class(CharStack), intent(in) :: this
 
         if (this%top == 0) then
             ! stack is empty, write error to stderr
@@ -75,7 +76,7 @@ contains
     integer function charstack_size(this)
         implicit none
 
-        class(CharStack) :: this
+        class(CharStack), intent(in) :: this
 
         charstack_size = this%top
     end function
