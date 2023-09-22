@@ -13,7 +13,7 @@ program tests
 
   call init_fruit
 
-  call run_test_case(test_unique_quartet,"test_unique_quartet")
+  call run_test_case(test_unique_string,"test_unique_string")
   call run_test_case(test_find_sopmarker,"test_find_sopmarker")
   call run_test_case(test_solve_example,"test_solve_example")
   call run_test_case(test_solve_input,"test_solve_input")

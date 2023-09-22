@@ -6,12 +6,12 @@ module day06a_test
 
 contains
 
-    subroutine test_unique_quartet
-        use day06a, only : unique_quartet
+    subroutine test_unique_string
+        use day06a, only : unique_string
         implicit none
 
-        call assert_equals (.true., unique_quartet('abcd'))
-        call assert_equals (.false., unique_quartet('abad'))
+        call assert_equals (.true., unique_string('abcd'))
+        call assert_equals (.false., unique_string('abad'))
     end subroutine
 
     subroutine test_find_sopmarker

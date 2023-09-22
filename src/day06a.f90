@@ -4,21 +4,22 @@ module day06a
     implicit none
     private
 
-    public :: solve, unique_quartet, find_sopmarker
+    public :: solve, unique_string, find_sopmarker
 
 contains
 
-    logical function unique_quartet(quartet)
+    logical function unique_string(string)
         implicit none
 
-        character(len=4), intent(in) :: quartet
+        character(len=*), intent(in) :: string
         integer                      :: i, j
 
-        unique_quartet = .true.
-        iloop: do i = 1, 3
-            do j = i+1, 4
-                if (quartet(i:i) == quartet(j:j)) then
-                    unique_quartet = .false.
+        unique_string = .true.
+        ! print *, string
+        iloop: do i = 1, len(string)-1
+            do j = i+1, len(string)
+                if (string(i:i) == string(j:j)) then
+                    unique_string = .false.
                     exit iloop
                 end if
             end do
@@ -30,9 +31,10 @@ contains
 
         character(len=*), intent(in) :: line
         integer                      :: sopmarker  ! start-of-packet marker
+        integer, parameter           :: sopmarkerlength = 4
 
-        do sopmarker = 4, len(line)
-            if (unique_quartet(line(sopmarker-3:sopmarker))) then
+        do sopmarker = sopmarkerlength, len(line)
+            if (unique_string(line(sopmarker-sopmarkerlength+1:sopmarker))) then
                 exit
             end if
         end do
