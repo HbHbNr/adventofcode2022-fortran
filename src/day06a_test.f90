@@ -14,6 +14,16 @@ contains
         call assert_equals (.false., unique_quartet('abad'))
     end subroutine
 
+    subroutine test_find_sopmarker
+        use day06a, only : find_sopmarker
+        implicit none
+
+        call assert_equals (5, find_sopmarker('bvwbjplbgvbhsrlpgdmjqwftvncz'))
+        call assert_equals (6, find_sopmarker('nppdvjthqldpwncqszvftbrmjlhg'))
+        call assert_equals (10, find_sopmarker('nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg'))
+        call assert_equals (11, find_sopmarker('zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw'))
+    end subroutine
+
     subroutine test_solve_example
         use day06a, only : solve
         implicit none

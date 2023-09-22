@@ -1,10 +1,10 @@
 !> Solution for https://adventofcode.com/2021/day/6 part a
 module day06a
-    use util, only : printioerror
+    use util, only : printioerror, readinputfile_asline
     implicit none
     private
 
-    public :: solve, unique_quartet
+    public :: solve, unique_quartet, find_sopmarker
 
 contains
 
@@ -25,34 +25,30 @@ contains
         end do iloop
     end function
 
-    integer function solve(filename)
+    integer function find_sopmarker(line)
         implicit none
 
-        character(len=*), intent(in) :: filename
-        integer                      :: io, iostat
-        character(len=512)           :: iomsg
-        character(len=4096)          :: line
+        character(len=*), intent(in) :: line
         integer                      :: sopmarker  ! start-of-packet marker
 
-        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
-        if (iostat /= 0) then
-            call printioerror(iostat, iomsg, .true.)
-        end if
-        read(io, '(A)', iostat=iostat, iomsg=iomsg) line
-        if (iostat /= 0) then
-            ! end of file or I/O error -> exit loop
-            call printioerror(iostat, iomsg, .true.)
-        end if
-        close(io)
-        ! debug: output line from file and its length
-        ! print '(A, A2, I4)', trim(line), ': ', len_trim(line)
         do sopmarker = 4, len(line)
             if (unique_quartet(line(sopmarker-3:sopmarker))) then
                 exit
             end if
         end do
-        ! return maximum calories
-        solve = sopmarker
+        find_sopmarker = sopmarker
+    end function
+
+    integer function solve(filename)
+        implicit none
+
+        character(len=*), intent(in)  :: filename
+        character(len=:), allocatable :: line
+
+        line = readinputfile_asline(filename)
+        ! debug: output line from file and its length
+        ! print '(A, A2, I4)', trim(line), ': ', len_trim(line)
+        solve = find_sopmarker(line)
     end function
 
 end module day06a
