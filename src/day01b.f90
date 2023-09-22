@@ -57,7 +57,7 @@ contains
                 exit
             end if
             ! debug: output line from file and its length
-            ! print '(A5, A2, I1)', line, ': ', len_trim(line)
+            ! print '(A, A2, I1)', trim(line), ': ', len_trim(line)
             if (len_trim(line) == 0) then
                 ! reset sum for a new Elf
                 if (sumcalories > 0) then
