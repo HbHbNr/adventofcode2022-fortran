@@ -93,7 +93,7 @@ fruitpy/day%b.py: | fruitpy/day%a.py
 	sed -e 's/day$(*)a/day$(*)b/g' \
 		fruitpy/day$(*)a.py > $@
 
-# dependencies
+# shared code dependencies
 $(OBJ)/class_charstack.o: $(OBJ)/util.o
 $(OBJ)/class_charstack_test.o: $(OBJ)/class_charstack.o $(OBJ)/fruit.o
 $(OBJ)/class_charstack_test_driver.o: $(OBJ)/class_charstack_test.o $(OBJ)/class_charstack.o $(OBJ)/fruit.o
@@ -103,6 +103,7 @@ $(OBJ)/util_test.o: $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/util_test_driver.o: $(OBJ)/util_test.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/util_test_driver: $(OBJ)/util_test_driver.o $(OBJ)/util_test.o $(OBJ)/util.o $(OBJ)/fruit.o
 
+# day solution code dependencies
 $(OBJ)/day01a.o: $(OBJ)/util.o
 $(OBJ)/day01a_main.o: $(OBJ)/day01a.o $(OBJ)/util.o
 $(OBJ)/day01a_test.o: $(OBJ)/day01a.o $(OBJ)/util.o $(OBJ)/fruit.o

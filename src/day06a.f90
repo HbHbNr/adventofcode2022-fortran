@@ -8,6 +8,7 @@ module day06a
 
 contains
 
+    ! check if a string consist of only unique characters
     logical function unique_string(string)
         implicit none
 
@@ -26,6 +27,7 @@ contains
         end do iloop
     end function
 
+    ! find start-of-packet marker in a string
     integer function find_sopmarker(line)
         implicit none
 

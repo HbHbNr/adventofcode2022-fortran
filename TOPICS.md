@@ -21,3 +21,6 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 ### Day 05
 * Fortran: classes, allocation at runtime
 * Techniques: stacks
+
+### Day 06
+* Fortran: tagged nested loops, inquire file size
