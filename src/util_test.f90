@@ -30,4 +30,15 @@ contains
         call assert_equals ('gzbzwzjwwrfftfrrbvvcbcvcffpssvhh', line(:32))
     end subroutine
 
+    subroutine test_readinputfile_asarray_example
+        use util, only : readinputfile_asarray
+        implicit none
+
+        integer, parameter                           :: linebufferlength = 32
+        character(len=linebufferlength), allocatable :: lines(:)
+
+        lines = readinputfile_asarray('../inputfiles/day07_example.txt', linebufferlength)
+        call assert_equals (23, size(lines))
+    end subroutine
+
 end module util_test

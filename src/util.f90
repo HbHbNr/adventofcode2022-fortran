@@ -7,6 +7,7 @@ module util
     public :: printresultline
     public :: printioerror
     public :: readinputfile_asline
+    public :: readinputfile_asarray
 
 contains
 
@@ -87,6 +88,62 @@ contains
         ! remove blanks or newlines at the end of the file
         line = tmpline(:len_trim(tmpline))
         deallocate(tmpline)
+    end function
+
+    function readinputfile_asarray(filename, linebufferlength) result(lines)
+        implicit none
+
+        character(len=*), intent(in)    :: filename
+        integer, intent(in)             :: linebufferlength
+        integer                         :: io, iostat
+        character(len=512)              :: iomsg
+        integer                         :: linecount, linelength, maxlinelength
+        character(len=linebufferlength) :: tmpline
+        character(len=linebufferlength) :: line
+        character(len=linebufferlength), allocatable :: lines(:)
+
+        ! open file for reading
+        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
+        if (iostat /= 0) then
+            call printioerror(iostat, iomsg, .true.)
+        end if
+
+        ! get file's number of lines 
+        linecount = 0
+        linelength = 0
+        maxlinelength = 0
+        do
+            read(io, '(A)', iostat=iostat, iomsg=iomsg) tmpline
+            if (iostat /= 0) then
+                ! end of file or I/O error -> stop program
+                call printioerror(iostat, iomsg)
+                exit
+            end if
+            linecount = linecount + 1
+            linelength = len_trim(tmpline)
+            maxlinelength = max(maxlinelength, linelength)
+        end do
+        print *, 'linecount=', linecount
+        print *, 'maxlinelength=', maxlinelength
+
+        ! create new array and read all lines of file
+        allocate(lines(linecount))
+        rewind(io)
+        linecount = 0
+        do
+            read(io, '(A)', iostat=iostat, iomsg=iomsg) tmpline
+            if (iostat /= 0) then
+                ! end of file or I/O error -> stop program
+                call printioerror(iostat, iomsg)
+                exit
+            end if
+            linecount = linecount + 1
+            ! TODO: cut line to maxlinelength or actual length
+            line = tmpline
+            lines(linecount) = tmpline
+            print *, linecount, line
+        end do
+        close(io)
     end function
 
 end module util
