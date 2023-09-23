@@ -13,8 +13,8 @@ contains
 
         character(len=*), intent(in)    :: filename
         integer, parameter              :: linebufferlength = 32
-        character(len=linebufferlength), allocatable :: lines(:)
-        character(len=linebufferlength) :: line
+        character(len=:), allocatable   :: lines(:)
+        character(len=:), allocatable   :: line
         integer                         :: i
 
         ! read whole file into an array of strings

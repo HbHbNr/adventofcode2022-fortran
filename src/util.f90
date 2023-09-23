@@ -58,10 +58,12 @@ contains
         end if
     end subroutine
 
+    !> read the first (and maybe only) line of a file into a string
     function readinputfile_asline(filename) result(line)
         implicit none
 
         character(len=*), intent(in)  :: filename
+            !! name of the file
         integer                       :: io, iostat
         character(len=512)            :: iomsg
         integer                       :: filesize
@@ -90,17 +92,21 @@ contains
         deallocate(tmpline)
     end function
 
+    !> read all lines of a file into an array of strings, with the length
+    !> of the strings fitting to the longest line
     function readinputfile_asarray(filename, linebufferlength) result(lines)
         implicit none
 
         character(len=*), intent(in)    :: filename
+            !! name of the file
         integer, intent(in)             :: linebufferlength
+            !! length of a buffer for one line, big enough for the longest line
         integer                         :: io, iostat
         character(len=512)              :: iomsg
         integer                         :: linecount, linelength, maxlinelength
         character(len=linebufferlength) :: tmpline
-        character(len=linebufferlength) :: line
-        character(len=linebufferlength), allocatable :: lines(:)
+        character(len=:), allocatable   :: line
+        character(len=:), allocatable   :: lines(:)
 
         ! open file for reading
         open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
@@ -126,22 +132,21 @@ contains
         print *, 'linecount=', linecount
         print *, 'maxlinelength=', maxlinelength
 
-        ! create new array and read all lines of file
-        allocate(lines(linecount))
+        ! create new array and read all lines from file
+        allocate(character(len=maxlinelength) :: lines(linecount))
+        allocate(character(len=maxlinelength) :: line)
         rewind(io)
         linecount = 0
         do
-            read(io, '(A)', iostat=iostat, iomsg=iomsg) tmpline
+            read(io, '(A)', iostat=iostat, iomsg=iomsg) line
             if (iostat /= 0) then
                 ! end of file or I/O error -> stop program
                 call printioerror(iostat, iomsg)
                 exit
             end if
             linecount = linecount + 1
-            ! TODO: cut line to maxlinelength or actual length
-            line = tmpline
-            lines(linecount) = tmpline
-            print *, linecount, line
+            lines(linecount) = line
+            ! print *, '"', line, '"', linecount
         end do
         close(io)
     end function
