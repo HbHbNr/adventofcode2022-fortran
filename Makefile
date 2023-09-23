@@ -179,3 +179,10 @@ $(OBJ)/day06a_test.o: $(OBJ)/day06a.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day06a_test_driver.o: $(OBJ)/day06a_test.o $(OBJ)/day06a.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day06a: $(OBJ)/day06a_main.o $(OBJ)/day06a.o $(OBJ)/util.o
 $(BIN)/day06a_test_driver: $(OBJ)/day06a_test_driver.o $(OBJ)/day06a_test.o $(OBJ)/day06a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day06b.o: $(OBJ)/util.o
+$(OBJ)/day06b_main.o: $(OBJ)/day06b.o $(OBJ)/util.o
+$(OBJ)/day06b_test.o: $(OBJ)/day06b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day06b_test_driver.o: $(OBJ)/day06b_test.o $(OBJ)/day06b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day06b: $(OBJ)/day06b_main.o $(OBJ)/day06b.o $(OBJ)/util.o
+$(BIN)/day06b_test_driver: $(OBJ)/day06b_test_driver.o $(OBJ)/day06b_test.o $(OBJ)/day06b.o $(OBJ)/util.o $(OBJ)/fruit.o
