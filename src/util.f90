@@ -6,6 +6,7 @@ module util
     public :: printresultline_integer
     public :: printresultline
     public :: printioerror
+    public :: readinputfile_asline
 
 contains
 
@@ -55,5 +56,37 @@ contains
             end if
         end if
     end subroutine
+
+    function readinputfile_asline(filename) result(line)
+        implicit none
+
+        character(len=*), intent(in)  :: filename
+        integer                       :: io, iostat
+        character(len=512)            :: iomsg
+        integer                       :: filesize
+        character(len=:), allocatable :: tmpline, line
+
+        ! open file for reading
+        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
+        if (iostat /= 0) then
+            call printioerror(iostat, iomsg, .true.)
+        end if
+
+        ! get file size
+        inquire(file=filename, size=filesize)
+
+        ! allocate string to read complete file
+        allocate(character(len=filesize) :: tmpline)
+        read(io, '(A)', iostat=iostat, iomsg=iomsg) tmpline
+        if (iostat /= 0) then
+            ! end of file or I/O error -> exit loop
+            call printioerror(iostat, iomsg, .true.)
+        end if
+        close(io)
+
+        ! remove blanks or newlines at the end of the file
+        line = tmpline(:len_trim(tmpline))
+        deallocate(tmpline)
+    end function
 
 end module util
