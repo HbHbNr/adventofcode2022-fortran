@@ -5,7 +5,7 @@ program day07a_main
 
     integer :: result
 
-    result = solve('inputfiles/day07_example.txt')
-    ! result = solve('inputfiles/day07_input.txt')
+    ! result = solve('inputfiles/day07_example.txt')
+    result = solve('inputfiles/day07_input.txt')
     call printresultline_integer('07a', result)
 end program day07a_main

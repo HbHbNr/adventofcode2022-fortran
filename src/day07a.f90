@@ -9,16 +9,16 @@ module day07a
 contains
 
     ! recursively traverse directory structure and sum up all file sizes
-    recursive integer function calcdirsize(lines, currentstep, currentdir) result(thisdirsize)
+    recursive integer function calcdirsize(lines, currentstep, specialdirsize) result(thisdirsize)
         implicit none
 
         character(len=*), intent(in)  :: lines(:)
-        integer, intent(inout)        :: currentstep
-        character(len=*), intent(in)  :: currentdir
-        character(len=:), allocatable :: line, filename
+        integer, intent(inout)        :: currentstep, specialdirsize
+        character(len=:), allocatable :: line, currentdir, filename
         integer                       :: filesize
 
         allocate(character(len=len(lines)) :: line)
+        allocate(character(len=len(lines)) :: currentdir)
         allocate(character(len=len(lines)) :: filename)
         thisdirsize = 0
 
@@ -28,7 +28,8 @@ contains
             print *, 'expected "$ cd", but found ', line
             stop
         else
-            print *, 'leaving ', currentdir, ', entering ', trim(line(6:))
+            currentdir = trim(line(6:))
+            print *, 'entering ', currentdir
         end if
 
         ! check all lines until the end or until "cd .." command
@@ -36,7 +37,10 @@ contains
             currentstep = currentstep + 1
             ! already at the end?
             if (currentstep > size(lines)) then
-                print *, 'collected ', thisdirsize, ' bytes'
+                print *, 'collected ', thisdirsize, ' bytes in directory ', currentdir
+                if (thisdirsize <= 100000) then
+                    specialdirsize = specialdirsize + thisdirsize
+                end if
                 return
             end if
 
@@ -51,11 +55,14 @@ contains
                 cycle
             else if (line(1:7) == '$ cd ..') then
                 ! return from recursion on '$ cd ..'
-                print *, 'collected ', thisdirsize, ' bytes'
+                print *, 'collected ', thisdirsize, ' bytes in directory ', currentdir
+                if (thisdirsize <= 100000) then
+                    specialdirsize = specialdirsize + thisdirsize
+                end if
                 return
             else if (line(1:4) == '$ cd') then
                 ! deeper recursion on other '$ cd'
-                thisdirsize = thisdirsize + calcdirsize(lines, currentstep, currentdir)
+                thisdirsize = thisdirsize + calcdirsize(lines, currentstep, specialdirsize)
             else
                 ! if nothing else fit, the line must be a file and its size
                 read(line, *) filesize, filename
@@ -72,7 +79,7 @@ contains
         integer, parameter              :: linebufferlength = 32
         character(len=:), allocatable   :: lines(:)
         character(len=:), allocatable   :: line
-        integer                         :: i, totaldirsize, currentstep
+        integer                         :: i, totaldirsize, currentstep, specialdirsize
 
         ! read whole file into an array of strings
         print *, 'open file ', filename, ' for reading'
@@ -84,9 +91,11 @@ contains
 
         ! traverse lines and calculate the total directory size
         currentstep = 1
-        totaldirsize = calcdirsize(lines, currentstep, '')
+        specialdirsize = 0
+        totaldirsize = calcdirsize(lines, currentstep, specialdirsize)
+        print *, 'specialdirsize:', specialdirsize
 
-        solve = totaldirsize
+        solve = specialdirsize
     end function
 
 end module day07a
