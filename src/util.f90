@@ -129,8 +129,8 @@ contains
             linelength = len_trim(tmpline)
             maxlinelength = max(maxlinelength, linelength)
         end do
-        print *, 'linecount=', linecount
-        print *, 'maxlinelength=', maxlinelength
+        ! print *, 'linecount=', linecount
+        ! print *, 'maxlinelength=', maxlinelength
 
         ! create new array and read all lines from file
         allocate(character(len=maxlinelength) :: lines(linecount))
