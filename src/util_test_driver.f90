@@ -15,6 +15,7 @@ program tests
 
   call run_test_case(test_readinputfile_asline_example,"test_readinputfile_asline_example")
   call run_test_case(test_readinputfile_asline_input,"test_readinputfile_asline_input")
+  call run_test_case(test_readinputfile_asarray_example,"test_readinputfile_asarray_example")
 
   call get_failed_count(failed_count)
   call fruit_summary

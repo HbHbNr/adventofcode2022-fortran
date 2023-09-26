@@ -7,6 +7,7 @@ module util
     public :: printresultline
     public :: printioerror
     public :: readinputfile_asline
+    public :: readinputfile_asarray
 
 contains
 
@@ -57,10 +58,12 @@ contains
         end if
     end subroutine
 
+    !> read the first (and maybe only) line of a file into a string
     function readinputfile_asline(filename) result(line)
         implicit none
 
         character(len=*), intent(in)  :: filename
+            !! name of the file
         integer                       :: io, iostat
         character(len=512)            :: iomsg
         integer                       :: filesize
@@ -87,6 +90,65 @@ contains
         ! remove blanks or newlines at the end of the file
         line = tmpline(:len_trim(tmpline))
         deallocate(tmpline)
+    end function
+
+    !> read all lines of a file into an array of strings, with the length
+    !> of the strings fitting to the longest line
+    function readinputfile_asarray(filename, linebufferlength) result(lines)
+        implicit none
+
+        character(len=*), intent(in)    :: filename
+            !! name of the file
+        integer, intent(in)             :: linebufferlength
+            !! length of a buffer for one line, big enough for the longest line
+        integer                         :: io, iostat
+        character(len=512)              :: iomsg
+        integer                         :: linecount, linelength, maxlinelength
+        character(len=linebufferlength) :: tmpline
+        character(len=:), allocatable   :: line
+        character(len=:), allocatable   :: lines(:)
+
+        ! open file for reading
+        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
+        if (iostat /= 0) then
+            call printioerror(iostat, iomsg, .true.)
+        end if
+
+        ! get file's number of lines 
+        linecount = 0
+        linelength = 0
+        maxlinelength = 0
+        do
+            read(io, '(A)', iostat=iostat, iomsg=iomsg) tmpline
+            if (iostat /= 0) then
+                ! end of file or I/O error -> stop program
+                call printioerror(iostat, iomsg)
+                exit
+            end if
+            linecount = linecount + 1
+            linelength = len_trim(tmpline)
+            maxlinelength = max(maxlinelength, linelength)
+        end do
+        ! print *, 'linecount=', linecount
+        ! print *, 'maxlinelength=', maxlinelength
+
+        ! create new array and read all lines from file
+        allocate(character(len=maxlinelength) :: lines(linecount))
+        allocate(character(len=maxlinelength) :: line)
+        rewind(io)
+        linecount = 0
+        do
+            read(io, '(A)', iostat=iostat, iomsg=iomsg) line
+            if (iostat /= 0) then
+                ! end of file or I/O error -> stop program
+                call printioerror(iostat, iomsg)
+                exit
+            end if
+            linecount = linecount + 1
+            lines(linecount) = line
+            ! print *, '"', line, '"', linecount
+        end do
+        close(io)
     end function
 
 end module util
