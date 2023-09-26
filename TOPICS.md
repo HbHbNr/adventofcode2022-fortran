@@ -24,3 +24,6 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 06
 * Fortran: tagged nested loops, inquire file size
+
+### Day 07
+* Fortran: recursion
