@@ -29,7 +29,7 @@ contains
             stop
         else
             currentdir = trim(line(6:))
-            print *, 'entering ', currentdir
+            ! print *, 'entering ', currentdir
         end if
 
         ! check all lines until the end or until "cd .." command
@@ -37,7 +37,7 @@ contains
             currentstep = currentstep + 1
             ! already at the end?
             if (currentstep > size(lines)) then
-                print *, 'collected ', thisdirsize, ' bytes in directory ', currentdir
+                ! print *, 'collected ', thisdirsize, ' bytes in directory ', currentdir
                 if (thisdirsize <= 100000) then
                     specialdirsize = specialdirsize + thisdirsize
                 end if
@@ -46,7 +46,7 @@ contains
 
             ! examine current line
             line = lines(currentstep)
-            print *, currentdir, '> ', line
+            ! print *, currentdir, '> ', line
             if (line(1:4) == '$ ls') then
                 ! ignore '$ ls'
                 cycle
@@ -55,7 +55,7 @@ contains
                 cycle
             else if (line(1:7) == '$ cd ..') then
                 ! return from recursion on '$ cd ..'
-                print *, 'collected ', thisdirsize, ' bytes in directory ', currentdir
+                ! print *, 'collected ', thisdirsize, ' bytes in directory ', currentdir
                 if (thisdirsize <= 100000) then
                     specialdirsize = specialdirsize + thisdirsize
                 end if
@@ -66,7 +66,7 @@ contains
             else
                 ! if nothing else fit, the line must be a file and its size
                 read(line, *) filesize, filename
-                print *, 'file ', filename, ' has size ', filesize
+                ! print *, 'file ', filename, ' has size ', filesize
                 thisdirsize = thisdirsize + filesize
             end if
         end do
@@ -78,22 +78,16 @@ contains
         character(len=*), intent(in)    :: filename
         integer, parameter              :: linebufferlength = 32
         character(len=:), allocatable   :: lines(:)
-        character(len=:), allocatable   :: line
-        integer                         :: i, totaldirsize, currentstep, specialdirsize
+        integer                         :: totaldirsize, currentstep, specialdirsize
 
         ! read whole file into an array of strings
-        print *, 'open file ', filename, ' for reading'
         lines = readinputfile_asarray(filename, linebufferlength)
-        do i = 1, size(lines)
-            line = lines(i)
-            print *, '"', line, '"'
-        end do
 
         ! traverse lines and calculate the total directory size
         currentstep = 1
         specialdirsize = 0
         totaldirsize = calcdirsize(lines, currentstep, specialdirsize)
-        print *, 'specialdirsize:', specialdirsize
+        ! print *, 'specialdirsize:', specialdirsize
 
         solve = specialdirsize
     end function
