@@ -4,6 +4,12 @@
 # adventofcode2022
 Solutions for https://adventofcode.com/2022/ in Fortran
 
+# Solution status
+| **Day**      | **1** | **2** | **3** | **4** | **5** | **6** | **7** | **8** | **9** | **10** |
+|-------------:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:------:|
+| **Part One** | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     |       |       |        |
+| **Part Two** | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     |       |       |        |
+
 # Requirements
 * [GFortran](https://gcc.gnu.org/wiki/GFortran)
 
