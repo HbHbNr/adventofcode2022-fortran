@@ -1,8 +1,8 @@
 [![Python 3.7](https://hbhbnr.github.io/badges/Fortran-2018-blue-fortran-white.svg)](https://fortran-lang.org/)
 [![GitHub Workflow Status](https://github.com/HbHbNr/adventofcode2022-fortran/actions/workflows/codequality.yml/badge.svg)](https://github.com/HbHbNr/adventofcode2022-fortran/actions/workflows/codequality.yml)
 
-# adventofcode2022
-Solutions for https://adventofcode.com/2022/ in Fortran unit testing.
+# adventofcode2022-fortran
+Solutions for https://adventofcode.com/2022/ in Fortran with unit testing.
 
 # Solution status
 | **Day**      | **1** | **2** | **3** | **4** | **5** | **6** | **7** | **8** | **9** | **10** | **11** | **12** | **13** |
