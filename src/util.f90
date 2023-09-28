@@ -7,7 +7,8 @@ module util
     public :: printresultline
     public :: printioerror
     public :: readinputfile_asline
-    public :: readinputfile_asarray
+    public :: readinputfile_asstringarray
+    public :: readinputfile_asintarray
 
 contains
 
@@ -94,7 +95,7 @@ contains
 
     !> read all lines of a file into an array of strings, with the length
     !> of the strings fitting to the longest line
-    function readinputfile_asarray(filename, linebufferlength) result(lines)
+    function readinputfile_asstringarray(filename, linebufferlength) result(lines)
         implicit none
 
         character(len=*), intent(in)    :: filename
@@ -114,7 +115,7 @@ contains
             call printioerror(iostat, iomsg, .true.)
         end if
 
-        ! get file's number of lines 
+        ! get file's number of lines and length of the longest line
         linecount = 0
         linelength = 0
         maxlinelength = 0
@@ -148,6 +149,58 @@ contains
             lines(linecount) = line
             ! print *, '"', line, '"', linecount
         end do
+        close(io)
+    end function
+
+    !> read all lines of a file into an array of int, with the dimensions
+    !> of the array fitting to the content of the rectangular file
+    function readinputfile_asintarray(filename, linebufferlength) result(intarray)
+        implicit none
+
+        character(len=*), intent(in)    :: filename
+            !! name of the file
+        integer, intent(in)             :: linebufferlength
+            !! length of a buffer for one line, big enough for the longest line
+        integer                         :: io, iostat
+        character(len=512)              :: iomsg
+        integer                         :: linecount, linelength
+        character(len=linebufferlength) :: tmpline, format
+        integer(kind=1), allocatable    :: tmpintarray(:,:), intarray(:,:)
+
+        ! open file for reading
+        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
+        if (iostat /= 0) then
+            call printioerror(iostat, iomsg, .true.)
+        end if
+
+        ! get file's number of lines and length per line
+        linecount = 0
+        linelength = 0
+        do
+            read(io, '(A)', iostat=iostat, iomsg=iomsg) tmpline
+            if (iostat /= 0) then
+                ! end of file or I/O error -> stop program
+                call printioerror(iostat, iomsg)
+                exit
+            end if
+            linecount = linecount + 1
+            linelength = len_trim(tmpline)
+        end do
+        ! print *, 'linecount=', linecount
+        ! print *, 'linelength=', linelength
+
+        ! create new array and read all lines from file
+        allocate(tmpintarray(linelength,linecount))
+        ! allocate(intarray(linecount, linelength))
+        rewind(io)
+        write(format, *) '(', linelength, '(I1))'  ! format for a single line of the array
+        read(io, format, iostat=iostat, iomsg=iomsg) tmpintarray
+        if (iostat /= 0) then
+            ! end of file or I/O error -> stop program
+            call printioerror(iostat, iomsg, .true.)
+        end if
+        intarray = transpose(tmpintarray)
+        deallocate(tmpintarray)
         close(io)
     end function
 

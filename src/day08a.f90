@@ -1,6 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/8 part a
 module day08a
-    use util, only : printioerror
+    use util, only : printioerror, readinputfile_asintarray
     implicit none
     private
 
@@ -12,6 +12,15 @@ contains
         implicit none
 
         character(len=*), intent(in) :: filename
+        integer(kind=1), allocatable :: intarray(:,:)
+        integer                      :: i
+
+        intarray = readinputfile_asintarray(filename, 99)
+        do i = 1, size(intarray, 1)
+            ! print all rows
+            print *, intarray(i, :)
+        end do
+        print *, intarray(4, 4)
         ! integer                      :: io, iostat
         ! character(len=512)           :: iomsg
         ! character(len=5)             :: line

@@ -1,6 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/7 part a
 module day07a
-    use util, only : printioerror, readinputfile_asarray
+    use util, only : printioerror, readinputfile_asstringarray
     implicit none
     private
 
@@ -81,7 +81,7 @@ contains
         integer                         :: totaldirsize, currentstep, specialdirsize
 
         ! read whole file into an array of strings
-        lines = readinputfile_asarray(filename, linebufferlength)
+        lines = readinputfile_asstringarray(filename, linebufferlength)
 
         ! traverse lines and calculate the total directory size
         currentstep = 1
