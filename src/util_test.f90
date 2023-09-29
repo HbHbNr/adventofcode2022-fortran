@@ -61,7 +61,7 @@ contains
         implicit none
 
         integer, parameter           :: linebufferlength = 5
-        integer(kind=1), allocatable :: intarray(:,:)
+        integer(int8), allocatable   :: intarray(:,:)
         integer                      :: testvalue, testvalues(5) = [3, 3, 5, 4, 9], i
 
         intarray = readinputfile_asintarray('../inputfiles/day08_example.txt', linebufferlength)
@@ -80,7 +80,7 @@ contains
         implicit none
 
         integer, parameter           :: linebufferlength = 99
-        integer(kind=1), allocatable :: intarray(:,:)
+        integer(int8), allocatable   :: intarray(:,:)
         integer                      :: testvalue, testvalues(5) = [6, 6, 3, 6, 4], i
 
         intarray = readinputfile_asintarray('../inputfiles/day08_input.txt', linebufferlength)

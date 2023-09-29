@@ -155,6 +155,7 @@ contains
     !> read all lines of a file into an array of int, with the dimensions
     !> of the array fitting to the content of the rectangular file
     function readinputfile_asintarray(filename, linebufferlength) result(intarray)
+        use iso_fortran_env, only : int8
         implicit none
 
         character(len=*), intent(in)    :: filename
@@ -166,7 +167,7 @@ contains
         integer                         :: linecount, linelength
         character(len=linebufferlength) :: tmpline
         character(len=20)               :: format
-        integer(kind=1), allocatable    :: tmpintarray(:,:), intarray(:,:)
+        integer(int8), allocatable      :: tmpintarray(:,:), intarray(:,:)
 
         ! open file for reading
         open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)

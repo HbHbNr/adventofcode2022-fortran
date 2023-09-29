@@ -1,5 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/8 part a
 module day08a
+    use iso_fortran_env, only : int8
     use util, only : printioerror, readinputfile_asintarray
     implicit none
     private
@@ -13,7 +14,7 @@ contains
 
         character(len=*), intent(in) :: filename
         integer, intent(in)          :: linebufferlength
-        integer(kind=1), allocatable :: intarray(:,:)
+        integer(int8), allocatable   :: intarray(:,:)
         integer                      :: i
 
         intarray = readinputfile_asintarray(filename, linebufferlength)
