@@ -12,7 +12,7 @@ contains
 
         integer :: result
 
-        result = solve('../inputfiles/day08_example.txt')
+        result = solve('../inputfiles/day08_example.txt', 5)
         call assert_equals (-1, result)
     end subroutine
 
@@ -22,7 +22,7 @@ contains
 
         integer :: result
 
-        result = solve('../inputfiles/day08_input.txt')
+        result = solve('../inputfiles/day08_input.txt', 99)
         call assert_equals (-1, result)
     end subroutine
 

@@ -8,14 +8,15 @@ module day08a
 
 contains
 
-    integer function solve(filename)
+    integer function solve(filename, linebufferlength)
         implicit none
 
         character(len=*), intent(in) :: filename
+        integer, intent(in)          :: linebufferlength
         integer(kind=1), allocatable :: intarray(:,:)
         integer                      :: i
 
-        intarray = readinputfile_asintarray(filename, 99)
+        intarray = readinputfile_asintarray(filename, linebufferlength)
         do i = 1, size(intarray, 1)
             ! print all rows
             print *, intarray(i, :)

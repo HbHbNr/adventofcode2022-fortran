@@ -164,7 +164,8 @@ contains
         integer                         :: io, iostat
         character(len=512)              :: iomsg
         integer                         :: linecount, linelength
-        character(len=linebufferlength) :: tmpline, format
+        character(len=linebufferlength) :: tmpline
+        character(len=20)               :: format
         integer(kind=1), allocatable    :: tmpintarray(:,:), intarray(:,:)
 
         ! open file for reading

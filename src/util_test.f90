@@ -62,16 +62,16 @@ contains
 
         integer, parameter           :: linebufferlength = 5
         integer(kind=1), allocatable :: intarray(:,:)
+        integer                      :: testvalue, testvalues(5) = [3, 3, 5, 4, 9], i
 
         intarray = readinputfile_asintarray('../inputfiles/day08_example.txt', linebufferlength)
 
         call assert_equals (5, size(intarray, 1))
         call assert_equals (5, size(intarray, 2))
-        ! call assert_equals (3, intarray(4,1))
-        ! call assert_equals (3, intarray(4,2))
-        ! call assert_equals (5, intarray(4,3))
-        ! call assert_equals (4, intarray(4,4))
-        ! call assert_equals (9, intarray(4,5))
+        do i = 1, size(testvalues)
+            testvalue = intarray(4,i)
+            call assert_equals (testvalues(i), testvalue)
+        end do
     end subroutine
 
     subroutine test_readinputfile_asintarray_input
@@ -81,11 +81,16 @@ contains
 
         integer, parameter           :: linebufferlength = 99
         integer(kind=1), allocatable :: intarray(:,:)
+        integer                      :: testvalue, testvalues(5) = [6, 6, 3, 6, 4], i
 
         intarray = readinputfile_asintarray('../inputfiles/day08_input.txt', linebufferlength)
 
         call assert_equals (99, size(intarray, 1))
         call assert_equals (99, size(intarray, 2))
+        do i = 1, size(testvalues)
+            testvalue = intarray(26 + i, 16)
+            call assert_equals (testvalues(i), testvalue)
+        end do
     end subroutine
 
 end module util_test
