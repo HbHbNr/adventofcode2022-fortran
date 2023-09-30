@@ -9,33 +9,24 @@ module day08a
 
 contains
 
-    subroutine checkrow(heightarray, visiblearray, rownumber, reversed)
+    subroutine checkstride(heightarray, visiblearray)
         implicit none
 
         integer(int8), intent(in)      :: heightarray(:,:)
         logical(kind=1), intent(inout) :: visiblearray(:,:)
-        integer, intent(in)            :: rownumber
-        logical, intent(in)            :: reversed
-        integer                        :: height, currenthighest
-        integer                        :: row, column, start, end, step
+        integer                        :: height, currenthighest, i, j
 
-        row = rownumber
-        currenthighest = 0
-        if (.not. reversed) then
-            start = 1
-            end = size(heightarray, 2)
-            step = 1
-        else
-            start = size(heightarray, 2)
-            end = 1
-            step = -1
-        end if
-        do column = start, end, step
-            height = heightarray(row, column)
-            if (height > currenthighest) then
-                currenthighest = height
-                visiblearray(row, column) = .true.
-            end if
+        ! one dimension of the stride will be one, so one of the loops will
+        ! have only a single iteration
+        currenthighest = -1
+        do i = 1, size(heightarray, 1)
+            do j = 1, size(heightarray, 2)
+                height = heightarray(i, j)
+                if (height > currenthighest) then
+                    currenthighest = height
+                    visiblearray(i, j) = .true.
+                end if
+            end do
         end do
     end subroutine
 
@@ -46,29 +37,28 @@ contains
         integer, intent(in)          :: linebufferlength
         integer(int8), allocatable   :: heightarray(:,:)
         logical(kind=1), allocatable :: visiblearray(:,:)
-        integer                      :: rownumber
+        integer                      :: rows, columns, i
 
-        ! print *, logical_kinds
+        ! read file with heights into array
         heightarray = readinputfile_asintarray(filename, linebufferlength)
-        do rownumber = 1, size(heightarray, 1)
-            ! print all rows
-            print *, heightarray(rownumber, :)
+        rows = size(heightarray,1)
+        columns = size(heightarray,2)
+
+        ! create boolean array of the same shape as the height array
+        allocate(visiblearray(rows, columns), source=logical(.false., kind=1))
+
+        ! check all row and columns in both directions to find which trees are visible
+        ! from the outside
+        do i = 1, rows
+            call checkstride(heightarray(i:i,:), visiblearray(i:i,:))
+            call checkstride(heightarray(i:i,columns:1:-1), visiblearray(i:i,columns:1:-1))
         end do
-        allocate(visiblearray(size(heightarray,1), size(heightarray,2)), source=logical(.false., kind=1))
-        do rownumber = 1, size(visiblearray, 1)
-            ! print all rows
-            print *, visiblearray(rownumber, :)
+        do i = 1, columns
+            call checkstride(heightarray(:,i:i), visiblearray(:,i:i))
+            call checkstride(heightarray(rows:1:-1,i:i), visiblearray(rows:1:-1,i:i))
         end do
-        print *
-        do rownumber = 1, size(visiblearray, 1)
-            call checkrow(heightarray, visiblearray, rownumber, .false.)
-            call checkrow(heightarray, visiblearray, rownumber, .true.)
-        end do
-        do rownumber = 1, size(visiblearray, 1)
-            ! print all rows
-            print *, visiblearray(rownumber, :)
-        end do
-        solve = -1
+
+        solve = count(visiblearray)
     end function
 
 end module day08a

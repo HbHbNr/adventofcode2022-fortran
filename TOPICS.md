@@ -27,3 +27,6 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 07
 * Fortran: recursion
+
+### Day 07
+* Fortran: arrays with multiple dimensions, array strides, integer types
