@@ -1,6 +1,6 @@
 from FRUIT import test_suite
 
-day = 'day07b'
+day = 'day08b'
 
 test_modules = [f'src/{day}_test.f90']
 drivername = f'{day}_test_driver'
