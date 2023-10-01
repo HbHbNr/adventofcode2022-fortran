@@ -47,7 +47,7 @@ contains
         ! create boolean array of the same shape as the height array
         allocate(visiblearray(rows, columns), source=logical(.false., kind=1))
 
-        ! check all row and columns in both directions to find which trees are visible
+        ! check all rows and columns in both directions to find which trees are visible
         ! from the outside
         do row = 1, rows
             call checkstride(heightarray(row:row,:), visiblearray(row:row,:))
@@ -58,6 +58,7 @@ contains
             call checkstride(heightarray(rows:1:-1,row:row), visiblearray(rows:1:-1,row:row))
         end do
 
+        ! solution is the number of visible trees
         solve = count(visiblearray)
     end function
 
