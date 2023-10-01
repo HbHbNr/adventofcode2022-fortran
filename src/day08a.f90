@@ -14,17 +14,17 @@ contains
 
         integer(int8), intent(in)      :: heightarray(:,:)
         logical(kind=1), intent(inout) :: visiblearray(:,:)
-        integer                        :: height, currenthighest, i, j
+        integer                        :: height, currenthighest, row, column
 
         ! one dimension of the stride will be one, so one of the loops will
         ! have only a single iteration
         currenthighest = -1
-        do i = 1, size(heightarray, 1)
-            do j = 1, size(heightarray, 2)
-                height = heightarray(i, j)
+        do row = 1, size(heightarray, 1)
+            do column = 1, size(heightarray, 2)
+                height = heightarray(row, column)
                 if (height > currenthighest) then
                     currenthighest = height
-                    visiblearray(i, j) = .true.
+                    visiblearray(row, column) = .true.
                 end if
             end do
         end do
@@ -37,7 +37,7 @@ contains
         integer, intent(in)          :: linebufferlength
         integer(int8), allocatable   :: heightarray(:,:)
         logical(kind=1), allocatable :: visiblearray(:,:)
-        integer                      :: rows, columns, i
+        integer                      :: rows, columns, row
 
         ! read file with heights into array
         heightarray = readinputfile_asintarray(filename, linebufferlength)
@@ -49,13 +49,13 @@ contains
 
         ! check all row and columns in both directions to find which trees are visible
         ! from the outside
-        do i = 1, rows
-            call checkstride(heightarray(i:i,:), visiblearray(i:i,:))
-            call checkstride(heightarray(i:i,columns:1:-1), visiblearray(i:i,columns:1:-1))
+        do row = 1, rows
+            call checkstride(heightarray(row:row,:), visiblearray(row:row,:))
+            call checkstride(heightarray(row:row,columns:1:-1), visiblearray(row:row,columns:1:-1))
         end do
-        do i = 1, columns
-            call checkstride(heightarray(:,i:i), visiblearray(:,i:i))
-            call checkstride(heightarray(rows:1:-1,i:i), visiblearray(rows:1:-1,i:i))
+        do row = 1, columns
+            call checkstride(heightarray(:,row:row), visiblearray(:,row:row))
+            call checkstride(heightarray(rows:1:-1,row:row), visiblearray(rows:1:-1,row:row))
         end do
 
         solve = count(visiblearray)
