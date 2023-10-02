@@ -215,3 +215,10 @@ $(OBJ)/day08b_test.o: $(OBJ)/day08b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day08b_test_driver.o: $(OBJ)/day08b_test.o $(OBJ)/day08b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day08b: $(OBJ)/day08b_main.o $(OBJ)/day08b.o $(OBJ)/util.o
 $(BIN)/day08b_test_driver: $(OBJ)/day08b_test_driver.o $(OBJ)/day08b_test.o $(OBJ)/day08b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day09a.o: $(OBJ)/util.o
+$(OBJ)/day09a_main.o: $(OBJ)/day09a.o $(OBJ)/util.o
+$(OBJ)/day09a_test.o: $(OBJ)/day09a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day09a_test_driver.o: $(OBJ)/day09a_test.o $(OBJ)/day09a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day09a: $(OBJ)/day09a_main.o $(OBJ)/day09a.o $(OBJ)/util.o
+$(BIN)/day09a_test_driver: $(OBJ)/day09a_test_driver.o $(OBJ)/day09a_test.o $(OBJ)/day09a.o $(OBJ)/util.o $(OBJ)/fruit.o
