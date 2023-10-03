@@ -1,6 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/9 part a
 module day09a
-    use iso_fortran_env, only : int8
+    use iso_fortran_env, only : int8, error_unit
     use util, only : printioerror, readinputfile_asstringarray
     implicit none
     private
@@ -15,6 +15,8 @@ module day09a
     contains
         procedure :: init     => complexlist_init
         procedure :: add      => complexlist_add
+        procedure :: get      => complexlist_get
+        procedure :: count    => complexlist_count
         procedure :: contains => complexlist_contains
     end type ComplexList
 
@@ -40,6 +42,38 @@ contains
         this%values(this%length) = value
     end subroutine
 
+    function complexlist_get(this, index, defaultvalue) result(value)
+        implicit none
+
+        class(ComplexList), intent(inout) :: this
+        integer, intent(in)               :: index
+        integer, optional, intent(in)     :: defaultvalue
+        complex                           :: value
+
+        if ((index < 1) .or. (index > this%length)) then
+            if (present(defaultvalue)) then
+                value = defaultvalue
+            else
+                if (this%length == 0) then
+                    write (error_unit, *) 'List error: index ', index, ' out of bounds (empty list)'
+                else
+                    write (error_unit, *) 'List error: index ', index, ' out of bounds (1:', this%length, ')'
+                end if
+                stop
+            end if
+        end if
+        value = this%values(index)
+    end function
+
+    function complexlist_count(this) result(count)
+        implicit none
+
+        class(ComplexList), intent(inout) :: this
+        integer                           :: count
+
+        count = this%length
+    end function
+
     function complexlist_contains(this, value) result(contains)
         implicit none
 
@@ -47,7 +81,11 @@ contains
         complex, intent(in)               :: value
         logical                           :: contains
 
-        contains = any(this%values == value)
+        if (this%length == 0) then
+            contains = .false.
+        else
+            contains = any(this%values(1:this%length) == value)
+        end if
     end function
 
     subroutine analyse_motions(filename, motions, visitlist)
@@ -103,10 +141,13 @@ contains
         character(len=*), intent(in)   :: filename
         type(ComplexList) :: motions
         type(ComplexList) :: visitlist
+        integer           :: i
 
         ! analyse series of motions and prepare containers
         call analyse_motions(filename, motions, visitlist)
-        ! print *, motions
+        do i = 1, motions%count()
+            print *, motions%get(i)
+        end do
 
         ! return number of visited positions
         solve = visitlist%length
