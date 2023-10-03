@@ -28,7 +28,7 @@ contains
         class(ComplexList), intent(inout) :: this
         integer, intent(in)               :: listsize
 
-        allocate(this%values(listsize))
+        allocate(this%values(listsize), source=(0,0))
         this%length = 0
     end subroutine
 
@@ -45,10 +45,10 @@ contains
     function complexlist_get(this, index, defaultvalue) result(value)
         implicit none
 
-        class(ComplexList), intent(inout) :: this
-        integer, intent(in)               :: index
-        integer, optional, intent(in)     :: defaultvalue
-        complex                           :: value
+        class(ComplexList), intent(in) :: this
+        integer, intent(in)            :: index
+        integer, optional, intent(in)  :: defaultvalue
+        complex                        :: value
 
         if ((index < 1) .or. (index > this%length)) then
             if (present(defaultvalue)) then
@@ -61,30 +61,40 @@ contains
                 end if
                 stop
             end if
+        else
+            value = this%values(index)
         end if
-        value = this%values(index)
     end function
 
-    function complexlist_count(this) result(count)
+    pure function complexlist_count(this) result(count)
         implicit none
 
-        class(ComplexList), intent(inout) :: this
-        integer                           :: count
+        class(ComplexList), intent(in) :: this
+        integer                        :: count
 
         count = this%length
     end function
 
-    function complexlist_contains(this, value) result(contains)
+    pure function complexlist_contains(this, value) result(contains)
         implicit none
 
-        class(ComplexList), intent(inout) :: this
-        complex, intent(in)               :: value
-        logical                           :: contains
+        class(ComplexList), intent(in) :: this
+        complex, intent(in)            :: value
+        logical                        :: contains
+        integer                        :: i
+        complex                        :: item
 
-        if (this%length == 0) then
-            contains = .false.
-        else
-            contains = any(this%values(1:this%length) == value)
+        contains = .false.
+        if (this%length > 0) then
+            do i = 1, this%length
+                item = this%values(i)
+                if (int(real(value)) == int(real(item))) then
+                    if (int(aimag(value)) == int(aimag(item))) then
+                        contains = .true.
+                        exit
+                    end if
+                end if
+            end do
         end if
     end function
 
@@ -110,7 +120,7 @@ contains
             ! print *, direction, repeat
             totalmotions = totalmotions + repeat
         end do
-        print *, totalmotions
+        ! print *, totalmotions
 
         ! prepare containers
         call motions%init(totalmotions)
@@ -135,22 +145,78 @@ contains
         end do
     end subroutine
 
+    subroutine execute_motions(motions, visitlist)
+        implicit none
+
+        type(ComplexList), intent(inout) :: motions
+        type(ComplexList), intent(inout) :: visitlist
+        integer                          :: i
+        complex                          :: motion, head, tail
+
+        ! position head and tail at centre of coordinate system
+        head = (0,0)
+        tail = (0,0)
+
+        ! execute all motions from the series
+        do i = 1, motions%count()
+            motion = motions%get(i)
+
+            ! move head according to motion
+            head = head + motion
+
+            ! move tail based on the drag of head
+            tail = move_tail(head, tail)
+
+            ! store new tail position only in visitlist if it is the very first visit
+            if (visitlist%contains(tail) .eqv. .false.) then
+                call visitlist%add(tail)
+            end if
+        end do
+    end subroutine execute_motions
+
+    function move_tail(head, tail) result(newtail)
+        complex, intent(in) :: head, tail
+        complex             :: newtail, drag
+        integer             :: dragx, dragy
+
+        ! default: tail stays at the same place
+        newtail = tail
+
+        ! calculate the drag from tail towards head
+        drag = head - tail
+        dragx = int(real(drag))
+        dragy = int(aimag(drag))
+
+        ! analyse drag and move tail only if needed
+        if (abs(dragx) > 1 .or. abs(dragy) > 1) then
+            if (dragx == 0 .or. dragy == 0) then
+                ! drag straight along x or y axis
+                newtail = tail + (drag / 2)
+            else if (abs(dragx) > abs(dragy)) then
+                ! drag most along x axis
+                newtail = tail + cmplx(dragx / 2, dragy)
+            else
+                ! drag most along y axis
+                newtail = tail + cmplx(dragx, dragy / 2)
+            end if
+        end if
+    end function
+
     integer function solve(filename)
         implicit none
 
         character(len=*), intent(in)   :: filename
         type(ComplexList) :: motions
         type(ComplexList) :: visitlist
-        integer           :: i
 
         ! analyse series of motions and prepare containers
         call analyse_motions(filename, motions, visitlist)
-        do i = 1, motions%count()
-            print *, motions%get(i)
-        end do
+
+        ! execute series of motions and drag tail around
+        call execute_motions(motions, visitlist)
 
         ! return number of visited positions
-        solve = visitlist%length
+        solve = visitlist%count()
     end function
 
 end module day09a

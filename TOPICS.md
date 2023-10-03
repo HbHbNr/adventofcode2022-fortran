@@ -32,4 +32,5 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 * Fortran: arrays with multiple dimensions, array strides, integer and logical types
 
 ### Day 09
-* Fortran: complex numbers
+* Fortran: complex numbers, pure functions
+* Techniques: array list
