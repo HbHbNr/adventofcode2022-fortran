@@ -7,13 +7,13 @@ module class_complexlist
         private
 
         complex, allocatable :: values(:)
-        integer              :: length
+        integer              :: valueslength
     contains
         procedure :: init         => complexlist_init
         procedure :: add          => complexlist_add
         procedure :: get          => complexlist_get
         procedure :: empty        => complexlist_empty
-        procedure :: count        => complexlist_count
+        procedure :: length       => complexlist_length
         procedure :: containsints => complexlist_containsints
     end type ComplexList
 
@@ -26,7 +26,7 @@ contains
         integer, intent(in)               :: listsize
 
         allocate(this%values(listsize), source=(0,0))
-        this%length = 0
+        this%valueslength = 0
     end subroutine
 
     subroutine complexlist_add(this, value)
@@ -35,8 +35,8 @@ contains
         class(ComplexList), intent(inout) :: this
         complex, intent(in)               :: value
 
-        this%length = this%length + 1
-        this%values(this%length) = value
+        this%valueslength = this%valueslength + 1
+        this%values(this%valueslength) = value
     end subroutine
 
     function complexlist_get(this, index, defaultvalue) result(value)
@@ -47,14 +47,14 @@ contains
         integer, optional, intent(in)  :: defaultvalue
         complex                        :: value
 
-        if ((index < 1) .or. (index > this%length)) then
+        if ((index < 1) .or. (index > this%valueslength)) then
             if (present(defaultvalue)) then
                 value = defaultvalue
             else
-                if (this%length == 0) then
+                if (this%valueslength == 0) then
                     write (error_unit, *) 'List error: index ', index, ' out of bounds (empty list)'
                 else
-                    write (error_unit, *) 'List error: index ', index, ' out of bounds (1:', this%length, ')'
+                    write (error_unit, *) 'List error: index ', index, ' out of bounds (1:', this%valueslength, ')'
                 end if
                 stop
             end if
@@ -69,16 +69,16 @@ contains
         class(ComplexList), intent(in) :: this
         logical                        :: empty
 
-        empty = (this%length == 0)
+        empty = (this%valueslength == 0)
     end function
 
-    pure function complexlist_count(this) result(count)
+    pure function complexlist_length(this) result(count)
         implicit none
 
         class(ComplexList), intent(in) :: this
         integer                        :: count
 
-        count = this%length
+        count = this%valueslength
     end function
 
     pure function complexlist_containsints(this, value) result(contains)
@@ -91,8 +91,8 @@ contains
         complex                        :: item
 
         contains = .false.
-        if (this%length > 0) then
-            do i = 1, this%length
+        if (this%valueslength > 0) then
+            do i = 1, this%valueslength
                 item = this%values(i)
                 if (int(real(value)) == int(real(item))) then
                     if (int(aimag(value)) == int(aimag(item))) then

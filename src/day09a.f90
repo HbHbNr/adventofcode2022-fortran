@@ -70,7 +70,7 @@ contains
         tail = (0,0)
 
         ! execute all motions from the series
-        do i = 1, motions%count()
+        do i = 1, motions%length()
             motion = motions%get(i)
 
             ! move head according to motion
@@ -128,7 +128,7 @@ contains
         call execute_motions(motions, visitlist)
 
         ! return number of visited positions
-        solve = visitlist%count()
+        solve = visitlist%length()
     end function
 
 end module day09a
