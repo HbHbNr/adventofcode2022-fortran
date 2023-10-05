@@ -6,7 +6,7 @@ program day09b_main
     integer :: result
 
     ! result = solve('inputfiles/day09_example1.txt')
-    result = solve('inputfiles/day09_example2.txt')
-    ! result = solve('inputfiles/day09_input.txt')
+    ! result = solve('inputfiles/day09_example2.txt')
+    result = solve('inputfiles/day09_input.txt')
     call printresultline_integer('09b', result)
 end program day09b_main

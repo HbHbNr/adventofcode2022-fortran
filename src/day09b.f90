@@ -29,10 +29,8 @@ contains
         totalmotions = 0
         do i=1, size(lines)
             read(lines(i), *) direction, repeat
-            ! print *, direction, repeat
             totalmotions = totalmotions + repeat
         end do
-        ! print *, totalmotions
 
         ! prepare containers
         call motions%init(totalmotions)
@@ -55,7 +53,7 @@ contains
                 call motions%add(motion)
             end do
         end do
-    end subroutine
+    end subroutine analyse_motions
 
     subroutine execute_motions(motions, visitlist)
         implicit none
@@ -87,9 +85,6 @@ contains
             if (visitlist%containsints(chainlinks(lastlink)) .eqv. .false.) then
                 call visitlist%add(chainlinks(lastlink))
             end if
-
-            ! call plot_playground(visitlist, chainlinks)
-            ! print *
         end do
     end subroutine execute_motions
 
@@ -111,15 +106,18 @@ contains
             if (dragx == 0 .or. dragy == 0) then
                 ! drag straight along x or y axis
                 newtail = tail + (drag / 2)
+            else if (abs(dragx) == abs(dragy)) then
+                ! drag diagonal towards head
+                newtail = tail + (drag / 2)
             else if (abs(dragx) > abs(dragy)) then
-                ! drag most along x axis
+                ! drag mostly along x axis
                 newtail = tail + cmplx(dragx / 2, dragy)
             else
-                ! drag most along y axis
+                ! drag mostly along y axis
                 newtail = tail + cmplx(dragx, dragy / 2)
             end if
         end if
-    end function
+    end function move_tail
 
     subroutine plot_playground(visitlist, chainlinks)
         implicit none
@@ -150,11 +148,9 @@ contains
                 maxy = max(maxy, int(aimag(chainlinks(v))))
             end do
         end if
-        ! print *, minx, miny, maxx, maxy
 
         ! prepare playground
         allocate(character(len=1) :: fields(miny:maxy,minx:maxx))
-        ! print *, size(fields, 1), size(fields, 2)
         do row = miny, maxy
             do column = minx, maxx
                 fields(row, column) = emptyfield
@@ -169,7 +165,7 @@ contains
             fields(row, column) = visitedfield
         end do
 
-        ! makr startfield
+        ! mark startfield
         fields(0, 0) = startfield
 
         ! mark all occupied fields
@@ -190,7 +186,7 @@ contains
         do row = miny, maxy
             print *, fields(row, :)
         end do
-    end subroutine
+    end subroutine plot_playground
 
     integer function solve(filename)
         implicit none
@@ -198,21 +194,15 @@ contains
         character(len=*), intent(in)   :: filename
         type(ComplexList) :: motions
         type(ComplexList) :: visitlist
-        ! integer           :: i
 
         ! analyse series of motions and prepare containers
         call analyse_motions(filename, motions, visitlist)
 
         ! execute series of motions and drag tail around
         call execute_motions(motions, visitlist)
-        ! do i = 1, visitlist%length()
-        !     print *, visitlist%get(i)
-        ! end do
-        call plot_playground(visitlist)
 
         ! return number of visited positions
-        solve = -1  ! visitlist%length()
-        ! 2617 is wrong
-    end function
+        solve = visitlist%length()
+    end function solve
 
 end module day09b

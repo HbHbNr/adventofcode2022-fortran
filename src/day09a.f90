@@ -29,10 +29,8 @@ contains
         totalmotions = 0
         do i=1, size(lines)
             read(lines(i), *) direction, repeat
-            ! print *, direction, repeat
             totalmotions = totalmotions + repeat
         end do
-        ! print *, totalmotions
 
         ! prepare containers
         call motions%init(totalmotions)
@@ -55,7 +53,7 @@ contains
                 call motions%add(motion)
             end do
         end do
-    end subroutine
+    end subroutine analyse_motions
 
     subroutine execute_motions(motions, visitlist)
         implicit none
@@ -105,14 +103,14 @@ contains
                 ! drag straight along x or y axis
                 newtail = tail + (drag / 2)
             else if (abs(dragx) > abs(dragy)) then
-                ! drag most along x axis
+                ! drag mostly along x axis
                 newtail = tail + cmplx(dragx / 2, dragy)
             else
-                ! drag most along y axis
+                ! drag mostly along y axis
                 newtail = tail + cmplx(dragx, dragy / 2)
             end if
         end if
-    end function
+    end function move_tail
 
     integer function solve(filename)
         implicit none
@@ -129,6 +127,6 @@ contains
 
         ! return number of visited positions
         solve = visitlist%length()
-    end function
+    end function solve
 
 end module day09a
