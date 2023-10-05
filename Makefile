@@ -1,7 +1,7 @@
 # disable default rules and default variables
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
-.PHONY: all runall tests runtests fruitpytests info clean
+.PHONY: all runall runbenchmark tests runtests fruitpytests info clean
 
 SRC := src
 OBJ := obj
@@ -11,13 +11,16 @@ FFLAGS := -J $(OBJ) -Wall -Wextra -fcheck=all -g -std=f2018
 SOURCES := $(sort $(wildcard $(SRC)/*.f90))
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(sort $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90)))
-TESTS := $(BINARIES:%=%_test_driver) $(BIN)/class_charstack_test_driver $(BIN)/util_test_driver
+TESTS := $(BINARIES:%=%_test_driver) $(BIN)/class_charstack_test_driver $(BIN)/class_complexlist_test_driver $(BIN)/util_test_driver
 FRUITPYTESTS := $(TESTS:$(BIN)/%_test_driver=fruitpy/%.py)
 
 all: $(BINARIES)
 
 runall: $(BINARIES)
 	for BINARY in $(BINARIES); do $${BINARY}; done
+
+runbenchmark: $(BINARIES)
+	for BINARY in $(BINARIES); do /usr/bin/time -f "$${BINARY}: %es" $${BINARY} > /dev/null; done
 
 tests: $(TESTS)
 
