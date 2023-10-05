@@ -1,7 +1,7 @@
 # disable default rules and default variables
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
-.PHONY: all runall tests runtests fruitpytests info clean
+.PHONY: all runall runbenchmark tests runtests fruitpytests info clean
 
 SRC := src
 OBJ := obj
@@ -11,13 +11,16 @@ FFLAGS := -J $(OBJ) -Wall -Wextra -fcheck=all -g -std=f2018
 SOURCES := $(sort $(wildcard $(SRC)/*.f90))
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(sort $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90)))
-TESTS := $(BINARIES:%=%_test_driver) $(BIN)/class_charstack_test_driver $(BIN)/util_test_driver
+TESTS := $(BINARIES:%=%_test_driver) $(BIN)/class_charstack_test_driver $(BIN)/class_complexlist_test_driver $(BIN)/util_test_driver
 FRUITPYTESTS := $(TESTS:$(BIN)/%_test_driver=fruitpy/%.py)
 
 all: $(BINARIES)
 
 runall: $(BINARIES)
 	for BINARY in $(BINARIES); do $${BINARY}; done
+
+runbenchmark: $(BINARIES)
+	for BINARY in $(BINARIES); do /usr/bin/time -f "$${BINARY}: %es" $${BINARY} > /dev/null; done
 
 tests: $(TESTS)
 
@@ -98,6 +101,11 @@ $(OBJ)/class_charstack.o: $(OBJ)/util.o
 $(OBJ)/class_charstack_test.o: $(OBJ)/class_charstack.o $(OBJ)/fruit.o
 $(OBJ)/class_charstack_test_driver.o: $(OBJ)/class_charstack_test.o $(OBJ)/class_charstack.o $(OBJ)/fruit.o
 $(BIN)/class_charstack_test_driver: $(OBJ)/class_charstack_test_driver.o $(OBJ)/class_charstack_test.o $(OBJ)/class_charstack.o $(OBJ)/fruit.o
+
+$(OBJ)/class_complexlist.o: $(OBJ)/util.o
+$(OBJ)/class_complexlist_test.o: $(OBJ)/class_complexlist.o $(OBJ)/fruit.o
+$(OBJ)/class_complexlist_test_driver.o: $(OBJ)/class_complexlist_test.o $(OBJ)/class_complexlist.o $(OBJ)/fruit.o
+$(BIN)/class_complexlist_test_driver: $(OBJ)/class_complexlist_test_driver.o $(OBJ)/class_complexlist_test.o $(OBJ)/class_complexlist.o $(OBJ)/fruit.o
 
 $(OBJ)/util_test.o: $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/util_test_driver.o: $(OBJ)/util_test.o $(OBJ)/util.o $(OBJ)/fruit.o
@@ -215,3 +223,17 @@ $(OBJ)/day08b_test.o: $(OBJ)/day08b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day08b_test_driver.o: $(OBJ)/day08b_test.o $(OBJ)/day08b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day08b: $(OBJ)/day08b_main.o $(OBJ)/day08b.o $(OBJ)/util.o
 $(BIN)/day08b_test_driver: $(OBJ)/day08b_test_driver.o $(OBJ)/day08b_test.o $(OBJ)/day08b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day09a.o: $(OBJ)/util.o $(OBJ)/class_complexlist.o
+$(OBJ)/day09a_main.o: $(OBJ)/day09a.o $(OBJ)/util.o
+$(OBJ)/day09a_test.o: $(OBJ)/day09a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day09a_test_driver.o: $(OBJ)/day09a_test.o $(OBJ)/day09a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day09a: $(OBJ)/day09a_main.o $(OBJ)/day09a.o $(OBJ)/util.o $(OBJ)/class_complexlist.o
+$(BIN)/day09a_test_driver: $(OBJ)/day09a_test_driver.o $(OBJ)/day09a_test.o $(OBJ)/day09a.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_complexlist.o
+
+$(OBJ)/day09b.o: $(OBJ)/util.o $(OBJ)/class_complexlist.o
+$(OBJ)/day09b_main.o: $(OBJ)/day09b.o $(OBJ)/util.o
+$(OBJ)/day09b_test.o: $(OBJ)/day09b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day09b_test_driver.o: $(OBJ)/day09b_test.o $(OBJ)/day09b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day09b: $(OBJ)/day09b_main.o $(OBJ)/day09b.o $(OBJ)/util.o $(OBJ)/class_complexlist.o
+$(BIN)/day09b_test_driver: $(OBJ)/day09b_test_driver.o $(OBJ)/day09b_test.o $(OBJ)/day09b.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_complexlist.o
