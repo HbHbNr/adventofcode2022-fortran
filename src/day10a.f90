@@ -1,6 +1,7 @@
 !> Solution for https://adventofcode.com/2021/day/10 part a
 module day10a
     use util, only : printioerror, readinputfile_asstringarray
+    use class_intstack, only : IntStack
     implicit none
     private
 
@@ -14,26 +15,44 @@ contains
         character(len=*), intent(in)  :: instructions(:)
         character(len=:), allocatable :: instruction
         character(len=4)              :: command
-        integer                       :: signalsum, cycle_, registerX, value, i
+        integer                       :: signalstrength, signalsum, cycle_, registerX, value, i
+        type(IntStack)                :: stack
+        integer, parameter            :: triggercycles(6) = [20, 60, 100, 140, 180, 220]
 
-        cycle_ = 0
+        ! prepare variables
+        cycle_ = 1
         registerX = 1
         signalsum = 0
+        call stack%init(3)
         allocate(character(len=len(instructions(1))) :: instruction)
+
+        ! iterate through all instructions
         do i = 1, size(instructions)
             instruction = instructions(i)
+            ! print *, i, ': instruction=', instruction
             if (trim(instruction) == 'noop') then
-                cycle_ = cycle_ + 1
-                print *, 'noop'
+                ! print *, 'noop'
+                call stack%push(0)      ! only step: add nothing
             else
                 read(instruction, *) command, value
-                cycle_ = cycle_ + 2
-                registerX = registerX + value
-                print *, command, value
+                ! print *, command, value
+                call stack%push(value)  ! 2. step: add value
+                call stack%push(0)      ! 1. step: add nothing
             end if
-            print *, registerX
-            signalsum = signalsum + registerX
-            print *, signalsum
+            ! call stack%print()
+            ! print *, 'stack%size()=', stack%size()
+            do while (stack%size() > 0)
+                cycle_ = cycle_ + 1
+                value = stack%pop()
+                registerX = registerX + value
+                if (any(triggercycles == cycle_)) then
+                    signalstrength = cycle_ * registerX
+                    ! print *, '    registerX=', registerX, ' cycle=', cycle_, ' signalstrength=', signalstrength
+                    signalsum = signalsum + signalstrength
+                    ! print *, '    signalsum=', signalsum
+                end if
+            end do
+            ! print *
         end do
 
     end function execute_instructions
@@ -50,10 +69,10 @@ contains
 
         ! execute list of instructions and calculate sum of signal strengths
         signalsum = execute_instructions(instructions)
-        print *, signalsum
+        ! print *, signalsum
 
         ! return number of visited positions
-        solve = -1  ! signalsum
+        solve = signalsum
     end function solve
 
 end module day10a
