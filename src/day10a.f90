@@ -42,15 +42,19 @@ contains
             ! call stack%print()
             ! print *, 'stack%size()=', stack%size()
             do while (stack%size() > 0)
-                cycle_ = cycle_ + 1
-                value = stack%pop()
-                registerX = registerX + value
+                ! check if this beginning cycle is one of the trigger cycles; the value at the beginning stays the
+                ! same during the cycle; *after* the cycle, the register is modified
                 if (any(triggercycles == cycle_)) then
                     signalstrength = cycle_ * registerX
-                    ! print *, '    registerX=', registerX, ' cycle=', cycle_, ' signalstrength=', signalstrength
+                    ! print *,'    cycle=', cycle_, ' registerX=', registerX,  ' signalstrength=', signalstrength
                     signalsum = signalsum + signalstrength
                     ! print *, '    signalsum=', signalsum
                 end if
+
+                ! after the cycle: modify register and increase cycle number
+                value = stack%pop()
+                registerX = registerX + value
+                cycle_ = cycle_ + 1  ! cycle number of the next cycle
             end do
             ! print *
         end do
