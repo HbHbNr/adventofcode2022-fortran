@@ -4,6 +4,7 @@ module util
     private
 
     public :: printresultline_integer
+    public :: printresultline_stringarray
     public :: printresultline
     public :: printioerror
     public :: readinputfile_asline
@@ -17,11 +18,25 @@ contains
         implicit none
 
         character(len=*), intent(in) :: day
-        integer(kind=4) , intent(in) :: intresult
+        integer(kind=4),  intent(in) :: intresult
         character(len=11)            :: result
 
         write(result, '(I11)') intresult
         call printresultline(day, result)
+    end subroutine
+
+    !> print a standard AOC result line, with an array of strings parameter
+    subroutine printresultline_stringarray(day, stringsresult)
+        implicit none
+
+        character(len=*), intent(in) :: day
+        character(len=*), intent(in) :: stringsresult(:)
+        integer                      :: i
+
+        call printresultline(day, '')
+        do i = 1, size(stringsresult)
+            print '(A)', stringsresult(i)
+        end do
     end subroutine
 
     !> print a standard AOC result line, with a string parameter
