@@ -1,6 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/10 part a
 module day10a
-    use util, only : printioerror, readinputfile_asstringarray
+    use util, only : readinputfile_asstringarray
     use class_intstack, only : IntStack
     implicit none
     private
@@ -29,26 +29,21 @@ contains
         ! iterate through all instructions
         do i = 1, size(instructions)
             instruction = instructions(i)
-            ! print *, i, ': instruction=', instruction
             if (trim(instruction) == 'noop') then
-                ! print *, 'noop'
                 call stack%push(0)      ! only step: add nothing
             else
                 read(instruction, *) command, value
-                ! print *, command, value
                 call stack%push(value)  ! 2. step: add value
                 call stack%push(0)      ! 1. step: add nothing
             end if
-            ! call stack%print()
-            ! print *, 'stack%size()=', stack%size()
+
+            ! execute commands on the stack
             do while (stack%size() > 0)
                 ! check if this beginning cycle is one of the trigger cycles; the value at the beginning stays the
-                ! same during the cycle; *after* the cycle, the register is modified
+                ! same during the cycle; only *after* the cycle the register is modified
                 if (any(triggercycles == cycle_)) then
                     signalstrength = cycle_ * registerX
-                    ! print *,'    cycle=', cycle_, ' registerX=', registerX,  ' signalstrength=', signalstrength
                     signalsum = signalsum + signalstrength
-                    ! print *, '    signalsum=', signalsum
                 end if
 
                 ! after the cycle: modify register and increase cycle number
@@ -56,7 +51,6 @@ contains
                 registerX = registerX + value
                 cycle_ = cycle_ + 1  ! cycle number of the next cycle
             end do
-            ! print *
         end do
 
     end function execute_instructions
@@ -73,7 +67,6 @@ contains
 
         ! execute list of instructions and calculate sum of signal strengths
         signalsum = execute_instructions(instructions)
-        ! print *, signalsum
 
         ! return number of visited positions
         solve = signalsum

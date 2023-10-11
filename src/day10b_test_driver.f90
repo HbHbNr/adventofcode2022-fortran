@@ -13,7 +13,6 @@ program tests
 
   call init_fruit
 
-  call run_test_case(test_solve_example1,"test_solve_example1")
   call run_test_case(test_solve_example2,"test_solve_example2")
   call run_test_case(test_solve_input,"test_solve_input")
 
