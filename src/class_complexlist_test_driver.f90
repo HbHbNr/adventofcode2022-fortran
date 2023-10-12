@@ -13,7 +13,7 @@ program tests
 
   call init_fruit
 
-  call run_test_case(test_charstack,"test_charstack")
+  call run_test_case(test_complexlist,"test_complexlist")
 
   call get_failed_count(failed_count)
   call fruit_summary

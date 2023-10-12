@@ -6,7 +6,7 @@ module complexlist_test
 
 contains
 
-    subroutine test_charstack
+    subroutine test_complexlist
         use class_ComplexList, only : ComplexList
         implicit none
 
