@@ -34,3 +34,6 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 ### Day 09
 * Fortran: complex numbers, pure functions
 * Techniques: array list
+
+### Day 11
+* Techniques: ring buffer

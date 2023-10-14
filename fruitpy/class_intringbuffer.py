@@ -1,6 +1,6 @@
 from FRUIT import test_suite
 
-base = 'class_complexlist'
+base = 'class_intringbuffer'
 
 test_modules = [f'src/{base}_test.f90']
 drivername = f'{base}_test_driver'
