@@ -17,6 +17,7 @@ module day11a
         integer             :: test_divisor
         integer             :: monkey_true_target
         integer             :: monkey_false_target
+        integer             :: total_inspections
     end type Monkey
 
 contains
@@ -62,22 +63,104 @@ contains
         read(notes(6)(31:), *) themonkey%monkey_false_target
         print *, 'monkey_false_target: ', themonkey%monkey_false_target
 
+        themonkey%total_inspections = 0
     end subroutine
 
-    function configure_monkeys(notes) result(monkeys)
+    subroutine configure_monkeys(notes, monkeys)
         implicit none
 
         character(len=*), intent(in) :: notes(:)
-        type(Monkey), allocatable    :: monkeys(:)
+        type(Monkey), allocatable, intent(inout)    :: monkeys(:)
         integer                      :: number_of_monkeys, i
 
         number_of_monkeys = (size(notes) + 1) / 7
         ! print *, number_of_monkeys
         allocate(monkeys(0:number_of_monkeys-1))
+        print *, 'configure_monkeys monkey bounds: ', lbound(monkeys, 1), ubound(monkeys, 1)
         do i = 0, number_of_monkeys-1
             ! print *, i
             call configure_monkey(monkeys(i), notes(i*7+1:i*7+6))
         end do
+    end subroutine
+
+    subroutine calculate_monkey(activemonkeyid, monkeys)
+        implicit none
+
+        integer, intent(in)       :: activemonkeyid
+        type(Monkey), allocatable :: monkeys(:)
+        integer                   :: item, operation_factor
+        logical                   :: test_result
+
+        do while(.not. monkeys(activemonkeyid)%items%empty())
+            ! take first item from list
+            item = monkeys(activemonkeyid)%items%removeFirst()
+            monkeys(activemonkeyid)%total_inspections = monkeys(activemonkeyid)%total_inspections + 1
+
+            ! set the operation factor - -1 means 'old'
+            operation_factor = monkeys(activemonkeyid)%operation_factor
+            if (operation_factor == -1) operation_factor = item
+
+            ! perform operation based on operator
+            select case(monkeys(activemonkeyid)%operation)
+            case ('+')
+                item = item + operation_factor
+            case ('*')
+                item = item * operation_factor
+            end select
+
+            ! divide worry level by three
+            item = item / 3
+
+            ! test if item is divisible by requested factor
+            test_result = (modulo(item, monkeys(activemonkeyid)%test_divisor) == 0)
+            if (test_result) then
+                call monkeys(monkeys(activemonkeyid)%monkey_true_target)%items%addLast(item)
+            else
+                call monkeys(monkeys(activemonkeyid)%monkey_false_target)%items%addLast(item)
+            end if
+        end do
+    end subroutine
+
+    subroutine calculate_round(round, monkeys)
+        implicit none
+
+        integer, intent(in)       :: round
+        type(Monkey), allocatable :: monkeys(:)
+        integer                   :: activemonkeyid
+
+        print *, 'calculate_round monkey bounds: ', lbound(monkeys, 1), ubound(monkeys, 1)
+
+        print *, 'Calculate round', round
+        do activemonkeyid = lbound(monkeys, 1), ubound(monkeys, 1)
+            call calculate_monkey(activemonkeyid, monkeys)
+        end do
+
+        print *, 'Round results:', round
+        do activemonkeyid = lbound(monkeys, 1), ubound(monkeys, 1)
+            call monkeys(activemonkeyid)%items%print()
+        end do
+    end subroutine
+
+    function calculate_monkeybusiness(monkeys) result(monkeybusiness)
+        implicit none
+
+        type(Monkey), intent(in) :: monkeys(:)
+        integer                  :: monkeybusiness
+        integer                  :: i, first, second, current
+
+        first = 0
+        second = 0
+        do i = lbound(monkeys, 1), ubound(monkeys, 1)
+            current = monkeys(i)%total_inspections
+            if (current > first) then
+                second = first
+                first = current
+            else if (current > second) then
+                second = current
+            end if
+        end do
+
+        monkeybusiness = first * second
     end function
 
     integer function solve(filename)
@@ -86,15 +169,22 @@ contains
         character(len=*), intent(in)  :: filename
         character(len=:), allocatable :: notes(:)
         type(Monkey), allocatable     :: monkeys(:)
+        integer                       :: round
 
         ! read list of notes from file
         notes = readinputfile_asstringarray(filename, 64)
 
         ! evaluate list of notes and configure monkeys
-        monkeys = configure_monkeys(notes)
+        call configure_monkeys(notes, monkeys)
+        print *, 'solve monkey bounds: ', lbound(monkeys, 1), ubound(monkeys, 1)
+
+        ! calcuate rounds of monkey business and show results
+        do round = 1, 20
+            call calculate_round(round, monkeys)
+        end do
 
         ! return number of visited positions
-        solve = -1
+        solve = calculate_monkeybusiness(monkeys)
     end function solve
 
 end module day11a
