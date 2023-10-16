@@ -212,22 +212,28 @@ contains
         stop
     end function intringbuffer_contains
 
-    subroutine intringbuffer_print(this)
+    subroutine intringbuffer_print(this, withdebug)
         implicit none
 
         class(IntRingBuffer), intent(in) :: this
+        logical, optional, intent(in)    :: withdebug
         integer                          :: startindex
 
         ! print *, this%top
         if (this%valueslength == 0) then
-            print *, '[]<-[]<-(', this%nextwriteindex, '/', this%valueslength, ')'
+            print *, '[]'
         else if (this%nextwriteindex > this%valueslength) then
             print *, '[', this%values(this%nextwriteindex-this%valueslength:this%nextwriteindex-1), ']'
-            print *, '<-[', this%values(:), ']<-(', this%nextwriteindex, '/', this%valueslength, ')'
         else
             startindex = this%nextwriteindex - this%valueslength + size(this%values)
             print *, '[', this%values(startindex:size(this%values)), '___'
             print *, '___', this%values(1:this%nextwriteindex-1), ']'
+        end if
+        if (present(withdebug)) then
+            if (withdebug .eqv. .true.) then
+                ! print also the subjacent array and limits
+                print *, '<-[', this%values(:), ']<-(', this%nextwriteindex, '/', this%valueslength, ')'
+            end if
         end if
     end subroutine
 
