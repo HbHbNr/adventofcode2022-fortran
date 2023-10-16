@@ -6,6 +6,18 @@ module util_test
 
 contains
 
+    subroutine test_printarray_integer
+        use util, only : printarray_integer
+        implicit none
+
+        integer :: array1(5) = [1, 2, 3, 4, 5]
+        integer :: array2(3) = [6, 7, 8]
+
+        call printarray_integer(array1)
+        call printarray_integer(array2)
+        call printarray_integer(array1, array2)
+    end subroutine
+
     subroutine test_readinputfile_asline_example
         use util, only : readinputfile_asline
         implicit none

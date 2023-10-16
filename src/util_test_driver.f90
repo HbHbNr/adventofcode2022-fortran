@@ -13,6 +13,7 @@ program tests
 
   call init_fruit
 
+  call run_test_case(test_printarray_integer,"test_printarray_integer")
   call run_test_case(test_readinputfile_asline_example,"test_readinputfile_asline_example")
   call run_test_case(test_readinputfile_asline_input,"test_readinputfile_asline_input")
   call run_test_case(test_readinputfile_asstringarray_example,"test_readinputfile_asstringarray_example")

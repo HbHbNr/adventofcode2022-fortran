@@ -113,9 +113,9 @@ $(OBJ)/class_intstack_test_driver.o: $(OBJ)/class_intstack_test.o $(OBJ)/class_i
 $(BIN)/class_intstack_test_driver: $(OBJ)/class_intstack_test_driver.o $(OBJ)/class_intstack_test.o $(OBJ)/class_intstack.o $(OBJ)/fruit.o
 
 $(OBJ)/class_intringbuffer.o: $(OBJ)/util.o
-$(OBJ)/class_intringbuffer_test.o: $(OBJ)/class_intringbuffer.o $(OBJ)/fruit.o
-$(OBJ)/class_intringbuffer_test_driver.o: $(OBJ)/class_intringbuffer_test.o $(OBJ)/class_intringbuffer.o $(OBJ)/fruit.o
-$(BIN)/class_intringbuffer_test_driver: $(OBJ)/class_intringbuffer_test_driver.o $(OBJ)/class_intringbuffer_test.o $(OBJ)/class_intringbuffer.o $(OBJ)/fruit.o
+$(OBJ)/class_intringbuffer_test.o: $(OBJ)/class_intringbuffer.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/class_intringbuffer_test_driver.o: $(OBJ)/class_intringbuffer_test.o $(OBJ)/class_intringbuffer.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/class_intringbuffer_test_driver: $(OBJ)/class_intringbuffer_test_driver.o $(OBJ)/class_intringbuffer_test.o $(OBJ)/class_intringbuffer.o $(OBJ)/util.o $(OBJ)/fruit.o
 
 $(OBJ)/util_test.o: $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/util_test_driver.o: $(OBJ)/util_test.o $(OBJ)/util.o $(OBJ)/fruit.o

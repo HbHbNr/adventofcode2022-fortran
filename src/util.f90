@@ -3,6 +3,7 @@ module util
     implicit none
     private
 
+    public :: printarray_integer
     public :: printresultline_integer
     public :: printresultline_stringarray
     public :: printresultline
@@ -12,6 +13,41 @@ module util
     public :: readinputfile_asintarray
 
 contains
+
+    !> print an array of integers
+    subroutine printarray_integer(array1, array2)
+        implicit none
+
+        integer(kind=4), intent(in)           :: array1(:)
+        integer(kind=4), optional, intent(in) :: array2(:)
+        character(len=11)                     :: result
+        integer                               :: i
+        logical                               :: first
+
+        first = .true.
+        write (*, '(A)', advance='no') '['
+        do i = lbound(array1, 1), ubound(array1, 1)
+            if (first) then
+                first = .false.
+            else
+                write (*, '(A)', advance='no') ','
+            end if
+            write(result, '(I11)') array1(i)
+            write (*, '(A)', advance='no') trim(adjustl(result))
+        end do
+        if (present(array2)) then
+            do i = lbound(array2, 1), ubound(array2, 1)
+                if (first) then
+                    first = .false.
+                else
+                    write (*, '(A)', advance='no') ','
+                end if
+                write(result, '(I11)') array2(i)
+                write (*, '(A)', advance='no') trim(adjustl(result))
+            end do
+        end if
+        write (*, '(A)', advance='yes') ']'
+    end subroutine
 
     !> print a standard AOC result line, with an integer parameter
     subroutine printresultline_integer(day, intresult)

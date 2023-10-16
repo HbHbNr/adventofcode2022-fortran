@@ -1,5 +1,6 @@
 module class_intringbuffer
     use iso_fortran_env, only : error_unit
+    use util, only : printarray_integer
     implicit none
     private
 
@@ -221,18 +222,23 @@ contains
 
         ! print *, this%top
         if (this%valueslength == 0) then
-            print *, '[]'
+            ! print *, '[]'
+            call printarray_integer(this%values(1:0))  ! empty array
         else if (this%nextwriteindex > this%valueslength) then
-            print *, '[', this%values(this%nextwriteindex-this%valueslength:this%nextwriteindex-1), ']'
+            ! print *, '[', this%values(this%nextwriteindex-this%valueslength:this%nextwriteindex-1), ']'
+            call printarray_integer(this%values(this%nextwriteindex-this%valueslength:this%nextwriteindex-1))
         else
             startindex = this%nextwriteindex - this%valueslength + size(this%values)
-            print *, '[', this%values(startindex:size(this%values)), '___'
-            print *, '___', this%values(1:this%nextwriteindex-1), ']'
+            ! print *, '[', this%values(startindex:size(this%values)), '___'
+            ! print *, '___', this%values(1:this%nextwriteindex-1), ']'
+            call printarray_integer(this%values(startindex:size(this%values)), this%values(1:this%nextwriteindex-1))
         end if
         if (present(withdebug)) then
             if (withdebug .eqv. .true.) then
                 ! print also the subjacent array and limits
-                print *, '<-[', this%values(:), ']<-(', this%nextwriteindex, '/', this%valueslength, ')'
+                write (*, '(A)', advance='no') '<-'
+                call printarray_integer(this%values)
+                ! print *, '<-(', this%nextwriteindex, '/', this%valueslength, ')'
             end if
         end if
     end subroutine
