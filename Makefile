@@ -268,3 +268,10 @@ $(OBJ)/day11a_test.o: $(OBJ)/day11a.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day11a_test_driver.o: $(OBJ)/day11a_test.o $(OBJ)/day11a.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day11a: $(OBJ)/day11a_main.o $(OBJ)/day11a.o $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
 $(BIN)/day11a_test_driver: $(OBJ)/day11a_test_driver.o $(OBJ)/day11a_test.o $(OBJ)/day11a.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_intringbuffer.o
+
+$(OBJ)/day11b.o: $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
+$(OBJ)/day11b_main.o: $(OBJ)/day11b.o $(OBJ)/util.o
+$(OBJ)/day11b_test.o: $(OBJ)/day11b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day11b_test_driver.o: $(OBJ)/day11b_test.o $(OBJ)/day11b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day11b: $(OBJ)/day11b_main.o $(OBJ)/day11b.o $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
+$(BIN)/day11b_test_driver: $(OBJ)/day11b_test_driver.o $(OBJ)/day11b_test.o $(OBJ)/day11b.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_intringbuffer.o

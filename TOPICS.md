@@ -37,4 +37,4 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 11
 * Fortran: lbound, ubound, array assigment sets bounds to defaults
-* Techniques: ring buffer
+* Techniques: ring buffer, modulo arithmetics
