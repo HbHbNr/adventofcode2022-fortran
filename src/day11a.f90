@@ -94,6 +94,7 @@ contains
         do while(.not. monkeys(activemonkeyid)%items%empty())
             ! take first item from list
             item = monkeys(activemonkeyid)%items%removeFirst()
+            ! increment number of inspections
             monkeys(activemonkeyid)%total_inspections = monkeys(activemonkeyid)%total_inspections + 1
 
             ! set the operation factor - -1 means 'old'
@@ -138,6 +139,7 @@ contains
         print *, 'Round results:', round
         do activemonkeyid = lbound(monkeys, 1), ubound(monkeys, 1)
             call monkeys(activemonkeyid)%items%print()
+            print *, monkeys(activemonkeyid)%total_inspections
         end do
     end subroutine
 
