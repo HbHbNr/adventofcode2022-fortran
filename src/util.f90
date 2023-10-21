@@ -4,7 +4,7 @@ module util
     implicit none
     private
 
-    public :: printarray_integer
+    public :: printarray
     public :: printresultline_integer
     public :: printresultline_int64
     public :: printresultline_stringarray
@@ -16,15 +16,15 @@ module util
 
 contains
 
-    !> print an array of integers
-    subroutine printarray_integer(array1, array2)
+    !> print an array of integers, supports default integer type as well as integer(int64)
+    subroutine printarray(array1, array2)
         implicit none
 
-        integer(kind=4), intent(in)           :: array1(:)
-        integer(kind=4), optional, intent(in) :: array2(:)
-        character(len=11)                     :: result
-        integer                               :: i
-        logical                               :: first
+        class(*), intent(in)           :: array1(:)
+        class(*), optional, intent(in) :: array2(:)
+        character(len=20)              :: result
+        integer                        :: i
+        logical                        :: first
 
         first = .true.
         write (*, '(A)', advance='no') '['
@@ -34,8 +34,19 @@ contains
             else
                 write (*, '(A)', advance='no') ','
             end if
-            write(result, '(I11)') array1(i)
-            write (*, '(A)', advance='no') trim(adjustl(result))
+            select type(array1)
+                type is (integer)
+                    write(result, '(I20)') array1(i)
+                    write (*, '(A)', advance='no') trim(adjustl(result))
+                type is (integer(int64))
+                    write(result, '(I20)') array1(i)
+                    write (*, '(A)', advance='no') trim(adjustl(result))
+                type is (character(len=*))
+                    write (*, '(A)', advance='no') trim(adjustl(array1(i)))
+                class default
+                    print *, 'unsupported type in printarray()'
+                    stop
+            end select
         end do
         if (present(array2)) then
             do i = lbound(array2, 1), ubound(array2, 1)
@@ -44,8 +55,19 @@ contains
                 else
                     write (*, '(A)', advance='no') ','
                 end if
-                write(result, '(I11)') array2(i)
-                write (*, '(A)', advance='no') trim(adjustl(result))
+                select type(array2)
+                    type is (integer)
+                        write(result, '(I20)') array2(i)
+                        write (*, '(A)', advance='no') trim(adjustl(result))
+                    type is (integer(int64))
+                        write(result, '(I20)') array2(i)
+                        write (*, '(A)', advance='no') trim(adjustl(result))
+                    type is (character(len=*))
+                        write (*, '(A)', advance='no') trim(adjustl(array2(i)))
+                    class default
+                        print *, 'unsupported type in printarray()'
+                        stop
+                end select
             end do
         end if
         write (*, '(A)', advance='yes') ']'

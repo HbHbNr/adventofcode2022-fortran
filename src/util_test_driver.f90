@@ -13,7 +13,7 @@ program tests
 
   call init_fruit
 
-  call run_test_case(test_printarray_integer,"test_printarray_integer")
+  call run_test_case(test_printarray,"test_printarray")
   call run_test_case(test_printresultline_integer,"test_printresultline_integer")
   call run_test_case(test_printresultline_int64,"test_printresultline_int64")
   call run_test_case(test_printresultline_stringarray,"test_printresultline_stringarray")

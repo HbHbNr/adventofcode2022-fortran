@@ -6,16 +6,21 @@ module util_test
 
 contains
 
-    subroutine test_printarray_integer
-        use util, only : printarray_integer
+    subroutine test_printarray
+        use iso_fortran_env, only : int64
+        use util, only : printarray
         implicit none
 
-        integer :: array1(5) = [1, 2, 3, 4, 5]
-        integer :: array2(3) = [6, 7, 8]
+        integer          :: array1(5) = [1, 2, 3, 4, 5]
+        integer          :: array2(3) = [6, 7, 8]
+        integer(int64)   :: array3(3) = [60_int64, 70_int64, 80_int64]
+        character(len=3) :: array4(3) = ['600', '700', '800']
 
-        call printarray_integer(array1)
-        call printarray_integer(array2)
-        call printarray_integer(array1, array2)
+        call printarray(array1)
+        call printarray(array2)
+        call printarray(array1, array2)
+        call printarray(array3)
+        call printarray(array4)
     end subroutine
 
     subroutine test_printresultline_integer
