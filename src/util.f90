@@ -1,10 +1,12 @@
 !> Collection of utility functions
 module util
+    use iso_fortran_env, only : int64
     implicit none
     private
 
     public :: printarray_integer
     public :: printresultline_integer
+    public :: printresultline_int64
     public :: printresultline_stringarray
     public :: printresultline
     public :: printioerror
@@ -58,6 +60,18 @@ contains
         character(len=11)            :: result
 
         write(result, '(I11)') intresult
+        call printresultline(day, result)
+    end subroutine
+
+    !> print a standard AOC result line, with an int64 parameter
+    subroutine printresultline_int64(day, intresult)
+        implicit none
+
+        character(len=*), intent(in) :: day
+        integer(int64),  intent(in)  :: intresult
+        character(len=22)            :: result
+
+        write(result, '(I22)') intresult
         call printresultline(day, result)
     end subroutine
 
