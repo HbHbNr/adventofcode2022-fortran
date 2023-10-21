@@ -1,4 +1,5 @@
 module day11b_test
+    use iso_fortran_env, only : int64
     use fruit
     implicit none
 
@@ -10,20 +11,24 @@ contains
         use day11b, only : solve
         implicit none
 
-        integer :: result
+        integer(int64) :: result
+        logical        :: isequal
 
         result = solve('../inputfiles/day11_example.txt')
-        call assert_equals (-1, result)
+        isequal = (2713310158_int64 == result)
+        call assert_equals (isequal, .true.)
     end subroutine
 
     subroutine test_solve_input
         use day11b, only : solve
         implicit none
 
-        integer :: result
+        integer(int64) :: result
+        logical        :: isequal
 
         result = solve('../inputfiles/day11_input.txt')
-        call assert_equals (-1, result)
+        isequal = (17408399184_int64 == result)
+        call assert_equals (isequal, .true.)
     end subroutine
 
 end module day11b_test
