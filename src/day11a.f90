@@ -34,7 +34,6 @@ contains
         call themonkey%items%init(36)
 
         read(notes(1)(8:8), *) themonkey%id
-        print *, 'Configuring monkey ', themonkey%id
 
         read(notes(2), '(18X,A)') tmpstring
         ! items always have two digits plus command and space
@@ -42,7 +41,6 @@ contains
             read(tmpstring(i:i+1), *) item
             call themonkey%items%addLast(item)
         end do
-        print *, 'itemliststring: ', trim(tmpstring)
 
         read(notes(3)(24:24), *) themonkey%operation
         read(notes(3)(26:), *) tmpstring
@@ -52,16 +50,12 @@ contains
         else
             read(tmpstring, *) themonkey%operation_factor
         end if
-        print *, 'operation: ', themonkey%operation, ' ', themonkey%operation_factor
 
         read(notes(4)(22:), *) themonkey%test_divisor
-        print *, 'test_divisor: ', themonkey%test_divisor
 
         read(notes(5)(30:), *) themonkey%monkey_true_target
-        print *, 'monkey_true_target: ', themonkey%monkey_true_target
 
         read(notes(6)(31:), *) themonkey%monkey_false_target
-        print *, 'monkey_false_target: ', themonkey%monkey_false_target
 
         themonkey%total_inspections = 0
     end subroutine
@@ -74,11 +68,8 @@ contains
         integer                      :: number_of_monkeys, i
 
         number_of_monkeys = (size(notes) + 1) / 7
-        ! print *, number_of_monkeys
         allocate(monkeys(0:number_of_monkeys-1))
-        print *, 'configure_monkeys monkey bounds: ', lbound(monkeys, 1), ubound(monkeys, 1)
         do i = 0, number_of_monkeys-1
-            ! print *, i
             call configure_monkey(monkeys(i), notes(i*7+1:i*7+6))
         end do
     end subroutine
@@ -122,24 +113,14 @@ contains
         end do
     end subroutine
 
-    subroutine calculate_round(round, monkeys)
+    subroutine calculate_round(monkeys)
         implicit none
 
-        integer, intent(in)       :: round
         type(Monkey), allocatable :: monkeys(:)
         integer                   :: activemonkeyid
 
-        print *, 'calculate_round monkey bounds: ', lbound(monkeys, 1), ubound(monkeys, 1)
-
-        print *, 'Calculate round', round
         do activemonkeyid = lbound(monkeys, 1), ubound(monkeys, 1)
             call calculate_monkey(activemonkeyid, monkeys)
-        end do
-
-        print *, 'Round results:', round
-        do activemonkeyid = lbound(monkeys, 1), ubound(monkeys, 1)
-            call monkeys(activemonkeyid)%items%print()
-            print *, monkeys(activemonkeyid)%total_inspections
         end do
     end subroutine
 
@@ -178,11 +159,10 @@ contains
 
         ! evaluate list of notes and configure monkeys
         call configure_monkeys(notes, monkeys)
-        print *, 'solve monkey bounds: ', lbound(monkeys, 1), ubound(monkeys, 1)
 
         ! calcuate rounds of monkey business and show results
         do round = 1, 20
-            call calculate_round(round, monkeys)
+            call calculate_round(monkeys)
         end do
 
         ! return number of visited positions
