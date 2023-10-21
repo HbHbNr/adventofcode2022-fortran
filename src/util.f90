@@ -1,9 +1,12 @@
 !> Collection of utility functions
 module util
+    use iso_fortran_env, only : int32, int64
     implicit none
     private
 
+    public :: printarray
     public :: printresultline_integer
+    public :: printresultline_int64
     public :: printresultline_stringarray
     public :: printresultline
     public :: printioerror
@@ -12,6 +15,63 @@ module util
     public :: readinputfile_asintarray
 
 contains
+
+    !> print an array of integers, supports default integer type as well as integer(int64)
+    subroutine printarray(array1, array2)
+        implicit none
+
+        class(*), intent(in)           :: array1(:)
+        class(*), optional, intent(in) :: array2(:)
+        character(len=20)              :: result
+        integer                        :: i
+        logical                        :: first
+
+        first = .true.
+        write (*, '(A)', advance='no') '['
+        do i = lbound(array1, 1), ubound(array1, 1)
+            if (first) then
+                first = .false.
+            else
+                write (*, '(A)', advance='no') ','
+            end if
+            select type(array1)
+                type is (integer(int32))
+                    write(result, '(I20)') array1(i)
+                    write (*, '(A)', advance='no') trim(adjustl(result))
+                type is (integer(int64))
+                    write(result, '(I20)') array1(i)
+                    write (*, '(A)', advance='no') trim(adjustl(result))
+                type is (character(len=*))
+                    write (*, '(A)', advance='no') trim(adjustl(array1(i)))
+                class default
+                    print *, 'unsupported type in printarray()'
+                    stop
+            end select
+        end do
+        if (present(array2)) then
+            do i = lbound(array2, 1), ubound(array2, 1)
+                if (first) then
+                    first = .false.
+                else
+                    write (*, '(A)', advance='no') ','
+                end if
+                select type(array2)
+                    type is (integer(int32))
+                        write(result, '(I20)') array2(i)
+                        write (*, '(A)', advance='no') trim(adjustl(result))
+                    type is (integer(int64))
+                        write(result, '(I20)') array2(i)
+                        write (*, '(A)', advance='no') trim(adjustl(result))
+                    type is (character(len=*))
+                        write (*, '(A)', advance='no') trim(adjustl(array2(i)))
+                    class default
+                        print *, 'unsupported type in printarray()'
+                        stop
+                end select
+            end do
+        end if
+        write (*, '(A)', advance='yes') ']'
+    end subroutine
 
     !> print a standard AOC result line, with an integer parameter
     subroutine printresultline_integer(day, intresult)
@@ -22,6 +82,18 @@ contains
         character(len=11)            :: result
 
         write(result, '(I11)') intresult
+        call printresultline(day, result)
+    end subroutine
+
+    !> print a standard AOC result line, with an int64 parameter
+    subroutine printresultline_int64(day, intresult)
+        implicit none
+
+        character(len=*), intent(in) :: day
+        integer(int64),  intent(in)  :: intresult
+        character(len=22)            :: result
+
+        write(result, '(I22)') intresult
         call printresultline(day, result)
     end subroutine
 

@@ -36,4 +36,5 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 * Techniques: array list
 
 ### Day 11
-* Techniques: ring buffer
+* Fortran: lbound, ubound, array assigment sets bounds to defaults, int32 and int64 from iso_fortran_env, select type, -fdefault-integer-8
+* Techniques: ring buffer, modulo arithmetics

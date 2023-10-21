@@ -1,5 +1,6 @@
 module class_intringbuffer
     use iso_fortran_env, only : error_unit
+    use util, only : printarray
     implicit none
     private
 
@@ -219,20 +220,19 @@ contains
         logical, optional, intent(in)    :: withdebug
         integer                          :: startindex
 
-        ! print *, this%top
         if (this%valueslength == 0) then
-            print *, '[]'
+            call printarray(this%values(1:0))  ! empty array
         else if (this%nextwriteindex > this%valueslength) then
-            print *, '[', this%values(this%nextwriteindex-this%valueslength:this%nextwriteindex-1), ']'
+            call printarray(this%values(this%nextwriteindex-this%valueslength:this%nextwriteindex-1))
         else
             startindex = this%nextwriteindex - this%valueslength + size(this%values)
-            print *, '[', this%values(startindex:size(this%values)), '___'
-            print *, '___', this%values(1:this%nextwriteindex-1), ']'
+            call printarray(this%values(startindex:size(this%values)), this%values(1:this%nextwriteindex-1))
         end if
         if (present(withdebug)) then
             if (withdebug .eqv. .true.) then
                 ! print also the subjacent array and limits
-                print *, '<-[', this%values(:), ']<-(', this%nextwriteindex, '/', this%valueslength, ')'
+                write (*, '(A)', advance='no') '<-'
+                call printarray(this%values)
             end if
         end if
     end subroutine

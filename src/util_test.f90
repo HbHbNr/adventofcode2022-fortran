@@ -6,6 +6,62 @@ module util_test
 
 contains
 
+    subroutine test_printarray
+        use iso_fortran_env, only : int64
+        use util, only : printarray
+        implicit none
+
+        integer          :: array1(5) = [1, 2, 3, 4, 5]
+        integer          :: array2(3) = [6, 7, 8]
+        integer(int64)   :: array3(3) = [60_int64, 70_int64, 80_int64]
+        character(len=3) :: array4(3) = ['600', '700', '800']
+
+        call printarray(array1)
+        call printarray(array2)
+        call printarray(array1, array2)
+        call printarray(array3)
+        call printarray(array4)
+    end subroutine
+
+    subroutine test_printresultline_integer
+        use util, only : printresultline_integer
+        implicit none
+
+        integer :: i = 42
+
+        call printresultline_integer('01a', i)
+    end subroutine
+
+    subroutine test_printresultline_int64
+        use iso_fortran_env, only : int64
+        use util, only : printresultline_int64
+        implicit none
+
+        integer(int64) :: i = 42_int64
+
+        call printresultline_int64('01a', i)
+    end subroutine
+
+    subroutine test_printresultline_stringarray
+        use util, only : printresultline_stringarray
+        implicit none
+
+        character(len=5) :: s(3) = ['1    ', '2    ', '42   ']
+
+        call printresultline_stringarray('01a', s)
+    end subroutine
+
+    subroutine test_printresultline
+        use util, only : printresultline
+        implicit none
+
+        character(len=5) :: s = '42'
+
+        call printresultline('01a', s)
+    end subroutine
+
+    ! printioerror(...) is not testable, because it will stop the program
+
     subroutine test_readinputfile_asline_example
         use util, only : readinputfile_asline
         implicit none
