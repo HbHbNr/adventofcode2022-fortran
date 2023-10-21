@@ -1,6 +1,6 @@
 !> Collection of utility functions
 module util
-    use iso_fortran_env, only : int64
+    use iso_fortran_env, only : int32, int64
     implicit none
     private
 
@@ -35,7 +35,7 @@ contains
                 write (*, '(A)', advance='no') ','
             end if
             select type(array1)
-                type is (integer)
+                type is (integer(int32))
                     write(result, '(I20)') array1(i)
                     write (*, '(A)', advance='no') trim(adjustl(result))
                 type is (integer(int64))
@@ -56,7 +56,7 @@ contains
                     write (*, '(A)', advance='no') ','
                 end if
                 select type(array2)
-                    type is (integer)
+                    type is (integer(int32))
                         write(result, '(I20)') array2(i)
                         write (*, '(A)', advance='no') trim(adjustl(result))
                     type is (integer(int64))
