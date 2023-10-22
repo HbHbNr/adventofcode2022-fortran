@@ -1,6 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/1 part a
 module day01a
-    use util, only : printioerror
+    use util, only : readinputfile_asstringarray
     implicit none
     private
 
@@ -11,23 +11,15 @@ contains
     integer function solve(filename)
         implicit none
 
-        character(len=*), intent(in) :: filename
-        integer                      :: io, iostat
-        character(len=512)           :: iomsg
-        character(len=5)             :: line
-        integer                      :: linecalories, sumcalories = 0, maxcalories = 0
+        character(len=*), intent(in)  :: filename
+        character(len=:), allocatable :: lines(:)
+        character(len=5)              :: line
+        integer                       :: i, linecalories, sumcalories = 0, maxcalories = 0
 
-        open(newunit=io, file=filename, status='old', action='read', iostat=iostat, iomsg=iomsg)
-        if (iostat /= 0) then
-            call printioerror(iostat, iomsg, .true.)
-        end if
-        do
-            read(io, '(A)', iostat=iostat, iomsg=iomsg) line
-            if (iostat /= 0) then
-                ! end of file or I/O error -> exit loop
-                call printioerror(iostat, iomsg)
-                exit
-            end if
+        lines = readinputfile_asstringarray(filename, 5)
+
+        do i = 1, size(lines)
+            line = lines(i)
             ! debug: output line from file and its length
             ! print '(A, A2, I1)', trim(line), ': ', len_trim(line)
             if (len_trim(line) == 0) then
@@ -40,7 +32,7 @@ contains
                 maxcalories = max(maxcalories, sumcalories)
             end if
         end do
-        close(io)
+
         ! return maximum calories
         solve = maxcalories
     end function
