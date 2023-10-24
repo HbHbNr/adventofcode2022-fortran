@@ -13,6 +13,7 @@ program tests
 
   call init_fruit
 
+  call run_test_case(test_nodepriorityqueue,"test_nodepriorityqueue")
   call run_test_case(test_solve_example,"test_solve_example")
   call run_test_case(test_solve_input,"test_solve_input")
 
