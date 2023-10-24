@@ -134,15 +134,18 @@ contains
 
         character(len=*), intent(in)  :: filename
         character(len=:), allocatable :: matrix(:)
-        logical(kind=1), allocatable  :: closelist(:,:)
+        type(NodePriorityQueue)       :: openlist
+        type(Node), allocatable       :: closelist(:,:)
         type(Position)                :: startpos, endpos
 
         call initvoidnode()
 
         ! read matrix from file as an array of strings
         matrix = readinputfile_asstringarray(filename, 200)
-        ! create 2-dimensional array of logicals of the same size
-        allocate(closelist(size(matrix),len(matrix(1))))
+        ! create 2-dimensional array of nodes as closelist, with the same dimensions as the matrix
+        allocate(closelist(size(matrix,1),len(matrix(1))), source=voidnode)
+        ! create NodePriorityQueue as openlist, with a size to keep all nodes from the matrix
+        call openlist%init(size(closelist))
 
         call find_startposendpos(matrix, startpos, endpos)
         print *, startpos
