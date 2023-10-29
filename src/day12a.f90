@@ -39,6 +39,8 @@ module day12a
 contains
 
     subroutine nodepriorityqueue_init(this, queuesize)
+        implicit none
+
         class(NodePriorityQueue), intent(inout) :: this
         integer, intent(in)                     :: queuesize
 
@@ -51,6 +53,8 @@ contains
     end subroutine
 
     subroutine nodepriorityqueue_add_or_update(this, addnode)
+        implicit none
+
         class(NodePriorityQueue), intent(inout) :: this
         type(Node)                              :: addnode
         integer                                 :: found, bestplace, i
@@ -100,6 +104,8 @@ contains
     end subroutine
 
     function nodepriorityqueue_pop(this) result(popnode)
+        implicit none
+
         class(NodePriorityQueue), intent(inout) :: this
         type(Node)                              :: popnode
 
@@ -115,6 +121,8 @@ contains
     end function
 
     function nodepriorityqueue_empty(this) result(empty)
+        implicit none
+
         class(NodePriorityQueue), intent(in) :: this
         logical                              :: empty
 
@@ -122,13 +130,18 @@ contains
     end function
 
     function position_equals(this, other) result(equals)
+        implicit none
+
         class(Position), intent(in) :: this, other
         logical                     :: equals
 
         equals = this%row == other%row .and. this%col == other%col
+        ! print *, this%row, other%row, this%col, other%col, equals
     end function
 
     subroutine node_setvoid(this)
+        implicit none
+
         class(Node), intent(inout) :: this
 
         this%ownpos%row = -1
@@ -140,6 +153,8 @@ contains
     end subroutine
 
     subroutine initvoidnode()
+        implicit none
+
         if (.not. allocated(voidnode)) allocate(voidnode)
         call voidnode%setvoid()
     end subroutine
@@ -180,11 +195,64 @@ contains
         ! ??? if (diffrow /= 0 .and. diffcol /= 0) d = d - 1
     end function
 
-    subroutine expand_currentnode(currentnode, openlist, closelist, endpos)
+    function reachable(frompos, topos, matrix) result(isreachable)
+        implicit none
+
+        type(Position), intent(in)   :: frompos, topos
+        character(len=*), intent(in) :: matrix(:)
+        logical                      :: isreachable
+        character(len=1)             :: fromchar, tochar
+
+        isreachable = .false.
+        fromchar = matrix(frompos%row)(frompos%col:frompos%col)
+        tochar = matrix(topos%row)(topos%col:topos%col)
+        if (fromchar == 'S') fromchar = 'a'
+        if (tochar == 'E') tochar = 'z'
+        ! at max one step up is reachable
+        if (ichar(fromchar) >= (ichar(tochar) - 1)) then
+            isreachable = .true.
+        ! else
+        !     print *, ichar(fromchar), ichar(tochar)
+        end if
+        ! if (.not. isreachable) print *, topos, ' is not reachable'
+    end function
+
+    subroutine print_map(currentnode, openlist, closelist, endpos, matrix)
+        implicit none
+
         type(Node), intent(in)                 :: currentnode
         type(NodePriorityQueue), intent(inout) :: openlist
         type(Node), intent(in)                 :: closelist(:,:)
         type(Position), intent(in)             :: endpos
+        character(len=*), intent(in)           :: matrix(:)
+        character(len=1)                       :: mapchar
+        integer                                :: row, col
+
+        do row = 1, size(closelist, 1)
+            do col = 1, size(closelist, 2)
+                ! mapchar = matrix(row)(col:col)
+                if (currentnode%ownpos%row == row .and. currentnode%ownpos%col == col) then
+                    mapchar = '+'
+                else if (closelist(row,col)%fValue /= -1) then
+                    mapchar = '*'
+                else
+                    ! mapchar = '.'
+                    mapchar = matrix(row)(col:col)
+                end if
+                write (*, '(A1)', advance='no') mapchar
+            end do
+            print *
+        end do
+    end subroutine
+
+    subroutine expand_currentnode(currentnode, openlist, closelist, endpos, matrix)
+        implicit none
+
+        type(Node), intent(in)                 :: currentnode
+        type(NodePriorityQueue), intent(inout) :: openlist
+        type(Node), intent(in)                 :: closelist(:,:)
+        type(Position), intent(in)             :: endpos
+        character(len=*), intent(in)           :: matrix(:)
         integer, parameter                     :: offsets(8) = [0, 1, 1, 0, 0, -1, -1, 0]
         type(Position)                         :: newpos
         integer                                :: i
@@ -200,13 +268,15 @@ contains
                 newpos%col >= 1 .and. newpos%col <= size(closelist,2)) then
                 ! check if new position is not in closelist
                 if (closelist(newpos%row,newpos%col)%fValue == -1) then
-                    newnode%ownpos = newpos
-                    newnode%parentpos = currentnode%ownpos
-                    newnode%gValue = currentnode%gValue + 1
-                    newnode%fValue = newnode%gValue + distance(newpos, endpos)
-                    print *, 'new node', newnode
+                    if (reachable(currentnode%ownpos, newpos, matrix)) then
+                        newnode%ownpos = newpos
+                        newnode%parentpos = currentnode%ownpos
+                        newnode%gValue = currentnode%gValue + 1
+                        newnode%fValue = newnode%gValue + distance(newpos, endpos)
+                        print *, 'new node', newnode
 
-                    call openlist%add_or_update(newnode)
+                        call openlist%add_or_update(newnode)
+                    end if
                 end if
             end if
         end do
@@ -244,20 +314,26 @@ contains
         do while (.not. openlist%empty())
             currentnode = openlist%pop()
             print *, 'current pos:', currentnode%ownpos%row, currentnode%ownpos%col
+            ! call print_map(currentnode, openlist, closelist, endpos, matrix)
 
             ! check if current node is at the end position
             if (currentnode%ownpos%equals(endpos)) then
                 ! end node reached, current node has the length of the path
+                print *, 'end node reached!'
                 solve = currentnode%gValue
                 exit
             else
                 ! save current node to closelist
                 closelist(currentnode%ownpos%row,currentnode%ownpos%col) = currentnode
                 ! expand current node
-                call expand_currentnode(currentnode, openlist, closelist, endpos)
+                call expand_currentnode(currentnode, openlist, closelist, endpos, matrix)
             end if
         end do
-        print *, 'no path found'
+        if (solve == -1) then
+            print *, 'no path found'
+        else
+            print *, 'path found, steps:', solve
+        end if
         solve = -1
     end function
 
