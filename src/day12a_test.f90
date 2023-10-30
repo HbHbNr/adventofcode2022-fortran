@@ -28,7 +28,7 @@ contains
         integer :: result
 
         result = solve('../inputfiles/day12_example.txt')
-        call assert_equals (-1, result)
+        call assert_equals (31, result)
     end subroutine
 
     subroutine test_solve_input
@@ -38,7 +38,7 @@ contains
         integer :: result
 
         result = solve('../inputfiles/day12_input.txt')
-        call assert_equals (-1, result)
+        call assert_equals (534, result)
     end subroutine
 
 end module day12a_test

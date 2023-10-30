@@ -307,7 +307,9 @@ contains
         print *, endpos
         print *, distance(startpos, endpos)
         startnode%ownpos = startpos
+        startnode%parentpos = startpos
         startnode%fValue = 0
+        startnode%gValue = 0
 
         solve = -1
         call openlist%add_or_update(startnode)
@@ -334,7 +336,7 @@ contains
         else
             print *, 'path found, steps:', solve
         end if
-        solve = -1
+        ! solve = -1
     end function
 
 end module day12a
