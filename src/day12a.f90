@@ -34,7 +34,7 @@ module day12a
 
     class(Node), allocatable :: voidnode
 
-    public :: solve
+    public :: solve, initvoidnode
 
 contains
 
@@ -258,7 +258,7 @@ contains
         integer                                :: i
         type(Node)                             :: newnode
 
-        print *, 'expanding ', currentnode
+        ! print *, 'expanding ', currentnode
         do i = 1, 7, 2
             newpos = currentnode%ownpos
             newpos%row = newpos%row + offsets(i)
@@ -273,7 +273,7 @@ contains
                         newnode%parentpos = currentnode%ownpos
                         newnode%gValue = currentnode%gValue + 1
                         newnode%fValue = newnode%gValue + distance(newpos, endpos)
-                        print *, 'new node', newnode
+                        ! print *, 'new node', newnode
 
                         call openlist%add_or_update(newnode)
                     end if
@@ -282,47 +282,40 @@ contains
         end do
     end subroutine
 
-    integer function solve(filename)
+    function find_shortestpath(matrix, startpos, endpos) result(shortestpath)
         implicit none
 
-        character(len=*), intent(in)  :: filename
-        character(len=:), allocatable :: matrix(:)
-        type(NodePriorityQueue)       :: openlist
-        type(Node), allocatable       :: closelist(:,:)
-        type(Node)                    :: startnode, currentnode
-        type(Position)                :: startpos, endpos
+        character(len=*), intent(in) :: matrix(:)
+        type(Position), intent(in)   :: startpos, endpos
+        integer                      :: shortestpath
+        type(NodePriorityQueue)      :: openlist
+        type(Node), allocatable      :: closelist(:,:)
+        type(Node)                   :: startnode, currentnode
 
-        call initvoidnode()
-
-        ! read matrix from file as an array of strings
-        matrix = readinputfile_asstringarray(filename, 200)
         ! create 2-dimensional array of nodes as closelist, with the same dimensions as the matrix
         allocate(closelist(size(matrix,1),len(matrix(1))), source=voidnode)
         ! create NodePriorityQueue as openlist, with a size to keep all nodes from the matrix
         call openlist%init(size(closelist))
 
-        ! find start and end position of the matrix
-        call find_startposendpos(matrix, startpos, endpos)
-        print *, startpos
-        print *, endpos
-        print *, distance(startpos, endpos)
+        ! print *, startpos
+        ! print *, endpos
+        ! print *, distance(startpos, endpos)
         startnode%ownpos = startpos
         startnode%parentpos = startpos
         startnode%fValue = 0
         startnode%gValue = 0
 
-        solve = -1
+        shortestpath = -1
         call openlist%add_or_update(startnode)
         do while (.not. openlist%empty())
             currentnode = openlist%pop()
-            print *, 'current pos:', currentnode%ownpos%row, currentnode%ownpos%col
+            ! print *, 'current pos:', currentnode%ownpos%row, currentnode%ownpos%col
             ! call print_map(currentnode, openlist, closelist, endpos, matrix)
 
             ! check if current node is at the end position
             if (currentnode%ownpos%equals(endpos)) then
                 ! end node reached, current node has the length of the path
-                print *, 'end node reached!'
-                solve = currentnode%gValue
+                shortestpath = currentnode%gValue
                 exit
             else
                 ! save current node to closelist
@@ -331,12 +324,32 @@ contains
                 call expand_currentnode(currentnode, openlist, closelist, endpos, matrix)
             end if
         end do
-        if (solve == -1) then
-            print *, 'no path found'
-        else
-            print *, 'path found, steps:', solve
-        end if
-        ! solve = -1
+        ! if (shortestpath == -1) then
+        !     print *, 'no path found'
+        ! else
+        !     print *, 'path found, steps:', shortestpath
+        ! end if
+    end function
+
+    integer function solve(filename)
+        implicit none
+
+        character(len=*), intent(in)  :: filename
+        character(len=:), allocatable :: matrix(:)
+        type(Position)                :: startpos, endpos
+        integer                       :: shortestpath
+
+        call initvoidnode()
+
+        ! read matrix from file as an array of strings
+        matrix = readinputfile_asstringarray(filename, 200)
+
+        ! find start and end position of the matrix
+        call find_startposendpos(matrix, startpos, endpos)
+
+        shortestpath = find_shortestpath(matrix, startpos, endpos)
+
+        solve = shortestpath
     end function
 
 end module day12a

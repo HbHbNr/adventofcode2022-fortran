@@ -7,18 +7,19 @@ module day12a_test
 contains
 
     subroutine test_nodepriorityqueue
-        use day12a, only : Position, Node, NodePriorityQueue
+        use day12a, only : Position, Node, NodePriorityQueue, initvoidnode
         implicit none
 
         type(NodePriorityQueue) :: queue
-        type(Node) :: thenode
+        type(Node)              :: thenode
 
+        call initvoidnode()
         call thenode%setvoid()
 
-        ! call queue%init(10)
-        ! call assert_equals (queue%empty(), .true.)
-        ! call queue%add(thenode)
-        ! call assert_equals (queue%empty(), .false.)
+        call queue%init(10)
+        call assert_equals (queue%empty(), .true.)
+        call queue%add_or_update(thenode)
+        call assert_equals (queue%empty(), .false.)
     end subroutine
 
     subroutine test_solve_example
