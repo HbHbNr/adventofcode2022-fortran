@@ -291,44 +291,36 @@ contains
         type(NodePriorityQueue)      :: openlist
         type(Node), allocatable      :: closelist(:,:)
         type(Node)                   :: startnode, currentnode
+        character(len=1)             :: currentchar
 
         ! create 2-dimensional array of nodes as closelist, with the same dimensions as the matrix
         allocate(closelist(size(matrix,1),len(matrix(1))), source=voidnode)
         ! create NodePriorityQueue as openlist, with a size to keep all nodes from the matrix
         call openlist%init(size(closelist))
 
-        ! print *, startpos
-        ! print *, endpos
-        ! print *, distance(startpos, endpos)
         startnode%ownpos = startpos
         startnode%parentpos = startpos
         startnode%fValue = 0
         startnode%gValue = 0
 
-        shortestpath = -1
+        shortestpath = 2 ** 30
         call openlist%add_or_update(startnode)
         do while (.not. openlist%empty())
             currentnode = openlist%pop()
             ! print *, 'current pos:', currentnode%ownpos%row, currentnode%ownpos%col
             ! call print_map(currentnode, openlist, closelist, endpos, matrix)
 
-            ! check if current node is at the end position
-            if (currentnode%ownpos%equals(endpos)) then
-                ! end node reached, current node has the length of the path
-                shortestpath = currentnode%gValue
-                exit
-            else
-                ! save current node to closelist
-                closelist(currentnode%ownpos%row,currentnode%ownpos%col) = currentnode
-                ! expand current node
-                call expand_currentnode(currentnode, openlist, closelist, endpos, matrix)
+            ! check if current node is an 'a'
+            currentchar = matrix(currentnode%ownpos%row)(currentnode%ownpos%col:currentnode%ownpos%col)
+            if (currentchar == 'a' .or. currentchar == 'S') then
+                ! one of the end nodes reached, compare the length of the path
+                shortestpath = min(shortestpath, currentnode%gValue)
             end if
+            ! save current node to closelist
+            closelist(currentnode%ownpos%row,currentnode%ownpos%col) = currentnode
+            ! expand current node
+            call expand_currentnode(currentnode, openlist, closelist, endpos, matrix)
         end do
-        ! if (shortestpath == -1) then
-        !     print *, 'no path found'
-        ! else
-        !     print *, 'path found, steps:', shortestpath
-        ! end if
     end function
 
     integer function solve(filename)
@@ -347,6 +339,7 @@ contains
         ! find start and end position of the matrix
         call find_startposendpos(matrix, startpos, endpos)
 
+        ! switch startpos and endpos
         shortestpath = find_shortestpath(matrix, endpos, startpos)
 
         solve = shortestpath

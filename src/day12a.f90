@@ -297,9 +297,6 @@ contains
         ! create NodePriorityQueue as openlist, with a size to keep all nodes from the matrix
         call openlist%init(size(closelist))
 
-        ! print *, startpos
-        ! print *, endpos
-        ! print *, distance(startpos, endpos)
         startnode%ownpos = startpos
         startnode%parentpos = startpos
         startnode%fValue = 0
@@ -324,11 +321,6 @@ contains
                 call expand_currentnode(currentnode, openlist, closelist, endpos, matrix)
             end if
         end do
-        ! if (shortestpath == -1) then
-        !     print *, 'no path found'
-        ! else
-        !     print *, 'path found, steps:', shortestpath
-        ! end if
     end function
 
     integer function solve(filename)
