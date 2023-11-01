@@ -2,13 +2,13 @@
 [![GitHub Workflow Status](https://github.com/HbHbNr/adventofcode2022-fortran/actions/workflows/codequality.yml/badge.svg)](https://github.com/HbHbNr/adventofcode2022-fortran/actions/workflows/codequality.yml)
 
 # adventofcode2022-fortran
-Solutions for https://adventofcode.com/2022/ in Fortran with unit testing.
+Solutions for https://adventofcode.com/2022/ in pure Fortran with unit testing.
 
 # Solution status
 | **Day**      | **1** | **2** | **3** | **4** | **5** | **6** | **7** | **8** | **9** | **10** | **11** | **12** | **13** |
 |-------------:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:------:|:------:|:------:|:------:|
-| **Part One** | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓      | ✓      |        |        |
-| **Part Two** | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓      | ✓      |        |        |
+| **Part One** | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓      | ✓      | ✓      |        |
+| **Part Two** | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓     | ✓      | ✓      | ✓      |        |
 
 | **Day**      | **14** | **15** | **16** | **17** | **18** | **19** | **20** | **21** | **22** | **23** | **24** | **25** |
 |-------------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
