@@ -50,6 +50,10 @@ $(BIN)/%: $(OBJ)/%.o
 $(OBJ)/%.o: $(SRC)/%.f90
 	$(FC) $(FFLAGS) -c -o $@ $<
 
+# download fruit.f90 from github.com
+$(SRC)/fruit.f90:
+	curl -sS https://raw.githubusercontent.com/mortele/FRUIT/3d7f35351a41be2422e4f83364aa1d1c378bc6d2/src/fruit.f90 > $@
+
 # source code cloning rules
 # - using day01a as a template for day##a
 # - using day##a as a template for day##b
