@@ -1,58 +1,57 @@
 !> Solution for https://adventofcode.com/2021/day/13 part a
 module day13a
     use util, only : readinputfile_asstringarray
+    use class_intringbuffer, only : IntRingBuffer
     implicit none
     private
 
-    public :: solve
+    integer, parameter :: square_bracket_open = ichar('[')
+    integer, parameter :: square_bracket_close = ichar(']')
 
-    type, public :: Token
-        integer          :: int
-        character(len=1) :: char
-    end type Token
+    public :: solve
 
 contains
 
     function extract_tokens(line) result(tokens)
         implicit none
 
-        character(len=*)         :: line
-        type(Token), allocatable :: tokens(:)
-        integer                  :: i, j
-        character(len=1)         :: char
+        character(len=*)    :: line
+        type(IntRingBuffer) :: tokens
+        integer             :: i, int
+        character(len=1)    :: char
 
         print *, line
-        allocate(tokens(len(line)))
+        call tokens%init(len_trim(line) * 3)  ! enough space to surround every number with brackets
         i = 1
-        j = 1
         do while (i <= len_trim(line))
             char = line(i:i)
             if (char == ',') then
                 ! ignore comma
-            else if (char == '[' .or. char == ']') then
-                tokens(j)%int = -1
-                tokens(j)%char = char
-                print *, tokens(j)
-                j = j + 1
+            else if (char == '[') then
+                call tokens%addLast(square_bracket_open)
+                print *, tokens%getLast()
+            else if (char == ']') then
+                call tokens%addLast(square_bracket_close)
+                print *, tokens%getLast()
             else
-                tokens(j)%int = ichar(char) - ichar('1') + 1
-                tokens(j)%char = ' '
+                int = ichar(char) - ichar('1') + 1
                 if (line(i+1:i+1) == '0') then
-                    tokens(j)%int = 10
+                    int = 10
                     i = i + 1
                 end if
-                print *, tokens(j)
-                j = j + 1
+                call tokens%addLast(int)
+                print *, tokens%getLast()
             end if
             i = i + 1
         end do
+        call tokens%print()
     end function
 
     function inrightorder(tokensleft, tokensright) result(ordered)
         implicit none
 
-        type(Token) :: tokensleft(*), tokensright(*)
-        logical     :: ordered
+        type(IntRingBuffer) :: tokensleft, tokensright
+        logical             :: ordered
 
         ordered = .true.
     end function
@@ -62,7 +61,7 @@ contains
 
         character(len=*), intent(in)  :: filename
         character(len=:), allocatable :: lines(:)
-        type(Token), allocatable      :: tokensleft(:), tokensright(:)
+        type(IntRingBuffer)           :: tokensleft, tokensright
         integer                       :: pair, pairs, sumofindizes
 
         lines = readinputfile_asstringarray(filename, 200)
