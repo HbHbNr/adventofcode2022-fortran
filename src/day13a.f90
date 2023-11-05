@@ -140,9 +140,7 @@ contains
             end if
         end do
 
-        ! return maximum calories
         solve = sumofindizes
-        ! solve = -1
     end function
 
 end module day13a
