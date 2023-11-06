@@ -20,7 +20,6 @@ contains
         integer             :: i, int
         character(len=1)    :: char
 
-        ! print *, line
         call tokens%init(len_trim(line) * 3)  ! enough space to surround every number with brackets
         i = 1
         do while (i <= len_trim(line))
@@ -29,10 +28,8 @@ contains
                 ! ignore comma
             else if (char == '[') then
                 call tokens%addLast(square_bracket_open)
-                ! print *, tokens%getLast()
             else if (char == ']') then
                 call tokens%addLast(square_bracket_close)
-                ! print *, tokens%getLast()
             else
                 int = ichar(char) - ichar('1') + 1
                 if (line(i+1:i+1) == '0') then
@@ -40,11 +37,9 @@ contains
                     i = i + 1
                 end if
                 call tokens%addLast(int)
-                ! print *, tokens%getLast()
             end if
             i = i + 1
         end do
-        ! call tokens%print()
     end function
 
     function inrightorder(tokensleft, tokensright) result(ordered)
@@ -97,9 +92,6 @@ contains
                 call tokensright%addFirst(square_bracket_close)
                 call tokensright%addFirst(right)
                 call tokensright%addFirst(square_bracket_open)
-                ! print *, 'only right token is a number'
-                ! call tokensleft%print()
-                ! call tokensright%print()
             else if (right == square_bracket_open .and. left < 11) then
                 ! only left token is a number: make left a list with that one number,
                 ! and re-add tokens
@@ -107,9 +99,6 @@ contains
                 call tokensleft%addFirst(square_bracket_close)
                 call tokensleft%addFirst(left)
                 call tokensleft%addFirst(square_bracket_open)
-                ! print *, 'only left token is a number'
-                ! call tokensleft%print()
-                ! call tokensright%print()
             else
                 print *, 'unknown case:', left, right
                 stop
@@ -134,9 +123,6 @@ contains
             tokensright = extract_tokens(lines(pair * 3 - 1))
             if (inrightorder(tokensleft, tokensright)) then
                 sumofindizes = sumofindizes + pair
-                ! print *, 'pair', pair, ' is ordered'
-            else
-                ! print *, 'pair', pair, ' is not ordered'
             end if
         end do
 
