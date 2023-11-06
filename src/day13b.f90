@@ -171,7 +171,7 @@ contains
         character(len=:), allocatable    :: lines(:)
         type(IntRingBuffer)              :: tokensline, devider2, devider6
         type(IntRingBuffer), allocatable :: tokenslines(:), tokenstmp(:)
-        integer                          :: pair, pairs, i
+        integer                          :: pair, pairs, i, decoderkey
 
         lines = readinputfile_asstringarray(filename, 200)
 
@@ -193,13 +193,23 @@ contains
         ! sort list of lists of tokens
         call merge_sort(tokenslines, 1, size(tokenslines), tokenstmp)
 
+        ! find devider packets
+        decoderkey = 1
         do i = 1, size(tokenslines)
-            call tokenslines(i)%print()
+            tokensline = tokenslines(i)
+            if (tokensline%length() == 5) then
+                if (tokensline%get(3) == 2 .or. tokensline%get(3) == 6) then
+                    if (tokensline%get(2) == square_bracket_open .and. &
+                        tokensline%get(4) == square_bracket_close) then
+                        decoderkey = decoderkey * i
+                    end if
+                end if
+            end if
         end do
 
         ! TODO: search for deviders
 
-        solve = -1
+        solve = decoderkey
     end function
 
 end module day13b
