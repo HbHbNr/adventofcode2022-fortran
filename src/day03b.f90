@@ -91,7 +91,7 @@ contains
             prioritysum = prioritysum + priority
         end do
         close(io)
-        ! return maximum calories
+
         solve = prioritysum
     end function
 

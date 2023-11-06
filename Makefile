@@ -50,6 +50,10 @@ $(BIN)/%: $(OBJ)/%.o
 $(OBJ)/%.o: $(SRC)/%.f90
 	$(FC) $(FFLAGS) -c -o $@ $<
 
+# download fruit.f90 from github.com
+$(SRC)/fruit.f90:
+	curl -sS https://raw.githubusercontent.com/mortele/FRUIT/3d7f35351a41be2422e4f83364aa1d1c378bc6d2/src/fruit.f90 > $@
+
 # source code cloning rules
 # - using day01a as a template for day##a
 # - using day##a as a template for day##b
@@ -289,3 +293,17 @@ $(OBJ)/day12b_test.o: $(OBJ)/day12b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day12b_test_driver.o: $(OBJ)/day12b_test.o $(OBJ)/day12b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day12b: $(OBJ)/day12b_main.o $(OBJ)/day12b.o $(OBJ)/util.o
 $(BIN)/day12b_test_driver: $(OBJ)/day12b_test_driver.o $(OBJ)/day12b_test.o $(OBJ)/day12b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day13a.o: $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
+$(OBJ)/day13a_main.o: $(OBJ)/day13a.o $(OBJ)/util.o
+$(OBJ)/day13a_test.o: $(OBJ)/day13a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day13a_test_driver.o: $(OBJ)/day13a_test.o $(OBJ)/day13a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day13a: $(OBJ)/day13a_main.o $(OBJ)/day13a.o $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
+$(BIN)/day13a_test_driver: $(OBJ)/day13a_test_driver.o $(OBJ)/day13a_test.o $(OBJ)/day13a.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_intringbuffer.o
+
+$(OBJ)/day13b.o: $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
+$(OBJ)/day13b_main.o: $(OBJ)/day13b.o $(OBJ)/util.o
+$(OBJ)/day13b_test.o: $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day13b_test_driver.o: $(OBJ)/day13b_test.o $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day13b: $(OBJ)/day13b_main.o $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
+$(BIN)/day13b_test_driver: $(OBJ)/day13b_test_driver.o $(OBJ)/day13b_test.o $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_intringbuffer.o

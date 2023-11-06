@@ -39,5 +39,8 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 * Fortran: lbound, ubound, array assigment sets bounds to defaults, int32 and int64 from iso_fortran_env, select type, -fdefault-integer-8
 * Techniques: ring buffer, modulo arithmetics
 
-### Day 11
+### Day 12
 * Techniques: A* path search algorithm
+
+### Day 13
+* Techniques: tokenization, merge sort

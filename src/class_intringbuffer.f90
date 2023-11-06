@@ -16,6 +16,7 @@ module class_intringbuffer
         procedure :: addLast     => intringbuffer_addlast
         procedure :: getFirst    => intringbuffer_getfirst
         procedure :: getLast     => intringbuffer_getlast
+        procedure :: get         => intringbuffer_get
         procedure :: removeFirst => intringbuffer_removefirst
         procedure :: removeLast  => intringbuffer_removelast
         procedure :: empty       => intringbuffer_empty
@@ -125,6 +126,32 @@ contains
             value = this%values(index)
         end if
     end function intringbuffer_getLast
+
+    function intringbuffer_get(this, theindex) result(value)
+        implicit none
+
+        class(IntRingBuffer), intent(in) :: this
+        integer, optional, intent(in)    :: theindex
+        integer                          :: value, index
+
+        if (this%valueslength < 1) then
+            write (error_unit, *) 'List error for get(): empty list'
+            stop
+        else if (theindex > this%valueslength) then
+            write (error_unit, *) 'List error for get(): index too large'
+            stop
+        else if (theindex < 1) then
+            write (error_unit, *) 'List error for get(): index too small'
+            stop
+        else
+            index = this%nextwriteindex - this%valueslength + theindex - 1
+            if (index < 1) then
+                ! modulo not usable, because array index is 1-based
+                index = index + size(this%values)
+            end if
+            value = this%values(index)
+        end if
+    end function intringbuffer_get
 
     function intringbuffer_removeFirst(this, defaultvalue) result(value)
         implicit none

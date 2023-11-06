@@ -27,9 +27,6 @@ jobs:
       run: |
         python -m pip install --upgrade FRUITPy pip setuptools
     - uses: actions/checkout@v3
-    - name: Check out fruit.f90
-      run: |
-        curl -sS https://raw.githubusercontent.com/mortele/FRUIT/3d7f35351a41be2422e4f83364aa1d1c378bc6d2/src/fruit.f90 > src/fruit.f90
     - name: Make all tests
       run: |
         make tests
