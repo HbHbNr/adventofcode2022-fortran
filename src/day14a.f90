@@ -52,8 +52,6 @@ contains
         ! mark source of sand and draw rock structures
         call this%put(char_source, source_x, source_y)
         call this%drawwalls(coords)
-
-        ! call this%print()
     end subroutine
 
     subroutine sandmap_put(this, char, x, y, allowoverwrite)
@@ -172,7 +170,6 @@ contains
         c = 0  ! number of single coords saved into linear array
         do i = 1, size(lines)
             line = lines(i)
-            ! print *, line
             count = 0
             do j = 1, len_trim(line)
                 char = line(j:j)
@@ -185,8 +182,6 @@ contains
                     line(j:j) = ' '
                 end select
             end do
-            ! print *, 'count=', count
-            ! print *, line
 
             ! read coords into the correct places of the array
             read (line, *) coords(c + 1:c + count)
@@ -206,18 +201,16 @@ contains
 
         type(SandMap), intent(inout) :: map
         integer                      :: sandunits
-        logical                      :: producing, falling
+        logical                      :: falling
         integer                      :: x, y, nextxs(3), nextx, nexty, i
 
         sandunits = 0
-        producing = .true.
-        producing_loop: do while (producing)
+        producing_loop: do
             sandunits = sandunits + 1
             x = source_x
             y = source_y
             falling = .true.
             do while (falling)
-                ! print *, sandunits, x, y
                 nextxs = [x, x-1, x+1]
                 nexty = y + 1
                 falling = .false.
@@ -255,11 +248,9 @@ contains
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
         call extract_coords(lines, coords)
-        ! print *, coords
 
         call map%init(coords)
         sandunits = simulate_sand(map)
-        ! call map%print()
 
         solve = sandunits
     end function
