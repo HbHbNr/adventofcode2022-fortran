@@ -236,6 +236,7 @@ contains
         integer, intent(in)              :: value
         logical                          :: contains
 
+        contains = .false.
         write (error_unit, *) 'List error for contains(): not implemented'
         stop
     end function intringbuffer_contains

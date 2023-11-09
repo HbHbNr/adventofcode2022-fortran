@@ -4,6 +4,8 @@ module day01b
     implicit none
     private
 
+    integer, parameter :: maxlinelength = 5
+
     public :: top_calories
     public :: solve
 
@@ -40,11 +42,11 @@ contains
 
         character(len=*), intent(in)  :: filename
         character(len=:), allocatable :: lines(:)
-        character(len=5)              :: line
+        character(len=maxlinelength)  :: line
         integer                       :: i, linecalories, sumcalories = 0
         integer                       :: top1 = 0, top2 = 0, top3 = 0
 
-        lines = readinputfile_asstringarray(filename, 5)
+        lines = readinputfile_asstringarray(filename, maxlinelength)
 
         do i = 1, size(lines)
             line = lines(i)

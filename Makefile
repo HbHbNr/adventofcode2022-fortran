@@ -7,7 +7,7 @@ SRC := src
 OBJ := obj
 BIN := bin
 FC := gfortran
-FFLAGS := -J $(OBJ) -Wall -Wextra -fcheck=all -g -std=f2018
+FFLAGS := -J $(OBJ) -Wall -Wextra -Wno-uninitialized -Wno-unused-function -Wno-unused-variable -Wno-unused-dummy-argument -fcheck=all -g -std=f2018
 SOURCES := $(sort $(wildcard $(SRC)/*.f90))
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(sort $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90)))
@@ -307,3 +307,17 @@ $(OBJ)/day13b_test.o: $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day13b_test_driver.o: $(OBJ)/day13b_test.o $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day13b: $(OBJ)/day13b_main.o $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/class_intringbuffer.o
 $(BIN)/day13b_test_driver: $(OBJ)/day13b_test_driver.o $(OBJ)/day13b_test.o $(OBJ)/day13b.o $(OBJ)/util.o $(OBJ)/fruit.o $(OBJ)/class_intringbuffer.o
+
+$(OBJ)/day14a.o: $(OBJ)/util.o
+$(OBJ)/day14a_main.o: $(OBJ)/day14a.o $(OBJ)/util.o
+$(OBJ)/day14a_test.o: $(OBJ)/day14a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day14a_test_driver.o: $(OBJ)/day14a_test.o $(OBJ)/day14a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day14a: $(OBJ)/day14a_main.o $(OBJ)/day14a.o $(OBJ)/util.o
+$(BIN)/day14a_test_driver: $(OBJ)/day14a_test_driver.o $(OBJ)/day14a_test.o $(OBJ)/day14a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day14b.o: $(OBJ)/util.o
+$(OBJ)/day14b_main.o: $(OBJ)/day14b.o $(OBJ)/util.o
+$(OBJ)/day14b_test.o: $(OBJ)/day14b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day14b_test_driver.o: $(OBJ)/day14b_test.o $(OBJ)/day14b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day14b: $(OBJ)/day14b_main.o $(OBJ)/day14b.o $(OBJ)/util.o
+$(BIN)/day14b_test_driver: $(OBJ)/day14b_test_driver.o $(OBJ)/day14b_test.o $(OBJ)/day14b.o $(OBJ)/util.o $(OBJ)/fruit.o
