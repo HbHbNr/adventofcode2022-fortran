@@ -7,7 +7,7 @@ SRC := src
 OBJ := obj
 BIN := bin
 FC := gfortran
-FFLAGS := -J $(OBJ) -Wall -Wextra -fcheck=all -g -std=f2018
+FFLAGS := -J $(OBJ) -Wall -Wextra -Wno-uninitialized -Wno-unused-function -Wno-unused-variable -Wno-unused-dummy-argument -fcheck=all -g -std=f2018
 SOURCES := $(sort $(wildcard $(SRC)/*.f90))
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(sort $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90)))
