@@ -1,11 +1,14 @@
 !> Solution for https://adventofcode.com/2021/day/14 part a
 module day14a
+    use iso_fortran_env, only : error_unit
     use util, only : readinputfile_asstringarray
     implicit none
     private
 
     integer, parameter :: maxlinelength = 150
     integer, parameter :: avgcoordsperline = 10
+    integer, parameter :: source_x = 500, source_y = 0
+    character(len=1), parameter :: char_empty = '.', char_sand = 'o', char_source = '+', char_wall = '#'
 
     type :: SandMap
         private
@@ -15,6 +18,9 @@ module day14a
     contains
         procedure :: init      => sandmap_init
         procedure :: put       => sandmap_put
+        procedure :: get       => sandmap_get
+        procedure :: isfree    => sandmap_isfree
+        procedure :: isvalid   => sandmap_isvalid
         procedure :: drawwalls => sandmap_drawwalls
         procedure :: print     => sandmap_print
     end type SandMap
@@ -40,27 +46,75 @@ contains
         ! allocate map and fill with dots
         linelength = this%maxx-this%minx+1
         allocate(character(len=linelength) :: this%map(this%miny:this%maxy))
-        fillline = repeat('.', linelength)
+        fillline = repeat(char_empty, linelength)
         this%map(:) = fillline
 
         ! mark source of sand and draw rock structures
-        call this%put('+', 500, 0)
+        call this%put(char_source, source_x, source_y)
         call this%drawwalls(coords)
 
-        call this%print()
+        ! call this%print()
     end subroutine
 
-    subroutine sandmap_put(this, char, x, y)
+    subroutine sandmap_put(this, char, x, y, allowoverwrite)
         implicit none
 
         class(SandMap), intent(inout) :: this
         character(len=1), intent(in)  :: char
         integer, intent(in)           :: x, y
+        logical, intent(in), optional :: allowoverwrite
+        integer                       :: xfixed
+        logical                       :: maketest
+        character(len=1)              :: testchar
+
+        xfixed = x - this%minx + 1
+        maketest = .true.
+        if (present(allowoverwrite)) then
+            if (allowoverwrite .eqv. .true.) then
+                maketest = .false.
+            end if
+        end if
+        if (maketest) then
+            testchar = this%map(y)(xfixed:xfixed)
+            if (testchar /= char_empty) then
+                write (error_unit, *) 'SandMap error for put(): coords are not empty (', x, '/', y, ')'
+                stop
+            end if
+        end if
+        this%map(y)(xfixed:xfixed) = char
+    end subroutine
+
+    function sandmap_get(this, x, y) result(char)
+        implicit none
+
+        class(SandMap), intent(inout) :: this
+        integer, intent(in)           :: x, y
+        character(len=1)              :: char
         integer                       :: xfixed
 
         xfixed = x - this%minx + 1
-        this%map(y)(xfixed:xfixed) = char
-    end subroutine
+        char = this%map(y)(xfixed:xfixed)
+    end function
+
+    function sandmap_isfree(this, x, y) result(isfree)
+        implicit none
+
+        class(SandMap), intent(inout) :: this
+        integer, intent(in)           :: x, y
+        logical                       :: isfree
+
+        isfree = this%get(x, y) == char_empty
+    end function
+
+    function sandmap_isvalid(this, x, y) result(isvalid)
+        implicit none
+
+        class(SandMap), intent(inout) :: this
+        integer, intent(in)           :: x, y
+        logical                       :: isvalid
+
+        isvalid = x >= this%minx .and. x <= this%maxx .and. y >= this%miny .and. y <= this%maxy
+    end function
 
     subroutine sandmap_drawwalls(this, coords)
         implicit none
@@ -83,7 +137,7 @@ contains
                     ! not the first coords, so draw a wall
                     do drawy = lasty, y, sign(1, y-lasty)
                         do drawx = lastx, x, sign(1, x-lastx)
-                            call this%put('#', drawx, drawy)
+                            call this%put(char_wall, drawx, drawy, .true.)
                         end do
                     end do
                 end if
@@ -147,6 +201,48 @@ contains
         coords = coords(1:c)
     end subroutine
 
+    function simulate_sand(map) result(sandunits)
+        implicit none
+
+        type(SandMap), intent(inout) :: map
+        integer                      :: sandunits
+        logical                      :: producing, falling
+        integer                      :: x, y, nextxs(3), nextx, nexty, i
+
+        sandunits = 0
+        producing = .true.
+        producing_loop: do while (producing)
+            sandunits = sandunits + 1
+            x = source_x
+            y = source_y
+            falling = .true.
+            do while (falling)
+                ! print *, sandunits, x, y
+                nextxs = [x, x-1, x+1]
+                nexty = y + 1
+                falling = .false.
+                possible_next: do i = 1, 3
+                    ! try three possible next positions
+                    nextx = nextxs(i)
+                    if (.not. map%isvalid(nextx, nexty)) then
+                        ! first sand unit has reached an invalid field
+                        sandunits = sandunits - 1
+                        exit producing_loop
+                    end if
+                    if (map%isfree(nextx, nexty)) then
+                        ! position is free, so move sand unit there, and keep falling
+                        x = nextx
+                        y = nexty
+                        falling = .true.
+                        exit possible_next
+                    end if
+                end do possible_next
+                ! if none of the three possible next positions is free, then "falling is now false"
+            end do
+            call map%put(char_sand, x, y)
+        end do producing_loop
+    end function
+
     integer function solve(filename)
         implicit none
 
@@ -154,6 +250,7 @@ contains
         character(len=:), allocatable :: lines(:)
         integer, allocatable          :: coords(:)
         type(SandMap)                 :: map
+        integer                       :: sandunits
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
@@ -161,8 +258,10 @@ contains
         ! print *, coords
 
         call map%init(coords)
+        sandunits = simulate_sand(map)
+        ! call map%print()
 
-        solve = -1
+        solve = sandunits
     end function
 
 end module day14a
