@@ -6,56 +6,52 @@ module day15a
     private
 
     integer, parameter :: maxlinelength = 80
-    character(len=1), parameter :: char_empty = '.', char_sensor = 'S', char_beacon = 'B', char_proximity = '#'
+    character(len=1), parameter :: char_empty = '.', char_sensor = 'S', char_beacon = 'B', char_coverage = '#'
 
     type :: SBMap
         private
 
         character(len=:), allocatable :: map(:)
-        integer                       :: minx, maxx, miny, maxy
+        integer                       :: minx, maxx, miny, maxy, yline
     contains
-        procedure :: init      => sbmap_init
-        procedure :: put       => sbmap_put
-        procedure :: get       => sbmap_get
-        procedure :: isfree    => sbmap_isfree
-        procedure :: isvalid   => sbmap_isvalid
-        procedure :: drawwalls => sbmap_drawwalls
-        procedure :: print     => sbmap_print
+        procedure :: init         => sbmap_init
+        procedure :: put          => sbmap_put
+        procedure :: get          => sbmap_get
+        procedure :: isfree       => sbmap_isfree
+        procedure :: isvalid      => sbmap_isvalid
+        procedure :: drawcoverage => sbmap_drawcoverage
+        procedure :: print        => sbmap_print
     end type SBMap
 
     public :: solve
 
 contains
 
-    subroutine sbmap_init(this, coords)
+    subroutine sbmap_init(this, coords, yline)
         implicit none
 
-        class(SBMap), intent(inout) :: this
+        class(SBMap), intent(inout)   :: this
         integer, intent(in)           :: coords(:)
+        integer, intent(in)           :: yline
         integer                       :: linelength
         character(len=:), allocatable :: fillline
-        integer                       :: i
 
         ! calculate dimensions of map
-        this%minx = minval(coords(::2))
-        this%maxx = maxval(coords(::2))
-        this%miny = minval(coords(2::2))
-        this%maxy = maxval(coords(2::2))
-        print *, this%minx, this%maxx, this%miny, this%maxy
+        this%minx = minval(coords(::2)) - 10
+        this%maxx = maxval(coords(::2)) + 10
+        this%miny = minval(coords(2::2)) - 10
+        this%maxy = maxval(coords(2::2)) + 10
+        this%yline = yline
+        print *, this%minx, this%maxx, this%miny, this%maxy, this%yline
 
         ! allocate map and fill with dots
         linelength = this%maxx-this%minx+1
-        print *, 'linelength=', linelength
         allocate(character(len=linelength) :: this%map(this%miny:this%maxy))
-        print *, 'linelength=', linelength
         fillline = repeat(char_empty, linelength)
         this%map(:) = fillline
 
         ! mark sensors and beacons
-        do i = 1, size(coords), 4
-            call this%put(char_sensor, coords(i), coords(i+1))
-            call this%put(char_beacon, coords(i+2), coords(i+3))
-        end do
+        call this%drawcoverage(coords)
     end subroutine
 
     subroutine sbmap_put(this, char, x, y, allowoverwrite)
@@ -118,35 +114,31 @@ contains
         isvalid = x >= this%minx .and. x <= this%maxx .and. y >= this%miny .and. y <= this%maxy
     end function
 
-    subroutine sbmap_drawwalls(this, coords)
+    subroutine sbmap_drawcoverage(this, coords)
         implicit none
 
         class(SBMap), intent(inout) :: this
-        integer, intent(in)           :: coords(:)
-        integer                       :: i, x, y, lastx, lasty, drawx, drawy
+        integer, intent(in)         :: coords(:)
+        integer                     :: i, sensorx, sensory, distance, x, y
 
-        lastx = -1
-        lasty = -1
-        do i = 1, size(coords), 2
-            x = coords(i)
-            y = coords(i+1)
-            if (lastx == x .and. lasty == y) then
-                ! end of current structure
-                lastx = -1
-                lasty = -1
-            else
-                if (lastx /= -1) then
-                    ! not the first coords, so draw a wall
-                    do drawy = lasty, y, sign(1, y-lasty)
-                        do drawx = lastx, x, sign(1, x-lastx)
-!                            call this%put(char_wall, drawx, drawy, .true.)
-                        end do
-                    end do
-                end if
-                lastx = x
-                lasty = y
-            end if
+        do i = 1, size(coords), 4
+            sensorx = coords(i)
+            sensory = coords(i+1)
+            call this%put(char_sensor, sensorx, sensory, .true.)
+            call this%put(char_beacon, coords(i+2), coords(i+3), .true.)
+            distance = abs(coords(i+2)-coords(i)) + abs(coords(i+3)-coords(i+1)) - 1
+            print *, distance
+            do y = -distance, distance
+                do x = -(distance-abs(y)), distance-abs(y)
+                    if (this%isfree(sensorx + x, sensory + y)) then
+                        call this%put(char_coverage, sensorx + x, sensory + y, .true.)
+                    end if
+                end do
+            end do
+            ! exit
         end do
+        print *
+        print *, this%map(this%yline)
     end subroutine
 
     subroutine sbmap_print(this)
@@ -156,7 +148,7 @@ contains
         integer                     :: y
 
         do y = lbound(this%map, 1), ubound(this%map, 1)
-            print '(A)', this%map(y)
+            print '(I5, A)', y, this%map(y)
         end do
     end subroutine
 
@@ -189,10 +181,11 @@ contains
         end do
     end subroutine
 
-    integer function solve(filename)
+    integer function solve(filename, yline)
         implicit none
 
         character(len=*), intent(in)  :: filename
+        integer, intent(in)           :: yline
         character(len=:), allocatable :: lines(:)
         integer, allocatable          :: coords(:)
         type(SBMap)                   :: map
@@ -203,7 +196,7 @@ contains
         call extract_coords(lines, coords)
         print *, coords
 
-        ! call map%init(coords)
+        ! call map%init(coords, yline)
         ! call map%print()
         ! ! impossible_positions = find_impossible_positions(map)
         impossible_positions = -1
