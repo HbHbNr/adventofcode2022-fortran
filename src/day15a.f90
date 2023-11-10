@@ -34,29 +34,26 @@ contains
         integer, intent(in)           :: coords(:)
         integer                       :: linelength
         character(len=:), allocatable :: fillline
+        integer                       :: i
 
-        ! ! calculate dimensions of map
-        ! this%miny = 0  ! source of sand
-        ! this%maxy = maxval(coords(2::2))
+        ! calculate dimensions of map
+        this%minx = minval(coords(::2))
+        this%maxx = maxval(coords(::2))
+        this%miny = minval(coords(2::2))
+        this%maxy = maxval(coords(2::2))
+        print *, this%minx, this%maxx, this%miny, this%maxy
 
-        ! ! adjustments for part b (1/2): extend map
-        ! this%maxy = this%maxy + 2
-        ! this%minx = source_x - this%maxy
-        ! this%maxx = source_x + this%maxy
+        ! allocate map and fill with dots
+        linelength = this%maxx-this%minx+1
+        allocate(character(len=linelength) :: this%map(this%miny:this%maxy))
+        fillline = repeat(char_empty, linelength)
+        this%map(:) = fillline
 
-        ! ! allocate map and fill with dots
-        ! linelength = this%maxx-this%minx+1
-        ! allocate(character(len=linelength) :: this%map(this%miny:this%maxy))
-        ! fillline = repeat(char_empty, linelength)
-        ! this%map(:) = fillline
-
-        ! ! adjustments for part b (2/2): fill bottom line with wall
-        ! fillline = repeat(char_wall, linelength)
-        ! this%map(this%maxy) = fillline
-
-        ! ! mark source of sand and draw rock structures
-        ! call this%put(char_source, source_x, source_y)
-        ! call this%drawwalls(coords)
+        ! mark sensors and beacons
+        do i = 1, size(coords), 4
+            call this%put(char_sensor, coords(i), coords(i+1))
+            call this%put(char_beacon, coords(i+2), coords(i+3))
+        end do
     end subroutine
 
     subroutine sbmap_put(this, char, x, y, allowoverwrite)
@@ -79,7 +76,7 @@ contains
         end if
         if (maketest) then
             testchar = this%map(y)(xfixed:xfixed)
-            if (testchar /= char_empty) then
+            if (testchar /= char .and. testchar /= char_empty) then
                 write (error_unit, *) 'SBMap error for put(): coords are not empty (', x, '/', y, ')'
                 stop
             end if
@@ -154,7 +151,7 @@ contains
         implicit none
 
         class(SBMap), intent(inout) :: this
-        integer                       :: y
+        integer                     :: y
 
         do y = lbound(this%map, 1), ubound(this%map, 1)
             print '(A)', this%map(y)
@@ -177,8 +174,10 @@ contains
             line = lines(i)
             do j = 1, len_trim(line)
                 char = line(j:j)
-                if (ichar(char) < ichar0 .or. ichar(char) > ichar9) then
-                    line(j:j) = ' '
+                if (char /= '-') then
+                    if (ichar(char) < ichar0 .or. ichar(char) > ichar9) then
+                        line(j:j) = ' '
+                    end if
                 end if
             end do
 
@@ -200,9 +199,10 @@ contains
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
         call extract_coords(lines, coords)
-        ! print *, coords
+        print *, coords
 
-        ! call map%init(coords)
+        call map%init(coords)
+        call map%print()
         ! impossible_positions = find_impossible_positions(map)
         impossible_positions = -1
 
