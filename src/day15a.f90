@@ -45,7 +45,9 @@ contains
 
         ! allocate map and fill with dots
         linelength = this%maxx-this%minx+1
+        print *, 'linelength=', linelength
         allocate(character(len=linelength) :: this%map(this%miny:this%maxy))
+        print *, 'linelength=', linelength
         fillline = repeat(char_empty, linelength)
         this%map(:) = fillline
 
@@ -201,9 +203,9 @@ contains
         call extract_coords(lines, coords)
         print *, coords
 
-        call map%init(coords)
-        call map%print()
-        ! impossible_positions = find_impossible_positions(map)
+        ! call map%init(coords)
+        ! call map%print()
+        ! ! impossible_positions = find_impossible_positions(map)
         impossible_positions = -1
 
         solve = impossible_positions
