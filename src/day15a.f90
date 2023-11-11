@@ -128,8 +128,8 @@ contains
             call this%put(char_beacon, coords(i+2), coords(i+3), .true.)
             distance = abs(coords(i+2)-coords(i)) + abs(coords(i+3)-coords(i+1)) - 1
             print *, distance
-            do y = -distance, distance
-                do x = -(distance-abs(y)), distance-abs(y)
+            do y = -distance-1, distance+1
+                do x = -(distance-abs(y))-1, distance-abs(y)+1
                     if (this%isfree(sensorx + x, sensory + y)) then
                         call this%put(char_coverage, sensorx + x, sensory + y, .true.)
                     end if
@@ -138,7 +138,7 @@ contains
             ! exit
         end do
         print *
-        print *, this%map(this%yline)
+        ! print '(I2, A, A)', this%yline, ' ', this%map(this%yline)
     end subroutine
 
     subroutine sbmap_print(this)
@@ -148,7 +148,7 @@ contains
         integer                     :: y
 
         do y = lbound(this%map, 1), ubound(this%map, 1)
-            print '(I5, A)', y, this%map(y)
+            print '(I2, A, A)', y, ' ', this%map(y)
         end do
     end subroutine
 
@@ -181,6 +181,21 @@ contains
         end do
     end subroutine
 
+    function find_impossible_positions(map) result(impossible_positions)
+        implicit none
+
+        type(SBMap), intent(inout) :: map
+        integer                    :: impossible_positions
+        integer                    :: x
+
+        impossible_positions = 0
+        do x = map%minx, map%maxx
+            if (map%get(x, map%yline) == char_coverage) then
+                impossible_positions = impossible_positions + 1
+            end if
+        end do
+    end function
+
     integer function solve(filename, yline)
         implicit none
 
@@ -196,10 +211,10 @@ contains
         call extract_coords(lines, coords)
         print *, coords
 
-        ! call map%init(coords, yline)
-        ! call map%print()
-        ! ! impossible_positions = find_impossible_positions(map)
-        impossible_positions = -1
+        call map%init(coords, yline)
+        call map%print()
+        impossible_positions = find_impossible_positions(map)
+        ! impossible_positions = -1
 
         solve = impossible_positions
     end function
