@@ -54,35 +54,19 @@ contains
         call this%drawcoverage(coords)
     end subroutine
 
-    subroutine sbmap_put(this, char, x, y, allowoverwrite)
+    subroutine sbmap_put(this, char, x, y)
         implicit none
 
-        class(SBMap), intent(inout) :: this
-        character(len=1), intent(in)  :: char
-        integer, intent(in)           :: x, y
-        logical, intent(in), optional :: allowoverwrite
-        integer                       :: xfixed
-        logical                       :: maketest
-        character(len=1)              :: testchar
+        class(SBMap), intent(inout)  :: this
+        character(len=1), intent(in) :: char
+        integer, intent(in)          :: x, y
+        integer                      :: xfixed
 
         if (y /= this%yline) then
             ! put only characters onto the interesting line
             return
         end if
         xfixed = x - this%minx + 1
-        maketest = .true.
-        if (present(allowoverwrite)) then
-            if (allowoverwrite .eqv. .true.) then
-                maketest = .false.
-            end if
-        end if
-        if (maketest) then
-            testchar = this%map(y)(xfixed:xfixed)
-            if (testchar /= char .and. testchar /= char_empty) then
-                write (error_unit, *) 'SBMap error for put(): coords are not empty (', x, '/', y, ')'
-                stop
-            end if
-        end if
         this%map(y)(xfixed:xfixed) = char
     end subroutine
 
@@ -135,8 +119,6 @@ contains
             sensory = coords(i+1)
             beaconx = coords(i+2)
             beacony = coords(i+3)
-            call this%put(char_sensor, sensorx, sensory, .true.)
-            call this%put(char_beacon, beaconx, beacony, .true.)
             distance = abs(beaconx-sensorx) + abs(beacony-sensory)
             if (abs(sensory - this%yline) > distance) then
                 ! sensor coverage is too far away from yline, so ignore it completely
@@ -147,12 +129,18 @@ contains
                     cycle
                 end if
                 do x = -(distance-abs(y)), distance-abs(y)
-                    if (this%isfree(sensorx + x, sensory + y)) then
-                        call this%put(char_coverage, sensorx + x, sensory + y, .true.)
-                    end if
+                    call this%put(char_coverage, sensorx + x, sensory + y)
                 end do
             end do
-            ! exit
+        end do
+        ! restore sensors and beacons
+        do i = 1, size(coords), 4
+            sensorx = coords(i)
+            sensory = coords(i+1)
+            beaconx = coords(i+2)
+            beacony = coords(i+3)
+            call this%put(char_sensor, sensorx, sensory)
+            call this%put(char_beacon, beaconx, beacony)
         end do
         ! print *
         ! print '(I2, A, A)', this%yline, ' ', this%map(this%yline)
