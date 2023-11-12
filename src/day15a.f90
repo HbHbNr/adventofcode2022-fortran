@@ -37,16 +37,16 @@ contains
         character(len=:), allocatable :: fillline
 
         ! calculate dimensions of map
-        this%minx = minval(coords(::2)) - 10
-        this%maxx = maxval(coords(::2)) + 10
-        this%miny = minval(coords(2::2)) - 10
-        this%maxy = maxval(coords(2::2)) + 10
+        this%minx = minval(coords(::2)) - 10000000
+        this%maxx = maxval(coords(::2)) + 10000000
+        this%miny = minval(coords(2::2)) - 10000000
+        this%maxy = maxval(coords(2::2)) + 10000000
         this%yline = yline
-        print *, this%minx, this%maxx, this%miny, this%maxy, this%yline
+        ! print *, this%minx, this%maxx, this%miny, this%maxy, this%yline
 
         ! allocate map and fill with dots
         linelength = this%maxx-this%minx+1
-        allocate(character(len=linelength) :: this%map(this%miny:this%maxy))
+        allocate(character(len=linelength) :: this%map(this%yline:this%yline))
         fillline = repeat(char_empty, linelength)
         this%map(:) = fillline
 
@@ -65,6 +65,10 @@ contains
         logical                       :: maketest
         character(len=1)              :: testchar
 
+        if (y /= this%yline) then
+            ! put only characters onto the interesting line
+            return
+        end if
         xfixed = x - this%minx + 1
         maketest = .true.
         if (present(allowoverwrite)) then
@@ -86,9 +90,9 @@ contains
         implicit none
 
         class(SBMap), intent(inout) :: this
-        integer, intent(in)           :: x, y
-        character(len=1)              :: char
-        integer                       :: xfixed
+        integer, intent(in)         :: x, y
+        character(len=1)            :: char
+        integer                     :: xfixed
 
         xfixed = x - this%minx + 1
         char = this%map(y)(xfixed:xfixed)
@@ -98,10 +102,15 @@ contains
         implicit none
 
         class(SBMap), intent(inout) :: this
-        integer, intent(in)           :: x, y
-        logical                       :: isfree
+        integer, intent(in)         :: x, y
+        logical                     :: isfree
 
-        isfree = this%get(x, y) == char_empty
+        if (y /= this%yline) then
+            ! every non-interesting line is free
+            isfree = .true.
+        else
+            isfree = this%get(x, y) == char_empty
+        end if
     end function
 
     function sbmap_isvalid(this, x, y) result(isvalid)
@@ -119,17 +128,25 @@ contains
 
         class(SBMap), intent(inout) :: this
         integer, intent(in)         :: coords(:)
-        integer                     :: i, sensorx, sensory, distance, x, y
+        integer                     :: i, sensorx, sensory, beaconx, beacony, distance, x, y
 
         do i = 1, size(coords), 4
             sensorx = coords(i)
             sensory = coords(i+1)
+            beaconx = coords(i+2)
+            beacony = coords(i+3)
             call this%put(char_sensor, sensorx, sensory, .true.)
-            call this%put(char_beacon, coords(i+2), coords(i+3), .true.)
-            distance = abs(coords(i+2)-coords(i)) + abs(coords(i+3)-coords(i+1)) - 1
-            print *, distance
-            do y = -distance-1, distance+1
-                do x = -(distance-abs(y))-1, distance-abs(y)+1
+            call this%put(char_beacon, beaconx, beacony, .true.)
+            distance = abs(beaconx-sensorx) + abs(beacony-sensory)
+            if (abs(sensory - this%yline) > distance) then
+                ! sensor coverage is too far away from yline, so ignore it completely
+                cycle
+            end if
+            do y = -distance, distance
+                if (sensory + y /= this%yline) then
+                    cycle
+                end if
+                do x = -(distance-abs(y)), distance-abs(y)
                     if (this%isfree(sensorx + x, sensory + y)) then
                         call this%put(char_coverage, sensorx + x, sensory + y, .true.)
                     end if
@@ -137,7 +154,7 @@ contains
             end do
             ! exit
         end do
-        print *
+        ! print *
         ! print '(I2, A, A)', this%yline, ' ', this%map(this%yline)
     end subroutine
 
@@ -209,12 +226,11 @@ contains
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
         call extract_coords(lines, coords)
-        print *, coords
+        ! print *, coords
 
         call map%init(coords, yline)
-        call map%print()
+        ! call map%print()
         impossible_positions = find_impossible_positions(map)
-        ! impossible_positions = -1
 
         solve = impossible_positions
     end function
