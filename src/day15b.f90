@@ -28,17 +28,17 @@ module day15b
 
 contains
 
-    subroutine sbmap_init(this, maxx, yline)
+    subroutine sbmap_init(this, maxcoord)
         implicit none
 
         class(SBMap), intent(inout)   :: this
-        integer, intent(in)           :: maxx, yline
+        integer, intent(in)           :: maxcoord
 
         ! calculate dimensions of map
         this%minx = 0
-        this%maxx = maxx
-        this%miny = yline
-        this%maxy = yline
+        this%maxx = maxcoord
+        this%miny = 0
+        this%maxy = maxcoord
         ! print *, this%minx, this%maxx, this%miny, this%maxy
     end subroutine
 
@@ -176,7 +176,7 @@ contains
                 end if
             end do
 
-            ! read coords into the correct places of the array
+            ! read coords of sensor and beacon into the correct places of the array
             read (line, *) coords(c + 1:c + 4)
 
             ! add distance between sensor and beacon as 5th coordinate
@@ -186,30 +186,71 @@ contains
         end do
     end subroutine
 
-    ! function find_tuning_frequency(map) result(tuning_frequency)
-    !     implicit none
+    function find_tuning_frequency(coords, maxcoord) result(tuning_frequency)
+        implicit none
 
-    !     type(SBMap), intent(inout) :: map
-    !     integer                    :: tuning_frequency
-    !     integer                    :: x, y, xfixed, linelength
+        integer, intent(in) :: coords(:)
+        integer, intent(in) :: maxcoord
+        ! type(SBMap), intent(inout) :: map
+        integer             :: totalcoords
+        integer             :: tuning_frequency
+        integer             :: sensor1, sensor1x, sensor1y, distance1
+        integer             :: sensor2, sensor2x, sensor2y, distance2
+        integer, parameter  :: minx = 0, miny = 0
+        integer             :: maxx, maxy
+        integer             :: xs(2), xsi, x, y, inspect1x, inspect1y, inspectdistance
 
-    !     ! linelength = len(map%map(map%miny))
-    !     ! yloop: do y = map%miny, map%maxy
-    !     !     do x = 1, linelength
-    !     !         if (map%map(y)(x:x) == char_empty) then
-    !     !             exit yloop
-    !     !         end if
-    !     !     end do
-    !     ! end do yloop
-    !     x = scan(map%map, char_empty)
-    !     ! print *, x
-    !     if (x == 0) then
-    !         tuning_frequency = 0
-    !     else
-    !         xfixed = map%minx + x - 1
-    !         tuning_frequency = xfixed * 4000000 + map%yline
-    !     end if
-    ! end function
+        maxx = maxcoord
+        maxy = maxcoord
+        totalcoords = size(coords)
+        sensor1loop: do sensor1 = 1, totalcoords - 5, 5
+            sensor1x = coords(sensor1)
+            sensor1y = coords(sensor1 + 1)
+            distance1 = coords(sensor1 + 4)
+            ! one y step further than distance, because the missing beacon is undetected
+            yloop: do y = -distance1 - 1, distance1 + 1
+                inspect1y = sensor1y + y
+                if (inspect1y < miny) then
+                    ! whole line is out of valid y range
+                    cycle yloop
+                else if (inspect1y > maxy) then
+                    ! whole line is out of valid y range
+                    cycle yloop
+                end if
+                ! also one x step further
+                xs = [-(distance1-abs(y))-1, distance1-abs(y)+1]
+                xloop: do xsi = 1, 2
+                    x = xs(xsi)
+                    inspect1x = sensor1x + x
+                    if (inspect1x < minx) then
+                        ! this position is out of valid x range
+                        cycle xloop
+                    else if (inspect1x > maxx) then
+                        ! this position is out of valid x range
+                        cycle xloop
+                    end if
+                    sensor2loop: do sensor2 = 1, totalcoords, 5
+                        if (sensor1 == sensor2) then
+                            ! don't compare sensor with itself
+                            cycle sensor2loop
+                        end if
+                        sensor2x = coords(sensor2)
+                        sensor2y = coords(sensor2 + 1)
+                        distance2 = coords(sensor2 + 4)
+                        inspectdistance = abs(inspect1x-sensor2x) + abs(inspect1y-sensor2y)
+                        if (inspectdistance <= distance2) then
+                            ! inspected position is in reach of sensor 2, so continue with next position to check
+                            cycle xloop
+                        end if
+                    end do sensor2loop
+                    ! inspected position is not reachable!
+                    print *, 'not reachable:', inspect1x, inspect1y
+                    tuning_frequency = inspect1x * 4000000 + inspect1y
+                    return
+                end do xloop
+            end do yloop
+        end do sensor1loop
+    end function
 
     integer function solve(filename, maxcoord)
         implicit none
@@ -225,22 +266,10 @@ contains
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
         call extract_coords(lines, coords)
-        print *, coords
+        ! print *, coords
 
-        ! call map%init(maxcoord, yline)
-        ! do yline = 0, maxcoord
-        !     print *, yline
-        !     map%miny = yline
-        !     map%maxy = yline
-        !     map%yline = yline
-        !     ! mark sensors and beacons
-        !     call map%drawcoverage(coords)
-        !     ! call map%print()
-        !     tuning_frequency = find_tuning_frequency(map)
-        !     if (tuning_frequency /= 0) then
-        !         exit
-        !     end if
-        ! end do
+        ! call map%init(maxcoord)
+        ! tuning_frequency = find_tuning_frequency(coords, maxcoord)
         tuning_frequency = -1
 
         solve = tuning_frequency
