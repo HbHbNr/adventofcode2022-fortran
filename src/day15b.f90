@@ -1,6 +1,6 @@
 !> Solution for https://adventofcode.com/2021/day/15 part b
 module day15b
-    use iso_fortran_env, only : error_unit
+    use iso_fortran_env, only : error_unit, int64
     use util, only : readinputfile_asstringarray
     implicit none
     private
@@ -191,9 +191,8 @@ contains
 
         integer, intent(in) :: coords(:)
         integer, intent(in) :: maxcoord
-        ! type(SBMap), intent(inout) :: map
         integer             :: totalcoords
-        integer             :: tuning_frequency
+        integer(int64)      :: tuning_frequency
         integer             :: sensor1, sensor1x, sensor1y, distance1
         integer             :: sensor2, sensor2x, sensor2y, distance2
         integer, parameter  :: minx = 0, miny = 0
@@ -243,25 +242,22 @@ contains
                             cycle xloop
                         end if
                     end do sensor2loop
-                    ! inspected position is not reachable!
-                    print *, 'not reachable:', inspect1x, inspect1y
-                    tuning_frequency = inspect1x * 4000000 + inspect1y
+                    ! inspected position is not reachable, so this is the result!
+                    tuning_frequency = int(inspect1x, int64) * 4000000 + inspect1y
                     return
                 end do xloop
             end do yloop
         end do sensor1loop
     end function
 
-    integer function solve(filename, maxcoord)
+    integer(int64) function solve(filename, maxcoord)
         implicit none
 
         character(len=*), intent(in)  :: filename
         integer, intent(in)           :: maxcoord
         character(len=:), allocatable :: lines(:)
         integer, allocatable          :: coords(:)
-        type(SBMap)                   :: map
-        integer                       :: yline
-        integer                       :: tuning_frequency
+        integer(int64)                :: tuning_frequency
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
@@ -269,8 +265,8 @@ contains
         ! print *, coords
 
         ! call map%init(maxcoord)
-        ! tuning_frequency = find_tuning_frequency(coords, maxcoord)
-        tuning_frequency = -1
+        tuning_frequency = find_tuning_frequency(coords, maxcoord)
+        ! tuning_frequency = -1
 
         solve = tuning_frequency
     end function
