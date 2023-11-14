@@ -25,7 +25,10 @@ runbenchmark: $(BINARIES)
 tests: $(TESTS)
 
 runtests: $(TESTS)
-	cd $(BIN) && for TEST in $(TESTS); do ../$${TEST}; done
+	cd $(BIN) && for TEST in $(TESTS); do \
+	    echo "******************** $${TEST} ********************"; \
+		../$${TEST}; \
+	done
 
 fruitpytests: $(FRUITPYTESTS)
 	@for FRUITPYTEST in $(FRUITPYTESTS); do \
