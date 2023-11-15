@@ -6,152 +6,10 @@ module day15b
     private
 
     integer, parameter :: maxlinelength = 80
-    character(len=1), parameter :: char_empty = '.', char_sensor = 'S', char_beacon = 'B', char_coverage = '#'
-
-    type :: SBMap
-        private
-
-        ! character(len=:), allocatable :: map
-        integer                       :: minx, maxx, miny, maxy
-        ! character(len=:), allocatable :: fillline
-    contains
-        procedure :: init         => sbmap_init
-        ! procedure :: put          => sbmap_put
-        ! procedure :: get          => sbmap_get
-        ! procedure :: isfree       => sbmap_isfree
-        procedure :: isvalid      => sbmap_isvalid
-        ! procedure :: drawcoverage => sbmap_drawcoverage
-        ! procedure :: print        => sbmap_print
-    end type SBMap
 
     public :: solve
 
 contains
-
-    subroutine sbmap_init(this, maxcoord)
-        implicit none
-
-        class(SBMap), intent(inout)   :: this
-        integer, intent(in)           :: maxcoord
-
-        ! calculate dimensions of map
-        this%minx = 0
-        this%maxx = maxcoord
-        this%miny = 0
-        this%maxy = maxcoord
-        ! print *, this%minx, this%maxx, this%miny, this%maxy
-    end subroutine
-
-    ! subroutine sbmap_put(this, char, x, y)
-    !     implicit none
-
-    !     class(SBMap), intent(inout)  :: this
-    !     character(len=1), intent(in) :: char
-    !     integer, intent(in)          :: x, y
-    !     integer                      :: xfixed
-
-    !     xfixed = x - this%minx + 1
-    !     this%map(xfixed:xfixed) = char
-    ! end subroutine
-
-    ! function sbmap_get(this, x, y) result(char)
-    !     implicit none
-
-    !     class(SBMap), intent(inout) :: this
-    !     integer, intent(in)         :: x, y
-    !     character(len=1)            :: char
-    !     integer                     :: xfixed
-
-    !     xfixed = x - this%minx + 1
-    !     char = this%map(xfixed:xfixed)
-    ! end function
-
-    ! function sbmap_isfree(this, x, y) result(isfree)
-    !     implicit none
-
-    !     class(SBMap), intent(inout) :: this
-    !     integer, intent(in)         :: x, y
-    !     logical                     :: isfree
-
-    !     if (y /= this%yline) then
-    !         ! every non-interesting line is free
-    !         isfree = .true.
-    !     else
-    !         isfree = this%get(x, y) == char_empty
-    !     end if
-    ! end function
-
-    function sbmap_isvalid(this, x, y) result(isvalid)
-        implicit none
-
-        class(SBMap), intent(inout) :: this
-        integer, intent(in)           :: x, y
-        logical                       :: isvalid
-
-        isvalid = x >= this%minx .and. x <= this%maxx .and. y >= this%miny .and. y <= this%maxy
-    end function
-
-    ! subroutine sbmap_drawcoverage(this, coords)
-    !     implicit none
-
-    !     class(SBMap), intent(inout) :: this
-    !     integer, intent(in)         :: coords(:)
-    !     integer                     :: i, sensorx, sensory, beaconx, beacony, distance, x, y
-
-    !     this%map(:) = this%fillline
-    !     do i = 1, size(coords), 4
-    !         sensorx = coords(i)
-    !         sensory = coords(i+1)
-    !         beaconx = coords(i+2)
-    !         beacony = coords(i+3)
-    !         distance = abs(beaconx-sensorx) + abs(beacony-sensory)
-    !         if (sensory + distance < this%miny .or. sensory - distance > this%maxy) then
-    !             ! whole coverage is out of valid y range
-    !             cycle
-    !         end if
-    !         if (sensorx + distance < this%minx .or. sensorx - distance > this%maxx) then
-    !             ! whole coverage is out of valid x range
-    !             cycle
-    !         end if
-    !         do y = -distance, distance
-    !             if (sensory + y < this%miny .or. sensory + y > this%maxy) then
-    !                 ! whole line is out of valid y range
-    !                 cycle
-    !             end if
-    !             do x = -(distance-abs(y)), distance-abs(y)
-    !                 if (sensorx + x < this%minx .or. sensorx + x > this%maxx) then
-    !                     ! this position is out of valid x range
-    !                     cycle
-    !                 end if
-    !                 call this%put(char_coverage, sensorx + x, sensory + y)
-    !             end do
-    !         end do
-    !     end do
-    !     ! restore sensors and beacons
-    !     do i = 1, size(coords), 4
-    !         ! sensorx = coords(i)
-    !         ! sensory = coords(i+1)
-    !         beaconx = coords(i+2)
-    !         beacony = coords(i+3)
-    !         ! call this%put(char_sensor, sensorx, sensory)
-    !         if (this%isvalid(beaconx, beacony)) then
-    !             call this%put(char_beacon, beaconx, beacony)
-    !         end if
-    !     end do
-    !     ! print *
-    !     ! print '(I2, A, A)', this%yline, ' ', this%map(this%yline)
-    ! end subroutine
-
-    ! subroutine sbmap_print(this)
-    !     implicit none
-
-    !     class(SBMap), intent(inout) :: this
-    !     integer                     :: y
-
-    !     do y = this%miny, this%maxy
-    !         print '(I2, A, A)', y, ' ', this%map
-    !     end do
-    ! end subroutine
 
     subroutine extract_coords(lines, coords)
         character(len=*), intent(in)      :: lines(:)
@@ -262,11 +120,9 @@ contains
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
         call extract_coords(lines, coords)
-        ! print *, coords
 
-        ! call map%init(maxcoord)
+        ! do not create a map, but check all possible positions
         tuning_frequency = find_tuning_frequency(coords, maxcoord)
-        ! tuning_frequency = -1
 
         solve = tuning_frequency
     end function
