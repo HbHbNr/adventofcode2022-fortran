@@ -132,7 +132,8 @@ contains
 
         call thecave%init(lines)
         mostpressure = 0
-        call traverse(thecave, valvesopen, 1, 'strt', 1, 0, mostpressure)
+        ! call traverse(thecave, valvesopen, 1, 'strt', 1, 0, mostpressure)
+        mostpressure = -1
 
         solve = mostpressure
     end function
