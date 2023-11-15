@@ -4,38 +4,44 @@ module day16a
     implicit none
     private
 
-    integer, parameter :: maxlinelength = 5
+    integer, parameter :: maxlinelength = 68
+
+    type :: Cave
+        private
+
+        character(len=2), allocatable :: rooms(:)
+        integer, allocatable          :: tunnels(:,:)
+    contains
+        procedure :: init => cave_init
+    end type Cave
 
     public :: solve
 
 contains
+
+    subroutine cave_init(this, lines)
+        implicit none
+
+        class(Cave), intent(inout) :: this
+        character(len=*)           :: lines(:)
+        integer                    :: i
+
+        do i = 1, size(lines)
+            print *, lines(i)
+        end do
+    end subroutine
 
     integer function solve(filename)
         implicit none
 
         character(len=*), intent(in)  :: filename
         character(len=:), allocatable :: lines(:)
-        character(len=maxlinelength)  :: line
-        integer                       :: i, linecalories, sumcalories = 0, maxcalories = 0
+        type(Cave)                    :: thecave
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
-        ! do i = 1, size(lines)
-        !     line = lines(i)
-        !     ! debug: output line from file and its length
-        !     ! print '(A, A2, I1)', trim(line), ': ', len_trim(line)
-        !     if (len_trim(line) == 0) then
-        !         ! reset sum for a new Elf
-        !         sumcalories = 0
-        !     else
-        !         ! same Elf, so add calories to the sum
-        !         read(line, *) linecalories
-        !         sumcalories = sumcalories + linecalories
-        !         maxcalories = max(maxcalories, sumcalories)
-        !     end if
-        ! end do
+        call thecave%init(lines)
 
-        ! return maximum calories
         solve = -1
     end function
 
