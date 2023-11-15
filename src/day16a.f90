@@ -83,18 +83,58 @@ contains
         ! end do
     end subroutine
 
+    recursive subroutine traverse(thecave, valvesopen, step, action, currentvalve, currentpressure, mostpressure)
+        implicit none
+
+        type(Cave), intent(in)       :: thecave
+        logical, intent(inout)       :: valvesopen(:)
+        integer, intent(in)          :: step, currentvalve, currentpressure
+        integer, intent(inout)       :: mostpressure
+        character(len=*), intent(in) :: action
+        integer                      :: increasedpressure, i
+
+        increasedpressure = currentpressure + sum(thecave%flowrates, 1, valvesopen)
+        ! print *, valvesopen, step, action, currentvalve, thecave%valves(currentvalve), currentpressure, increasedpressure
+
+        ! already at the last step?
+        if (step == 30) then
+            if (mostpressure < increasedpressure) then
+                print *, 'end, new top score', increasedpressure, ' from', mostpressure
+                mostpressure = increasedpressure
+            end if
+            return
+        end if
+
+        if (thecave%flowrates(currentvalve) > 0) then
+            if (.not. valvesopen(currentvalve)) then
+                valvesopen(currentvalve) = .true.
+                call traverse(thecave, valvesopen, step + 1, 'open', currentvalve, increasedpressure, mostpressure)
+                valvesopen(currentvalve) = .false.
+            end if
+        end if
+        do i = 1, thecave%tunnelcounts(currentvalve)
+            call traverse(thecave, valvesopen, step + 1, 'move', thecave%tunnels(i,currentvalve), increasedpressure, mostpressure)
+        end do
+    end subroutine
+
     integer function solve(filename)
         implicit none
 
         character(len=*), intent(in)  :: filename
         character(len=:), allocatable :: lines(:)
         type(Cave)                    :: thecave
+        logical, allocatable          :: valvesopen(:)
+        integer                       :: mostpressure
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
+        allocate(valvesopen(size(lines)), source=.false.)
+        print *, valvesopen
 
         call thecave%init(lines)
+        mostpressure = 0
+        call traverse(thecave, valvesopen, 1, 'strt', 1, 0, mostpressure)
 
-        solve = -1
+        solve = mostpressure
     end function
 
 end module day16a
