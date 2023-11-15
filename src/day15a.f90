@@ -42,7 +42,6 @@ contains
         this%miny = minval(coords(2::2)) - 10000000
         this%maxy = maxval(coords(2::2)) + 10000000
         this%yline = yline
-        ! print *, this%minx, this%maxx, this%miny, this%maxy, this%yline
 
         ! allocate map and fill with dots
         linelength = this%maxx-this%minx+1
@@ -142,8 +141,6 @@ contains
             call this%put(char_sensor, sensorx, sensory)
             call this%put(char_beacon, beaconx, beacony)
         end do
-        ! print *
-        ! print '(I2, A, A)', this%yline, ' ', this%map(this%yline)
     end subroutine
 
     subroutine sbmap_print(this)
@@ -214,10 +211,8 @@ contains
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
         call extract_coords(lines, coords)
-        ! print *, coords
 
         call map%init(coords, yline)
-        ! call map%print()
         impossible_positions = find_impossible_positions(map)
 
         solve = impossible_positions
