@@ -14,6 +14,7 @@ module day16a
         integer, allocatable          :: flowrates(:)
         integer, allocatable          :: tunnelcounts(:)
         integer, allocatable          :: tunnels(:,:)
+        integer                       :: workingvalves
     contains
         procedure :: init => cave_init
     end type Cave
@@ -46,7 +47,7 @@ contains
             this%valves(i) = line(7:8)
         end do
 
-        !
+        this%workingvalves = 0
         do i = 1, valvecount
             line = lines(i)
 
@@ -65,6 +66,9 @@ contains
 
             ! extract flow rates
             read (line(24:25), *) this%flowrates(i)
+            if (this%flowrates(i) > 0) then
+                this%workingvalves = this%workingvalves + 1
+            end if
 
             ! extract tunnels
             tunnels = trim(line(51:))
@@ -78,6 +82,7 @@ contains
 
         ! print *, this%valves
         ! print *, this%flowrates
+        ! print *, this%workingvalves
         ! do i = 1, valvecount
         !     print *, this%tunnels(:this%tunnelcounts(i),i)
         ! end do
@@ -91,7 +96,7 @@ contains
         integer, intent(in)          :: step, currentvalve, currentpressure
         integer, intent(inout)       :: mostpressure
         character(len=*), intent(in) :: action
-        integer                      :: increasedpressure, i
+        integer                      :: increasedpressure, i, skipsteps
 
         increasedpressure = currentpressure + sum(thecave%flowrates, 1, valvesopen)
         ! print *, valvesopen, step, action, currentvalve, thecave%valves(currentvalve), currentpressure, increasedpressure
@@ -105,6 +110,20 @@ contains
             return
         end if
 
+        ! check if we could skip some steps
+        if (step < 29) then
+            if (count(valvesopen) == thecave%workingvalves) then
+                skipsteps = 30 - step - 1
+                ! print *, valvesopen, step, action, currentvalve, thecave%valves(currentvalve), currentpressure, increasedpressure
+                ! print *, 'all working valves open, skipping', skipsteps, 'steps to step 30'
+                increasedpressure = increasedpressure + sum(thecave%flowrates, 1, valvesopen) * skipsteps
+                call traverse(thecave, valvesopen, 30, 'skip', currentvalve, increasedpressure, mostpressure)
+                ! nothing to be done anymore, so return
+                return
+            end if
+        end if
+
+        ! check if the valve could be opened
         if (thecave%flowrates(currentvalve) > 0) then
             if (.not. valvesopen(currentvalve)) then
                 valvesopen(currentvalve) = .true.
@@ -112,6 +131,8 @@ contains
                 valvesopen(currentvalve) = .false.
             end if
         end if
+
+        ! try all the tunnels
         do i = 1, thecave%tunnelcounts(currentvalve)
             call traverse(thecave, valvesopen, step + 1, 'move', thecave%tunnels(i,currentvalve), increasedpressure, mostpressure)
         end do
@@ -128,7 +149,6 @@ contains
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
         allocate(valvesopen(size(lines)), source=.false.)
-        print *, valvesopen
 
         call thecave%init(lines)
         mostpressure = 0
