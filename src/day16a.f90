@@ -124,7 +124,7 @@ contains
         ! already at the last minute?
         if (minute == maxminutes) then
             if (mostpressure < increasedpressure) then
-                print '(A, I5, A, I5)', 'last minute, new top score increased from', increasedpressure, ' from', mostpressure
+                print '(A, I5, A, I5)', 'last minute, new top score increased to', increasedpressure, ' from', mostpressure
                 call print_path(thecave, valvespath)
                 mostpressure = increasedpressure
             end if
@@ -182,8 +182,8 @@ contains
 
         call thecave%init(lines)
         mostpressure = 0
-        call traverse(thecave, valvesopen, valvespath, 1, 'strt', 1, 0, mostpressure)
-        ! mostpressure = -1
+        ! call traverse(thecave, valvesopen, valvespath, 1, 'strt', 1, 0, mostpressure)
+        mostpressure = -1
 
         solve = mostpressure
     end function
