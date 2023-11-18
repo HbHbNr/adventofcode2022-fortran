@@ -89,43 +89,46 @@ contains
         ! end do
     end subroutine
 
-    subroutine print_path(thecave, valvespath)
+    subroutine print_path(thecave, valvespath, additionalpressure)
         implicit none
 
         type(Cave), intent(in) :: thecave
         integer, intent(in)    :: valvespath(:)
-        integer                :: i
+        integer, intent(in)    :: additionalpressure(:)
+        integer                :: minute
 
-        do i = 1, size(valvespath)
-            write (*, '(A3)', advance='no') thecave%valves(valvespath(i))
+        do minute = 1, size(valvespath)
+            write (*, '(A3, I3)') thecave%valves(valvespath(minute)), additionalpressure(minute)
         end do
         print *
     end subroutine
 
-    recursive subroutine traverse(thecave, valvesopen, valvespath, minute, action, currentvalve, currentpressure, mostpressure)
+    recursive subroutine traverse(thecave, valvesopen, valvespath, additionalpressure, &
+                                  minute, action, currentvalve, currentpressure, mostpressure)
         implicit none
 
         type(Cave), intent(in)       :: thecave
         logical, intent(inout)       :: valvesopen(:)
         integer, intent(inout)       :: valvespath(:)
+        integer, intent(inout)       :: additionalpressure(:)
         integer, intent(in)          :: minute, currentvalve, currentpressure
         integer, intent(inout)       :: mostpressure
         character(len=*), intent(in) :: action
-        integer                      :: additionalpressure, increasedpressure, i, nextvalve, skipminutes
+        integer                      :: increasedpressure, i, nextvalve, skipminutes
 
         ! remember path
         valvespath(minute) = currentvalve
 
         ! increase pressure
-        additionalpressure = sum(thecave%flowrates, 1, valvesopen)
-        increasedpressure = currentpressure + additionalpressure
+        additionalpressure(minute) = sum(thecave%flowrates, 1, valvesopen)
+        increasedpressure = currentpressure + additionalpressure(minute)
         ! print *, valvesopen, minute, action, currentvalve, thecave%valves(currentvalve), currentpressure, increasedpressure
 
         ! already at the last minute?
         if (minute == maxminutes) then
             if (mostpressure < increasedpressure) then
-                print '(A, I5, A, I5)', 'last minute, new top score increased to', increasedpressure, ' from', mostpressure
-                call print_path(thecave, valvespath)
+                print '(A, I4, A, I4)', 'last minute, new top score increased from ', mostpressure, ' to ', increasedpressure
+                call print_path(thecave, valvespath, additionalpressure)
                 mostpressure = increasedpressure
             end if
             return
@@ -133,7 +136,8 @@ contains
 
         if (count(valvesopen) == thecave%workingvalves) then
             ! all valves are already open, no need to move anymore
-            call traverse(thecave, valvesopen, valvespath, minute + 1, 'skip', currentvalve, increasedpressure, mostpressure)
+            call traverse(thecave, valvesopen, valvespath, additionalpressure, &
+                          minute + 1, 'skip', currentvalve, increasedpressure, mostpressure)
             ! nothing to be done anymore, so return
             return
         end if
@@ -142,7 +146,8 @@ contains
         if (thecave%flowrates(currentvalve) > 0) then
             if (.not. valvesopen(currentvalve)) then
                 valvesopen(currentvalve) = .true.
-                call traverse(thecave, valvesopen, valvespath, minute + 1, 'open', currentvalve, increasedpressure, mostpressure)
+                call traverse(thecave, valvesopen, valvespath, additionalpressure, &
+                              minute + 1, 'open', currentvalve, increasedpressure, mostpressure)
                 valvesopen(currentvalve) = .false.
             end if
         end if
@@ -162,7 +167,8 @@ contains
                     cycle
                 end if
             end if
-            call traverse(thecave, valvesopen, valvespath, minute + 1, 'move', nextvalve, increasedpressure, mostpressure)
+            call traverse(thecave, valvesopen, valvespath, additionalpressure, &
+                          minute + 1, 'move', nextvalve, increasedpressure, mostpressure)
         end do
     end subroutine
 
@@ -174,15 +180,19 @@ contains
         type(Cave)                    :: thecave
         logical, allocatable          :: valvesopen(:)
         integer, allocatable          :: valvespath(:)
-        integer                       :: mostpressure
+        integer, allocatable          :: additionalpressure(:)
+        integer                       :: mostpressure, valvecount
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
-        allocate(valvesopen(size(lines)), source=.false.)
+        valvecount = size(lines)
+        allocate(valvesopen(valvecount), source=.false.)
         allocate(valvespath(maxminutes), source=0)
+        allocate(additionalpressure(maxminutes), source=0)
 
         call thecave%init(lines)
         mostpressure = 0
-        ! call traverse(thecave, valvesopen, valvespath, 1, 'strt', 1, 0, mostpressure)
+        call traverse(thecave, valvesopen, valvespath, additionalpressure, &
+                      1, 'strt', 1, 0, mostpressure)
         mostpressure = -1
 
         solve = mostpressure
