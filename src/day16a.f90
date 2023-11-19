@@ -89,32 +89,55 @@ contains
         ! end do
     end subroutine
 
-    subroutine print_path(thecave, valvespath, additionalpressure)
+    subroutine print_path(thecave, valvespath, additionalpressure, valvesopenstring)
         implicit none
 
         type(Cave), intent(in) :: thecave
         integer, intent(in)    :: valvespath(:)
         integer, intent(in)    :: additionalpressure(:)
+        character(len=100), intent(in) :: valvesopenstring(:)
         integer                :: minute
 
-        do minute = 1, size(valvespath)
-            write (*, '(A3, I3)') thecave%valves(valvespath(minute)), additionalpressure(minute)
+        do minute = 1, maxminutes
+            write (*, '(I2, A1, A3, I4, A1, A)') (maxminutes - minute + 1), ' ', thecave%valves(valvespath(minute)), &
+                                                 additionalpressure(minute), ' ', valvesopenstring(minute)
         end do
         print *
     end subroutine
 
-    recursive subroutine traverse(thecave, valvesopen, valvespath, additionalpressure, &
+    function create_valvesopenstring(thecave, valvesopen) result(valvesopenstring)
+        implicit none
+
+        type(Cave), intent(in) :: thecave
+        logical, intent(in)    :: valvesopen(:)
+        character(len=100)     :: valvesopenstring
+        integer                :: i, j
+
+        valvesopenstring = ''
+        j = 1
+        do i = 1, size(valvesopen)
+            if (valvesopen(i) .eqv. .true.) then
+                valvesopenstring(j:j+1) = thecave%valves(i)
+                valvesopenstring(j+2:j+2) = ','
+                j = j + 4
+            end if
+        end do
+
+    end function
+
+    recursive subroutine traverse(thecave, valvesopen, valvesopenstring, valvespath, additionalpressure, &
                                   minute, action, currentvalve, currentpressure, mostpressure)
         implicit none
 
-        type(Cave), intent(in)       :: thecave
-        logical, intent(inout)       :: valvesopen(:)
-        integer, intent(inout)       :: valvespath(:)
-        integer, intent(inout)       :: additionalpressure(:)
-        integer, intent(in)          :: minute, currentvalve, currentpressure
-        integer, intent(inout)       :: mostpressure
-        character(len=*), intent(in) :: action
-        integer                      :: increasedpressure, i, nextvalve, skipminutes
+        type(Cave), intent(in)            :: thecave
+        logical, intent(inout)            :: valvesopen(:)
+        character(len=100), intent(inout) :: valvesopenstring(:)
+        integer, intent(inout)            :: valvespath(:)
+        integer, intent(inout)            :: additionalpressure(:)
+        integer, intent(in)               :: minute, currentvalve, currentpressure
+        integer, intent(inout)            :: mostpressure
+        character(len=*), intent(in)      :: action
+        integer                           :: increasedpressure, i, nextvalve, skipminutes
 
         ! remember path
         valvespath(minute) = currentvalve
@@ -127,16 +150,18 @@ contains
         ! already at the last minute?
         if (minute == maxminutes) then
             if (mostpressure < increasedpressure) then
-                print '(A, I4, A, I4)', 'last minute, new top score increased from ', mostpressure, ' to ', increasedpressure
-                call print_path(thecave, valvespath, additionalpressure)
+                ! print '(A, I4, A, I4)', 'last minute, new top score increased from ', mostpressure, ' to ', increasedpressure
+                ! call print_path(thecave, valvespath, additionalpressure, valvesopenstring)
                 mostpressure = increasedpressure
+                ! stop
             end if
             return
         end if
 
         if (count(valvesopen) == thecave%workingvalves) then
             ! all valves are already open, no need to move anymore
-            call traverse(thecave, valvesopen, valvespath, additionalpressure, &
+            ! valvesopenstring(minute + 1) = valvesopenstring(minute)
+            call traverse(thecave, valvesopen, valvesopenstring, valvespath, additionalpressure, &
                           minute + 1, 'skip', currentvalve, increasedpressure, mostpressure)
             ! nothing to be done anymore, so return
             return
@@ -146,7 +171,8 @@ contains
         if (thecave%flowrates(currentvalve) > 0) then
             if (.not. valvesopen(currentvalve)) then
                 valvesopen(currentvalve) = .true.
-                call traverse(thecave, valvesopen, valvespath, additionalpressure, &
+                ! valvesopenstring(minute + 1) = create_valvesopenstring(thecave, valvesopen)
+                call traverse(thecave, valvesopen, valvesopenstring, valvespath, additionalpressure, &
                               minute + 1, 'open', currentvalve, increasedpressure, mostpressure)
                 valvesopen(currentvalve) = .false.
             end if
@@ -167,7 +193,8 @@ contains
                     cycle
                 end if
             end if
-            call traverse(thecave, valvesopen, valvespath, additionalpressure, &
+            ! valvesopenstring(minute + 1) = valvesopenstring(minute)
+            call traverse(thecave, valvesopen, valvesopenstring, valvespath, additionalpressure, &
                           minute + 1, 'move', nextvalve, increasedpressure, mostpressure)
         end do
     end subroutine
@@ -175,25 +202,28 @@ contains
     integer function solve(filename)
         implicit none
 
-        character(len=*), intent(in)  :: filename
-        character(len=:), allocatable :: lines(:)
-        type(Cave)                    :: thecave
-        logical, allocatable          :: valvesopen(:)
-        integer, allocatable          :: valvespath(:)
-        integer, allocatable          :: additionalpressure(:)
-        integer                       :: mostpressure, valvecount
+        character(len=*), intent(in)    :: filename
+        character(len=:), allocatable   :: lines(:)
+        type(Cave)                      :: thecave
+        logical, allocatable            :: valvesopen(:)
+        character(len=100), allocatable :: valvesopenstring(:)
+        integer, allocatable            :: valvespath(:)
+        integer, allocatable            :: additionalpressure(:)
+        integer                         :: mostpressure, valvecount
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
         valvecount = size(lines)
         allocate(valvesopen(valvecount), source=.false.)
+        allocate(valvesopenstring(maxminutes))
+        valvesopenstring = ''
         allocate(valvespath(maxminutes), source=0)
         allocate(additionalpressure(maxminutes), source=0)
 
         call thecave%init(lines)
         mostpressure = 0
-        call traverse(thecave, valvesopen, valvespath, additionalpressure, &
-                      1, 'strt', 1, 0, mostpressure)
-        mostpressure = -1
+        call traverse(thecave, valvesopen, valvesopenstring, valvespath, additionalpressure, &
+                      1, 'strt', findloc(thecave%valves, 'AA', 1), 0, mostpressure)
+        ! mostpressure = -1
 
         solve = mostpressure
     end function
