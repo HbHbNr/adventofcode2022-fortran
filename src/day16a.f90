@@ -265,6 +265,44 @@ contains
         call graph%find_paths()
     end subroutine
 
+    subroutine traverse(thecave, graph, mostpressure)
+        implicit none
+
+        type(Cave), intent(in)    :: thecave
+        type(GraphFW), intent(in) :: graph
+        integer, intent(out)      :: mostpressure
+        integer, allocatable      :: possibletargets(:)
+        integer                   :: minutesleft, yield, distance
+        integer                   :: currentvalve, testvalve, targetvalve, targetdistance, targetyield
+
+        ! initialize possible targets
+        ! allocate(possibletargets(size(thecave%valves)), source=.false.)
+        possibletargets = thecave%flowrates
+
+        minutesleft = maxminutes
+        mostpressure = 0
+        currentvalve = findloc(thecave%valves, 'AA', 1)
+        targetvalve = 0
+        targetdistance = 0
+        targetyield = 0
+        do testvalve = 1, size(possibletargets)
+            if (possibletargets(testvalve) < 1) cycle
+            if (testvalve == currentvalve) cycle
+            distance = int(graph%distance(currentvalve, testvalve))
+            yield = (minutesleft - distance - 1) * possibletargets(testvalve)
+            if (yield > targetyield) then
+                targetvalve = testvalve
+                targetdistance = distance
+                targetyield = yield
+            end if
+        end do
+        minutesleft = minutesleft - targetdistance - 1
+        print *, minutesleft
+        print *, targetvalve, thecave%valves(targetvalve)
+        print *, targetdistance
+        print *, targetyield
+    end subroutine
+
     integer function solve(filename)
         implicit none
 
@@ -284,8 +322,8 @@ contains
 
         call thecave%init(lines)
         call init_graph(thecave, graph)
-        print *, graph%distance
-        mostpressure = 0
+        ! print *, graph%distance
+        call traverse(thecave, graph, mostpressure)
         ! call traverse(thecave, valvesopen, valvespath, &
         !               1, findloc(thecave%valves, 'AA', 1), 0, mostpressure)
 
