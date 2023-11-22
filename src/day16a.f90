@@ -22,6 +22,7 @@ module day16a
     end type Cave
 
     type :: GraphFW
+        ! graph for Floyd-Warshall algorithm
         private
 
         real, allocatable :: distance(:,:)
@@ -141,107 +142,6 @@ contains
         ! end do
     end subroutine
 
-    ! subroutine print_path(thecave, valvespath)
-    !     implicit none
-
-    !     type(Cave), intent(in) :: thecave
-    !     integer, intent(in)    :: valvespath(:)
-    !     integer                :: minute
-
-    !     do minute = 1, maxminutes
-    !         write (*, '(I2, A1, A3, I4)') (maxminutes - minute + 1), ' ', thecave%valves(valvespath(minute))
-    !     end do
-    !     print *
-    ! end subroutine
-
-    ! function create_valvesopenstring(thecave, valvesopen) result(valvesopenstring)
-    !     implicit none
-
-    !     type(Cave), intent(in) :: thecave
-    !     logical, intent(in)    :: valvesopen(:)
-    !     character(len=100)     :: valvesopenstring
-    !     integer                :: i, j
-
-    !     valvesopenstring = ''
-    !     j = 1
-    !     do i = 1, size(valvesopen)
-    !         if (valvesopen(i) .eqv. .true.) then
-    !             valvesopenstring(j:j+1) = thecave%valves(i)
-    !             valvesopenstring(j+2:j+2) = ','
-    !             j = j + 4
-    !         end if
-    !     end do
-
-    ! end function
-
-    ! recursive subroutine traverse(thecave, valvesopen, valvespath, &
-    !                               minute, currentvalve, currentpressure, mostpressure)
-    !     implicit none
-
-    !     type(Cave), intent(in)            :: thecave
-    !     logical, intent(inout)            :: valvesopen(:)
-    !     integer, intent(inout)            :: valvespath(:)
-    !     integer, intent(in)               :: minute, currentvalve, currentpressure
-    !     integer, intent(inout)            :: mostpressure
-    !     integer                           :: additionalpressure, increasedpressure, i, nextvalve
-
-    !     ! remember path
-    !     valvespath(minute) = currentvalve
-
-    !     ! increase pressure
-    !     additionalpressure = sum(thecave%flowrates, 1, valvesopen)
-    !     increasedpressure = currentpressure + additionalpressure
-    !     ! print *, valvesopen, minute, currentvalve, thecave%valves(currentvalve), currentpressure, increasedpressure
-
-    !     ! already at the last minute?
-    !     if (minute == maxminutes) then
-    !         if (mostpressure < increasedpressure) then
-    !             ! print '(A, I4, A, I4)', 'last minute, new top score increased from ', mostpressure, ' to ', increasedpressure
-    !             ! call print_path(thecave, valvespath)
-    !             mostpressure = increasedpressure
-    !             ! stop
-    !         end if
-    !         return
-    !     end if
-
-    !     if (count(valvesopen) == thecave%workingvalves) then
-    !         ! all valves are already open, no need to move anymore
-    !         call traverse(thecave, valvesopen, valvespath, &
-    !                       minute + 1, currentvalve, increasedpressure, mostpressure)
-    !         ! nothing to be done anymore, so return
-    !         return
-    !     end if
-
-    !     ! check if the valve could be opened
-    !     if (thecave%flowrates(currentvalve) > 0) then
-    !         if (.not. valvesopen(currentvalve)) then
-    !             valvesopen(currentvalve) = .true.
-    !             call traverse(thecave, valvesopen, valvespath, &
-    !                           minute + 1, currentvalve, increasedpressure, mostpressure)
-    !             valvesopen(currentvalve) = .false.
-    !         end if
-    !     end if
-
-    !     ! try all the tunnels
-    !     do i = 1, thecave%tunnelcounts(currentvalve)
-    !         nextvalve = thecave%tunnels(i,currentvalve)
-    !         if (minute >= 2) then
-    !             if (nextvalve == valvespath(minute - 1)) then
-    !                 ! do not go back directly
-    !                 cycle
-    !             end if
-    !         end if
-    !         if (thecave%tunnelcounts(nextvalve) == 1) then
-    !             if (valvesopen(nextvalve)) then
-    !                 ! do not go to an open valve with only one tunnel
-    !                 cycle
-    !             end if
-    !         end if
-    !         call traverse(thecave, valvesopen, valvespath, &
-    !                       minute + 1, nextvalve, increasedpressure, mostpressure)
-    !     end do
-    ! end subroutine
-
     subroutine init_graph(thecave, graph)
         implicit none
 
@@ -265,42 +165,60 @@ contains
         call graph%find_paths()
     end subroutine
 
+    recursive subroutine rectraverse(thecave, graph, mostpressure, pathpressure, &
+                                     possibletargets, minutesleft, currentvalve)
+        implicit none
+
+        type(Cave), intent(in)    :: thecave
+        type(GraphFW), intent(in) :: graph
+        integer, intent(inout)    :: mostpressure
+        integer, intent(in)       :: pathpressure
+        logical, intent(inout)    :: possibletargets(:)
+        integer, intent(in)       :: minutesleft
+        integer, intent(in)       :: currentvalve
+
+        integer                   :: yield, distance
+        integer                   :: testvalve
+
+        ! is the pressure of the current path the highest measured up to now?
+        if (mostpressure < pathpressure) then
+            ! print '(A, I4, A, I4)', 'new top score increased from ', mostpressure, ' to ', pathpressure
+            mostpressure = pathpressure
+        end if
+
+        do testvalve = 1, size(possibletargets)
+            ! testvalve has no valve to open
+            if (.not. possibletargets(testvalve)) cycle 
+
+            distance = int(graph%distance(currentvalve, testvalve))
+            ! not reasonable for the remaining time
+            if (distance + 1 >= minutesleft) cycle
+
+            yield = (minutesleft - distance - 1) * thecave%flowrates(testvalve)
+            possibletargets(testvalve) = .false.
+            call rectraverse(thecave, graph, mostpressure, pathpressure + yield, &
+                             possibletargets, minutesleft - distance - 1, testvalve)
+            ! back tracking: revert last change
+            possibletargets(testvalve) = .true.
+        end do
+    end subroutine
+
     subroutine traverse(thecave, graph, mostpressure)
         implicit none
 
         type(Cave), intent(in)    :: thecave
         type(GraphFW), intent(in) :: graph
-        integer, intent(out)      :: mostpressure
-        integer, allocatable      :: possibletargets(:)
-        integer                   :: minutesleft, yield, distance
-        integer                   :: currentvalve, testvalve, targetvalve, targetdistance, targetyield
+        integer, intent(inout)    :: mostpressure
+        logical, allocatable      :: possibletargets(:)
+        integer                   :: startvalve
 
         ! initialize possible targets
-        ! allocate(possibletargets(size(thecave%valves)), source=.false.)
-        possibletargets = thecave%flowrates
+        allocate(possibletargets(size(thecave%valves)), source=.false.)
+        possibletargets = thecave%flowrates > 0
+        startvalve = findloc(thecave%valves, 'AA', 1)
 
-        minutesleft = maxminutes
-        mostpressure = 0
-        currentvalve = findloc(thecave%valves, 'AA', 1)
-        targetvalve = 0
-        targetdistance = 0
-        targetyield = 0
-        do testvalve = 1, size(possibletargets)
-            if (possibletargets(testvalve) < 1) cycle
-            if (testvalve == currentvalve) cycle
-            distance = int(graph%distance(currentvalve, testvalve))
-            yield = (minutesleft - distance - 1) * possibletargets(testvalve)
-            if (yield > targetyield) then
-                targetvalve = testvalve
-                targetdistance = distance
-                targetyield = yield
-            end if
-        end do
-        minutesleft = minutesleft - targetdistance - 1
-        print *, minutesleft
-        print *, targetvalve, thecave%valves(targetvalve)
-        print *, targetdistance
-        print *, targetyield
+        ! traverse recursively
+        call rectraverse(thecave, graph, mostpressure, 0, possibletargets, maxminutes, startvalve)
     end subroutine
 
     integer function solve(filename)
@@ -310,24 +228,16 @@ contains
         character(len=:), allocatable   :: lines(:)
         type(Cave)                      :: thecave
         type(GraphFW)                   :: graph
-        ! logical, allocatable            :: valvesopen(:)
-        ! integer, allocatable            :: valvespath(:)
         integer                         :: mostpressure
-        ! integer                         :: valvecount
 
         lines = readinputfile_asstringarray(filename, maxlinelength)
-        ! valvecount = size(lines)
-        ! allocate(valvesopen(valvecount), source=.false.)
-        ! allocate(valvespath(maxminutes), source=0)
 
         call thecave%init(lines)
         call init_graph(thecave, graph)
         ! print *, graph%distance
+        mostpressure = 0
         call traverse(thecave, graph, mostpressure)
-        ! call traverse(thecave, valvesopen, valvespath, &
-        !               1, findloc(thecave%valves, 'AA', 1), 0, mostpressure)
 
-        mostpressure = -1
         solve = mostpressure
     end function
 
