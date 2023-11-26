@@ -3,11 +3,17 @@ MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
 .PHONY: all runall runbenchmark tests runtests fruitpytests info clean
 
+DEBUG := 1
 SRC := src
 OBJ := obj
 BIN := bin
 FC := gfortran
-FFLAGS := -J $(OBJ) -Wall -Wextra -Wno-uninitialized -Wno-unused-function -Wno-unused-variable -Wno-unused-dummy-argument -fcheck=all -g -std=f2018
+ifeq ($(DEBUG),1)
+	DEBUGFLAGS := -Wall -Wextra -Wno-uninitialized -Wno-unused-function -Wno-unused-variable -Wno-unused-dummy-argument -fcheck=all -g
+else
+	DEBUGFLAGS := -O3
+endif
+FFLAGS := -J $(OBJ) $(DEBUGFLAGS) -std=f2018
 SOURCES := $(sort $(wildcard $(SRC)/*.f90))
 OBJECTS := $(SOURCES:$(SRC)/%.f90=$(OBJ)/%.o)
 BINARIES := $(sort $(patsubst $(SRC)/%_main.f90,$(BIN)/%,$(wildcard $(SRC)/*_main.f90)))
