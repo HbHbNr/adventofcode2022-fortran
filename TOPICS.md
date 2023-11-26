@@ -47,3 +47,6 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 14
 * Fortran: repeat, sign
+
+### Day 13
+* Techniques: solved with brute force and back tracking first, added Floyd-Warshall-algorithm later
