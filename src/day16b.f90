@@ -165,7 +165,7 @@ contains
         call graph%find_paths()
     end subroutine
 
-    recursive subroutine rectraverse(thecave, graph, mostpressure, pathpressure, minutelog1, minutelog2, &
+    recursive subroutine rectraverse(thecave, graph, mostpressure, pathpressure, &
                                      possibletargets, minutesleft1, minutesleft2, currentvalve1, currentvalve2)
         implicit none
 
@@ -173,7 +173,7 @@ contains
         type(GraphFW), intent(in)       :: graph
         integer, intent(inout)          :: mostpressure
         integer, intent(in)             :: pathpressure
-        character(len=*), intent(inout) :: minutelog1(maxminutes), minutelog2(maxminutes)
+        ! character(len=*), intent(inout) :: minutelog1(maxminutes), minutelog2(maxminutes)
         logical, intent(inout)          :: possibletargets(:)
         integer, intent(in)             :: minutesleft1, minutesleft2
         integer, intent(in)             :: currentvalve1, currentvalve2
@@ -184,8 +184,8 @@ contains
 
         ! is the pressure of the current path the highest measured up to now?
         if (mostpressure < pathpressure) then
-            write (*, '(I3, I3, A, I4, A, I4)') minutesleft1, minutesleft2, &
-                                            ' new top score increased from ', mostpressure, ' to ', pathpressure
+            ! write (*, '(I3, I3, A, I4, A, I4)') minutesleft1, minutesleft2, &
+            !                                 ' new top score increased from ', mostpressure, ' to ', pathpressure
             ! print *, minutelog1
             ! print *, minutelog2
             ! print *
@@ -216,27 +216,27 @@ contains
             yield = (minutesleft - distance - 1) * thecave%flowrates(testvalve)
             possibletargets(testvalve) = .false.
             if (actor == 1) then
-                write (minutelog1(minutesleft - distance), '(I2,A1,A2,A1)') &
-                      minutesleft - distance, 'g', thecave%valves(testvalve), ' '
-                write (minutelog1(minutesleft - distance - 1), '(I2,A1,A2,A1)') &
-                      minutesleft - distance - 1, 'o', thecave%valves(testvalve), ' '
-                call rectraverse(thecave, graph, mostpressure, pathpressure + yield, minutelog1, minutelog2, &
+                ! write (minutelog1(minutesleft - distance), '(I2,A1,A2,A1)') &
+                !       minutesleft - distance, 'g', thecave%valves(testvalve), ' '
+                ! write (minutelog1(minutesleft - distance - 1), '(I2,A1,A2,A1)') &
+                !       minutesleft - distance - 1, 'o', thecave%valves(testvalve), ' '
+                call rectraverse(thecave, graph, mostpressure, pathpressure + yield, &
                                  possibletargets, minutesleft - distance - 1, minutesleft2, testvalve, currentvalve2)
                 ! back tracking: revert last change
                 possibletargets(testvalve) = .true.
-                write (minutelog1(minutesleft - distance), *) ''
-                write (minutelog1(minutesleft - distance - 1), *) ''
+                ! write (minutelog1(minutesleft - distance), *) ''
+                ! write (minutelog1(minutesleft - distance - 1), *) ''
             else
-                write (minutelog2(minutesleft - distance), '(I2,A1,A2,A1)') &
-                      minutesleft - distance, 'g', thecave%valves(testvalve), ' '
-                write (minutelog2(minutesleft - distance - 1), '(I2,A1,A2,A1)') &
-                      minutesleft - distance - 1, 'o', thecave%valves(testvalve), ' '
-                call rectraverse(thecave, graph, mostpressure, pathpressure + yield, minutelog1, minutelog2, &
+                ! write (minutelog2(minutesleft - distance), '(I2,A1,A2,A1)') &
+                !       minutesleft - distance, 'g', thecave%valves(testvalve), ' '
+                ! write (minutelog2(minutesleft - distance - 1), '(I2,A1,A2,A1)') &
+                !       minutesleft - distance - 1, 'o', thecave%valves(testvalve), ' '
+                call rectraverse(thecave, graph, mostpressure, pathpressure + yield, &
                                  possibletargets, minutesleft1, minutesleft - distance - 1, currentvalve1, testvalve)
                 ! back tracking: revert last change
                 possibletargets(testvalve) = .true.
-                write (minutelog2(minutesleft - distance), *) ''
-                write (minutelog2(minutesleft - distance - 1), *) ''
+                ! write (minutelog2(minutesleft - distance), *) ''
+                ! write (minutelog2(minutesleft - distance - 1), *) ''
             end if
         end do
     end subroutine
@@ -264,7 +264,7 @@ contains
 
         ! traverse recursively
         call rectraverse(thecave, graph, mostpressure, 0, &
-                         minutelog1, minutelog2, possibletargets, maxminutes, maxminutes, startvalve, startvalve)
+                         possibletargets, maxminutes, maxminutes, startvalve, startvalve)
     end subroutine
 
     integer function solve(filename)
