@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/6 part b
+!> Solution for https://adventofcode.com/2022/day/6 part b
 module day06b
     use util, only : printioerror, readinputfile_asline
     implicit none

@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/8 part b
+!> Solution for https://adventofcode.com/2022/day/8 part b
 module day08b
     use iso_fortran_env, only : int8, logical_kinds
     use util, only : printioerror, readinputfile_asintarray

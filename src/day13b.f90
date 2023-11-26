@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/13 part b
+!> Solution for https://adventofcode.com/2022/day/13 part b
 module day13b
     use util, only : readinputfile_asstringarray
     use class_intringbuffer, only : IntRingBuffer

@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/16 part a
+!> Solution for https://adventofcode.com/2022/day/16 part a
 module day16a
     USE ieee_arithmetic
     use util, only : readinputfile_asstringarray

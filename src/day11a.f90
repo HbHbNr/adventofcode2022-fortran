@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/11 part a
+!> Solution for https://adventofcode.com/2022/day/11 part a
 module day11a
     use util, only : printioerror, readinputfile_asstringarray
     use class_intringbuffer, only : IntRingBuffer

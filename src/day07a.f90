@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/7 part a
+!> Solution for https://adventofcode.com/2022/day/7 part a
 module day07a
     use util, only : printioerror, readinputfile_asstringarray
     implicit none

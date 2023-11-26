@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/5 part a
+!> Solution for https://adventofcode.com/2022/day/5 part a
 module day05a
     use class_CharStack, only : CharStack
     use util, only : printioerror

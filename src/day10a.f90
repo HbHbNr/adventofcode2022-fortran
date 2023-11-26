@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/10 part a
+!> Solution for https://adventofcode.com/2022/day/10 part a
 module day10a
     use util, only : readinputfile_asstringarray
     use class_intstack, only : IntStack
