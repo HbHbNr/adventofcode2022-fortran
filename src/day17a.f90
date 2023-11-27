@@ -9,19 +9,20 @@ module day17a
     character(len=1), parameter :: char_empty = '.'
     integer, parameter :: chamberwidth = 7
     integer, parameter :: maxrocks = 2022
-    logical, parameter :: rockdata1(1,4) = reshape([.true., .true., .true., .true.], shape(rockdata1))
+    ! rocks are written column by column, from top to bottom and left to right
+    logical, parameter :: rockdata1(1,4) = reshape([.true., &
+                                                    .true., &
+                                                    .true., &
+                                                    .true.], shape(rockdata1))
     logical, parameter :: rockdata2(3,3) = reshape([.false., .true. , .false., &
                                                     .true. , .true. , .true. ,  &
                                                     .false., .true. , .false.], shape(rockdata2))
     logical, parameter :: rockdata3(3,3) = reshape([.false., .false., .true., &
                                                     .false., .false., .true., &
                                                     .true. , .true. , .true.], shape(rockdata3))
-    logical, parameter :: rockdata4(4,1) = reshape([.true., &
-                                                    .true., &
-                                                    .true., &
-                                                    .true.], shape(rockdata4))
+    logical, parameter :: rockdata4(4,1) = reshape([.true., .true., .true., .true.], shape(rockdata4))
     logical, parameter :: rockdata5(2,2) = reshape([.true. , .true., &
-                                                    .true. , .true. ], shape(rockdata5))
+                                                    .true. , .true.], shape(rockdata5))
 
     type :: Chamber
         private
@@ -43,10 +44,8 @@ module day17a
         logical, allocatable :: rockdata(:,:)
     contains
         procedure :: init      => rock_init
-        procedure :: pushleft  => rock_pushleft
-        procedure :: pushright => rock_pushright
+        procedure :: move      => rock_move
         procedure :: place     => rock_place
-        ! procedure :: dropone   => rock_dropone
         procedure :: print     => rock_print
     end type Rock
 
@@ -113,35 +112,45 @@ contains
         end select
     end subroutine
 
-    subroutine rock_pushleft(this)
+    subroutine rock_move(this, thechamber, movex, movey)
         implicit none
 
-        class(Rock), intent(inout) :: this
-        logical                    :: fits
-        integer                    :: y, x
+        class(Rock), intent(inout)    :: this
+        class(Chamber), intent(inout) :: thechamber
+        integer, intent(in)           :: movex, movey
+        logical                       :: fits
+        integer                       :: newx, newy, y, x, spacey, spacex
 
-        if (this%x > 1) then
-            fits = .true.
-            yloop: do y = lbound(this%rockdata, 1), ubound(this%rockdata, 1)
-                do x = lbound(this%rockdata, 2), ubound(this%rockdata, 2)
-                    ! todo: check if new place is free for all solid parts of the rock
-                    ! if (this%rockdata(y,:)
-                end do
-            end do yloop
+        newx = this%x + movex
+        newy = this%y + movey
+        fits = .false.
+        if (newy < 1) then
+            ! rock too far down, so don't move
+            return
+        else if (newx < 1) then
+            ! rock too far to the left, so don't move
+            return
+        else if (newx + ubound(this%rockdata, 2) - 1 > chamberwidth) then
+            ! rock too far to the right, so don't move
+            return
         end if
-    end subroutine
-
-    subroutine rock_pushright(this)
-        implicit none
-
-        class(Rock), intent(inout) :: this
-
-        select case (this%rock_type)
-        case (1)
-            ! if (this%x > 1) this%x = this%x + 1
-            ! check if push to right works
-        case (2)
-        end select
+        do y = lbound(this%rockdata, 1), ubound(this%rockdata, 1)
+            do x = lbound(this%rockdata, 2), ubound(this%rockdata, 2)
+                if (this%rockdata(y,x) .eqv. .false.) then
+                    ! rock has empty space at that position, so we do not care about the chamber
+                    cycle
+                end if
+                spacey = newx + ubound(this%rockdata, 1) - y
+                spacex = newy + x - 1
+                if (thechamber%space(spacey, spacex)) then
+                    ! chamber is oocupied at the position, so don't move
+                    return
+                end if
+            end do
+        end do
+        this%x = newx
+        this%y = newy
+        fits = .true.
     end subroutine
 
     subroutine rock_place(this, thechamber)
@@ -153,15 +162,12 @@ contains
 
         do y = lbound(this%rockdata, 1), ubound(this%rockdata, 1)
             do x = lbound(this%rockdata, 2), ubound(this%rockdata, 2)
-                spacey = this%y + y - 1
+                spacey = this%y + ubound(this%rockdata, 1) - y
                 spacex = this%x + x - 1
-                print *, spacey, spacex
                 thechamber%space(spacey, spacex) = thechamber%space(spacey, spacex) .or. this%rockdata(y,x)
             end do
         end do
         thechamber%tower_height = max(thechamber%tower_height, this%y + ubound(this%rockdata, 1) - 1)
-        call thechamber%print()
-        print *
     end subroutine
 
     subroutine rock_print(this)
@@ -170,8 +176,8 @@ contains
         class(Rock), intent(inout) :: this
         integer                    :: y
 
-        print *, this%y, this%x
-        do y = ubound(this%rockdata, 1), lbound(this%rockdata, 1), -1
+        print *, this%x, this%y
+        do y = lbound(this%rockdata, 1), ubound(this%rockdata, 1)
             print *, this%rockdata(y,:)
         end do
     end subroutine
@@ -188,12 +194,28 @@ contains
         line = readinputfile_asline(filename)
         print *, line
         call thechamber%init()
-        call thechamber%print()
-        do i = 1, 1
+        ! call thechamber%print()
+        do i = 1, 5
             therock = thechamber%spawnrock()
             call therock%print()
             print *
         end do
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, -1, 0)
+        call therock%move(thechamber, -1, 0)
+        call therock%move(thechamber, -1, 0)
+        call therock%move(thechamber, -1, 0)
+        call therock%place(thechamber)
+        therock = thechamber%spawnrock()
+        call therock%print()
+        print *
+        ! call therock%move(thechamber, 0, -1)
         call therock%place(thechamber)
         call thechamber%print()
 
