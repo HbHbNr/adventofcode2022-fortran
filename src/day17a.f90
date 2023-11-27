@@ -38,7 +38,6 @@ module day17a
     type :: Rock
         private
 
-        type(Chamber)        :: thechamber
         integer              :: x, y
         integer              :: rock_type
         logical, allocatable :: rockdata(:,:)
@@ -46,6 +45,7 @@ module day17a
         procedure :: init      => rock_init
         procedure :: pushleft  => rock_pushleft
         procedure :: pushright => rock_pushright
+        procedure :: place     => rock_place
         ! procedure :: dropone   => rock_dropone
         procedure :: print     => rock_print
     end type Rock
@@ -61,7 +61,7 @@ contains
 
         ! 5 blocks have total height of 13 space units
         allocate(this%space(ceiling(maxrocks / 5.0) * 13, chamberwidth))
-        this%tower_height = 5
+        this%tower_height = 0
         this%next_rock_type = 1
     end subroutine
 
@@ -71,7 +71,7 @@ contains
         class(Chamber), intent(inout) :: this
         type(Rock)                    :: therock
 
-        call therock%init(this, this%next_rock_type, this%tower_height)
+        call therock%init(this%next_rock_type, this%tower_height)
         this%next_rock_type = this%next_rock_type + 1
         if (this%next_rock_type > 5) this%next_rock_type = 1
     end function
@@ -87,17 +87,15 @@ contains
         end do
     end subroutine
 
-    subroutine rock_init(this, thechamber, rock_type, tower_height)
+    subroutine rock_init(this, rock_type, tower_height)
         implicit none
 
         class(Rock), intent(inout)    :: this
-        class(Chamber), intent(inout) :: thechamber
         integer, intent(in)           :: rock_type, tower_height
 
-        this%thechamber = thechamber
         this%rock_type = rock_type
-        this%x = 2
-        this%y = tower_height + 3
+        this%x = 3
+        this%y = tower_height + 4
         select case (this%rock_type)
         case (1)
             this%rockdata = rockdata1
@@ -146,12 +144,33 @@ contains
         end select
     end subroutine
 
+    subroutine rock_place(this, thechamber)
+        implicit none
+
+        class(Rock), intent(inout)    :: this
+        class(Chamber), intent(inout) :: thechamber
+        integer                       :: y, x, spacey, spacex
+
+        do y = lbound(this%rockdata, 1), ubound(this%rockdata, 1)
+            do x = lbound(this%rockdata, 2), ubound(this%rockdata, 2)
+                spacey = this%y + y - 1
+                spacex = this%x + x - 1
+                print *, spacey, spacex
+                thechamber%space(spacey, spacex) = thechamber%space(spacey, spacex) .or. this%rockdata(y,x)
+            end do
+        end do
+        thechamber%tower_height = max(thechamber%tower_height, this%y + ubound(this%rockdata, 1) - 1)
+        call thechamber%print()
+        print *
+    end subroutine
+
     subroutine rock_print(this)
         implicit none
 
         class(Rock), intent(inout) :: this
         integer                    :: y
 
+        print *, this%y, this%x
         do y = ubound(this%rockdata, 1), lbound(this%rockdata, 1), -1
             print *, this%rockdata(y,:)
         end do
@@ -170,11 +189,13 @@ contains
         print *, line
         call thechamber%init()
         call thechamber%print()
-        do i = 1, 10
+        do i = 1, 1
             therock = thechamber%spawnrock()
             call therock%print()
             print *
         end do
+        call therock%place(thechamber)
+        call thechamber%print()
 
         solve = -1
     end function
