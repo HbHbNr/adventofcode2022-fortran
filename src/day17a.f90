@@ -8,7 +8,7 @@ module day17a
     character(len=1), parameter :: char_rock = '#'
     character(len=1), parameter :: char_empty = '.'
     integer, parameter :: chamberwidth = 7
-    integer, parameter :: maxrocks = 2022
+    integer, parameter :: maxrocks = 10  ! 2022
     ! rocks are written column by column, from top to bottom and left to right
     logical, parameter :: rockdata1(1,4) = reshape([.true., &
                                                     .true., &
@@ -59,7 +59,7 @@ contains
         class(Chamber), intent(inout) :: this
 
         ! 5 blocks have total height of 13 space units
-        allocate(this%space(ceiling(maxrocks / 5.0) * 13, chamberwidth))
+        allocate(this%space(ceiling(maxrocks / 5.0) * 13, chamberwidth), source=.false.)
         this%tower_height = 0
         this%next_rock_type = 1
     end subroutine
@@ -195,7 +195,7 @@ contains
         print *, line
         call thechamber%init()
         ! call thechamber%print()
-        do i = 1, 5
+        do i = 1, 1
             therock = thechamber%spawnrock()
             call therock%print()
             print *
@@ -212,11 +212,40 @@ contains
         call therock%move(thechamber, -1, 0)
         call therock%move(thechamber, -1, 0)
         call therock%place(thechamber)
+
         therock = thechamber%spawnrock()
         call therock%print()
         print *
-        ! call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
         call therock%place(thechamber)
+
+        therock = thechamber%spawnrock()
+        therock = thechamber%spawnrock()
+        call therock%print()
+        print *
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, 1, 0)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%move(thechamber, 0, -1)
+        call therock%place(thechamber)
+
+        therock = thechamber%spawnrock()
+        therock = thechamber%spawnrock()
+        call therock%print()
+        print *
+        call therock%move(thechamber, 0, -1)
+        call therock%place(thechamber)
+
         call thechamber%print()
 
         solve = -1
