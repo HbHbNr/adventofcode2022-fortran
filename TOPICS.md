@@ -50,3 +50,6 @@ Some notes on the techniques, concepts, classes, etc. encountered while solving 
 
 ### Day 17
 * Techniques: solved with brute force and back tracking first, added Floyd-Warshall-algorithm later
+
+### Day 17
+* Fortran: forall
