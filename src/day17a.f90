@@ -8,7 +8,7 @@ module day17a
     character(len=1), parameter :: char_rock = '#'
     character(len=1), parameter :: char_empty = '.'
     integer, parameter :: chamberwidth = 7
-    integer, parameter :: maxrocks = 10  ! 2022
+    integer, parameter :: maxrocks = 2022
     ! rocks are written column by column, from top to bottom and left to right
     logical, parameter :: rockdata1(1,4) = reshape([.true., &
                                                     .true., &
@@ -30,10 +30,13 @@ module day17a
         integer              :: tower_height
         integer              :: next_rock_type
         logical, allocatable :: space(:,:)
+        logical, allocatable :: movements_left(:)
+        integer              :: next_movement_left
     contains
-        procedure :: init      => chamber_init
-        procedure :: spawnrock => chamber_spawnrock
-        procedure :: print     => chamber_print
+        procedure :: init           => chamber_init
+        procedure :: spawnrock      => chamber_spawnrock
+        procedure :: shouldpushleft => chamber_shouldpushleft
+        procedure :: print          => chamber_print
     end type Chamber
 
     type :: Rock
@@ -53,15 +56,23 @@ module day17a
 
 contains
 
-    subroutine chamber_init(this)
+    subroutine chamber_init(this, movements)
         implicit none
 
         class(Chamber), intent(inout) :: this
+        character(len=*), intent(in)  :: movements
+        integer                       :: i
 
         ! 5 blocks have total height of 13 space units
         allocate(this%space(ceiling(maxrocks / 5.0) * 13, chamberwidth), source=.false.)
         this%tower_height = 0
         this%next_rock_type = 1
+
+        ! translate string of '<' and '>' into .true. and .false.
+        allocate(this%movements_left(len(movements)))
+        forall (i = 1:len(movements)) this%movements_left(i) = movements(i:i) == '<'
+        ! print *, this%movements_left
+        this%next_movement_left = 1
     end subroutine
 
     function chamber_spawnrock(this) result(therock)
@@ -75,15 +86,35 @@ contains
         if (this%next_rock_type > 5) this%next_rock_type = 1
     end function
 
+    function chamber_shouldpushleft(this) result(nextleft)
+        implicit none
+
+        class(Chamber), intent(inout) :: this
+        logical                       :: nextleft
+
+        nextleft = this%movements_left(this%next_movement_left)
+        this%next_movement_left = this%next_movement_left + 1
+        if (this%next_movement_left > size(this%movements_left)) this%next_movement_left = 1
+    end function
+
     subroutine chamber_print(this)
         implicit none
 
         class(Chamber), intent(inout) :: this
-        integer                       :: y
+        integer                       :: y, x
 
         do y = this%tower_height, lbound(this%space, 1), -1
-            print '(7L1)', this%space(y,:)
+            write (*, '(A1)', advance='no') '|'
+            do x = lbound(this%space, 2), ubound(this%space, 2)
+                if (this%space(y,x)) then
+                    write (*, '(A1)', advance='no') char_rock
+                else
+                    write (*, '(A1)', advance='no') char_empty
+                end if
+            end do
+            write (*, '(A1)') '|'
         end do
+        write (*, '(A)') '+-------+'
     end subroutine
 
     subroutine rock_init(this, rock_type, tower_height)
@@ -112,7 +143,7 @@ contains
         end select
     end subroutine
 
-    subroutine rock_move(this, thechamber, movex, movey)
+    function rock_move(this, thechamber, movex, movey) result(fits)
         implicit none
 
         class(Rock), intent(inout)    :: this
@@ -121,8 +152,8 @@ contains
         logical                       :: fits
         integer                       :: newx, newy, y, x, spacey, spacex
 
-        newx = this%x + movex
         newy = this%y + movey
+        newx = this%x + movex
         fits = .false.
         if (newy < 1) then
             ! rock too far down, so don't move
@@ -140,8 +171,9 @@ contains
                     ! rock has empty space at that position, so we do not care about the chamber
                     cycle
                 end if
-                spacey = newx + ubound(this%rockdata, 1) - y
-                spacex = newy + x - 1
+                spacey = newy + ubound(this%rockdata, 1) - y
+                spacex = newx + x - 1
+                ! print *, 'space:', movex, movey, newx, newy, spacex, spacey, this%rock_type
                 if (thechamber%space(spacey, spacex)) then
                     ! chamber is oocupied at the position, so don't move
                     return
@@ -151,7 +183,7 @@ contains
         this%x = newx
         this%y = newy
         fits = .true.
-    end subroutine
+    end function
 
     subroutine rock_place(this, thechamber)
         implicit none
@@ -176,79 +208,55 @@ contains
         class(Rock), intent(inout) :: this
         integer                    :: y
 
-        print *, this%x, this%y
+        print *, 'pos:', this%x, this%y
         do y = lbound(this%rockdata, 1), ubound(this%rockdata, 1)
             print *, this%rockdata(y,:)
         end do
     end subroutine
+
+    function simulate(movements) result(tower_height)
+        implicit none
+
+        character(len=*), intent(in) :: movements
+        integer                      :: tower_height
+        type(Chamber)                :: thechamber
+        type(Rock), allocatable      :: therock
+        integer                      :: i
+        logical                      :: fits
+
+        call thechamber%init(movements)
+
+        do i = 1, maxrocks
+            therock = thechamber%spawnrock()
+            ! call therock%print()
+            fits = .true.
+            do while(fits)
+                if (thechamber%shouldpushleft()) then
+                    fits = therock%move(thechamber, -1, 0)
+                else
+                    fits = therock%move(thechamber, 1, 0)
+                end if
+                fits = therock%move(thechamber, 0, -1)
+            end do
+            call therock%place(thechamber)
+            ! call thechamber%print()
+            ! print *
+        end do
+
+        ! call thechamber%print()
+        tower_height = thechamber%tower_height
+    end function
 
     integer function solve(filename)
         implicit none
 
         character(len=*), intent(in)  :: filename
         character(len=:), allocatable :: line
-        type(Chamber)                 :: thechamber
-        type(Rock), allocatable       :: therock
-        integer                       :: i
 
         line = readinputfile_asline(filename)
-        print *, line
-        call thechamber%init()
-        ! call thechamber%print()
-        do i = 1, 1
-            therock = thechamber%spawnrock()
-            call therock%print()
-            print *
-        end do
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, -1, 0)
-        call therock%move(thechamber, -1, 0)
-        call therock%move(thechamber, -1, 0)
-        call therock%move(thechamber, -1, 0)
-        call therock%place(thechamber)
+        ! print *, line
 
-        therock = thechamber%spawnrock()
-        call therock%print()
-        print *
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%place(thechamber)
-
-        therock = thechamber%spawnrock()
-        therock = thechamber%spawnrock()
-        call therock%print()
-        print *
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, 1, 0)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%move(thechamber, 0, -1)
-        call therock%place(thechamber)
-
-        therock = thechamber%spawnrock()
-        therock = thechamber%spawnrock()
-        call therock%print()
-        print *
-        call therock%move(thechamber, 0, -1)
-        call therock%place(thechamber)
-
-        call thechamber%print()
-
-        solve = -1
+        solve = simulate(line)
     end function
 
 end module day17a
