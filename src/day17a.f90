@@ -70,7 +70,9 @@ contains
 
         ! translate string of '<' and '>' into .true. and .false.
         allocate(this%movements_left(len(movements)))
-        forall (i = 1:len(movements)) this%movements_left(i) = movements(i:i) == '<'
+        do i = 1, len(movements)
+            this%movements_left(i) = movements(i:i) == '<'
+        end do
         ! print *, this%movements_left
         this%next_movement_left = 1
     end subroutine
