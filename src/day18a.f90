@@ -52,14 +52,12 @@ contains
                             this%miny-border:this%maxy+border, &
                             this%minz-border:this%maxz+border))
         this%space = .false.
-        ! print *, this%minx, this%maxx, this%miny, this%maxy, this%minz, this%maxz
 
         ! fill space
         do i = 1, size(cubes)
             read (cubes(i), *) x, y, z
             this%space(x, y, z) = .true.
         end do
-        ! call this%print(this%space)
     end subroutine
 
     function grid3d_countwalls(this) result(walls)
