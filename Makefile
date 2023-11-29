@@ -372,3 +372,115 @@ $(OBJ)/day17b_test.o: $(OBJ)/day17b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day17b_test_driver.o: $(OBJ)/day17b_test.o $(OBJ)/day17b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day17b: $(OBJ)/day17b_main.o $(OBJ)/day17b.o $(OBJ)/util.o
 $(BIN)/day17b_test_driver: $(OBJ)/day17b_test_driver.o $(OBJ)/day17b_test.o $(OBJ)/day17b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day18a.o: $(OBJ)/util.o
+$(OBJ)/day18a_main.o: $(OBJ)/day18a.o $(OBJ)/util.o
+$(OBJ)/day18a_test.o: $(OBJ)/day18a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day18a_test_driver.o: $(OBJ)/day18a_test.o $(OBJ)/day18a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day18a: $(OBJ)/day18a_main.o $(OBJ)/day18a.o $(OBJ)/util.o
+$(BIN)/day18a_test_driver: $(OBJ)/day18a_test_driver.o $(OBJ)/day18a_test.o $(OBJ)/day18a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day18b.o: $(OBJ)/util.o
+$(OBJ)/day18b_main.o: $(OBJ)/day18b.o $(OBJ)/util.o
+$(OBJ)/day18b_test.o: $(OBJ)/day18b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day18b_test_driver.o: $(OBJ)/day18b_test.o $(OBJ)/day18b.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day18b: $(OBJ)/day18b_main.o $(OBJ)/day18b.o $(OBJ)/util.o
+$(BIN)/day18b_test_driver: $(OBJ)/day18b_test_driver.o $(OBJ)/day18b_test.o $(OBJ)/day18b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day19a.o: $(OBJ)/util.o
+# $(OBJ)/day19a_main.o: $(OBJ)/day19a.o $(OBJ)/util.o
+# $(OBJ)/day19a_test.o: $(OBJ)/day19a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day19a_test_driver.o: $(OBJ)/day19a_test.o $(OBJ)/day19a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day19a: $(OBJ)/day19a_main.o $(OBJ)/day19a.o $(OBJ)/util.o
+# $(BIN)/day19a_test_driver: $(OBJ)/day19a_test_driver.o $(OBJ)/day19a_test.o $(OBJ)/day19a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day19b.o: $(OBJ)/util.o
+# $(OBJ)/day19b_main.o: $(OBJ)/day19b.o $(OBJ)/util.o
+# $(OBJ)/day19b_test.o: $(OBJ)/day19b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day19b_test_driver.o: $(OBJ)/day19b_test.o $(OBJ)/day19b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day19b: $(OBJ)/day19b_main.o $(OBJ)/day19b.o $(OBJ)/util.o
+# $(BIN)/day19b_test_driver: $(OBJ)/day19b_test_driver.o $(OBJ)/day19b_test.o $(OBJ)/day19b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day20a.o: $(OBJ)/util.o
+# $(OBJ)/day20a_main.o: $(OBJ)/day20a.o $(OBJ)/util.o
+# $(OBJ)/day20a_test.o: $(OBJ)/day20a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day20a_test_driver.o: $(OBJ)/day20a_test.o $(OBJ)/day20a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day20a: $(OBJ)/day20a_main.o $(OBJ)/day20a.o $(OBJ)/util.o
+# $(BIN)/day20a_test_driver: $(OBJ)/day20a_test_driver.o $(OBJ)/day20a_test.o $(OBJ)/day20a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day20b.o: $(OBJ)/util.o
+# $(OBJ)/day20b_main.o: $(OBJ)/day20b.o $(OBJ)/util.o
+# $(OBJ)/day20b_test.o: $(OBJ)/day20b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day20b_test_driver.o: $(OBJ)/day20b_test.o $(OBJ)/day20b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day20b: $(OBJ)/day20b_main.o $(OBJ)/day20b.o $(OBJ)/util.o
+# $(BIN)/day20b_test_driver: $(OBJ)/day20b_test_driver.o $(OBJ)/day20b_test.o $(OBJ)/day20b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day21a.o: $(OBJ)/util.o
+# $(OBJ)/day21a_main.o: $(OBJ)/day21a.o $(OBJ)/util.o
+# $(OBJ)/day21a_test.o: $(OBJ)/day21a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day21a_test_driver.o: $(OBJ)/day21a_test.o $(OBJ)/day21a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day21a: $(OBJ)/day21a_main.o $(OBJ)/day21a.o $(OBJ)/util.o
+# $(BIN)/day21a_test_driver: $(OBJ)/day21a_test_driver.o $(OBJ)/day21a_test.o $(OBJ)/day21a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day21b.o: $(OBJ)/util.o
+# $(OBJ)/day21b_main.o: $(OBJ)/day21b.o $(OBJ)/util.o
+# $(OBJ)/day21b_test.o: $(OBJ)/day21b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day21b_test_driver.o: $(OBJ)/day21b_test.o $(OBJ)/day21b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day21b: $(OBJ)/day21b_main.o $(OBJ)/day21b.o $(OBJ)/util.o
+# $(BIN)/day21b_test_driver: $(OBJ)/day21b_test_driver.o $(OBJ)/day21b_test.o $(OBJ)/day21b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day22a.o: $(OBJ)/util.o
+# $(OBJ)/day22a_main.o: $(OBJ)/day22a.o $(OBJ)/util.o
+# $(OBJ)/day22a_test.o: $(OBJ)/day22a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day22a_test_driver.o: $(OBJ)/day22a_test.o $(OBJ)/day22a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day22a: $(OBJ)/day22a_main.o $(OBJ)/day22a.o $(OBJ)/util.o
+# $(BIN)/day22a_test_driver: $(OBJ)/day22a_test_driver.o $(OBJ)/day22a_test.o $(OBJ)/day22a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day22b.o: $(OBJ)/util.o
+# $(OBJ)/day22b_main.o: $(OBJ)/day22b.o $(OBJ)/util.o
+# $(OBJ)/day22b_test.o: $(OBJ)/day22b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day22b_test_driver.o: $(OBJ)/day22b_test.o $(OBJ)/day22b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day22b: $(OBJ)/day22b_main.o $(OBJ)/day22b.o $(OBJ)/util.o
+# $(BIN)/day22b_test_driver: $(OBJ)/day22b_test_driver.o $(OBJ)/day22b_test.o $(OBJ)/day22b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day23a.o: $(OBJ)/util.o
+# $(OBJ)/day23a_main.o: $(OBJ)/day23a.o $(OBJ)/util.o
+# $(OBJ)/day23a_test.o: $(OBJ)/day23a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day23a_test_driver.o: $(OBJ)/day23a_test.o $(OBJ)/day23a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day23a: $(OBJ)/day23a_main.o $(OBJ)/day23a.o $(OBJ)/util.o
+# $(BIN)/day23a_test_driver: $(OBJ)/day23a_test_driver.o $(OBJ)/day23a_test.o $(OBJ)/day23a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day23b.o: $(OBJ)/util.o
+# $(OBJ)/day23b_main.o: $(OBJ)/day23b.o $(OBJ)/util.o
+# $(OBJ)/day23b_test.o: $(OBJ)/day23b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day23b_test_driver.o: $(OBJ)/day23b_test.o $(OBJ)/day23b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day23b: $(OBJ)/day23b_main.o $(OBJ)/day23b.o $(OBJ)/util.o
+# $(BIN)/day23b_test_driver: $(OBJ)/day23b_test_driver.o $(OBJ)/day23b_test.o $(OBJ)/day23b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day24a.o: $(OBJ)/util.o
+# $(OBJ)/day24a_main.o: $(OBJ)/day24a.o $(OBJ)/util.o
+# $(OBJ)/day24a_test.o: $(OBJ)/day24a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day24a_test_driver.o: $(OBJ)/day24a_test.o $(OBJ)/day24a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day24a: $(OBJ)/day24a_main.o $(OBJ)/day24a.o $(OBJ)/util.o
+# $(BIN)/day24a_test_driver: $(OBJ)/day24a_test_driver.o $(OBJ)/day24a_test.o $(OBJ)/day24a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day24b.o: $(OBJ)/util.o
+# $(OBJ)/day24b_main.o: $(OBJ)/day24b.o $(OBJ)/util.o
+# $(OBJ)/day24b_test.o: $(OBJ)/day24b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day24b_test_driver.o: $(OBJ)/day24b_test.o $(OBJ)/day24b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day24b: $(OBJ)/day24b_main.o $(OBJ)/day24b.o $(OBJ)/util.o
+# $(BIN)/day24b_test_driver: $(OBJ)/day24b_test_driver.o $(OBJ)/day24b_test.o $(OBJ)/day24b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day25a.o: $(OBJ)/util.o
+# $(OBJ)/day25a_main.o: $(OBJ)/day25a.o $(OBJ)/util.o
+# $(OBJ)/day25a_test.o: $(OBJ)/day25a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day25a_test_driver.o: $(OBJ)/day25a_test.o $(OBJ)/day25a.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day25a: $(OBJ)/day25a_main.o $(OBJ)/day25a.o $(OBJ)/util.o
+# $(BIN)/day25a_test_driver: $(OBJ)/day25a_test_driver.o $(OBJ)/day25a_test.o $(OBJ)/day25a.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+# $(OBJ)/day25b.o: $(OBJ)/util.o
+# $(OBJ)/day25b_main.o: $(OBJ)/day25b.o $(OBJ)/util.o
+# $(OBJ)/day25b_test.o: $(OBJ)/day25b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(OBJ)/day25b_test_driver.o: $(OBJ)/day25b_test.o $(OBJ)/day25b.o $(OBJ)/util.o $(OBJ)/fruit.o
+# $(BIN)/day25b: $(OBJ)/day25b_main.o $(OBJ)/day25b.o $(OBJ)/util.o
+# $(BIN)/day25b_test_driver: $(OBJ)/day25b_test_driver.o $(OBJ)/day25b_test.o $(OBJ)/day25b.o $(OBJ)/util.o $(OBJ)/fruit.o
