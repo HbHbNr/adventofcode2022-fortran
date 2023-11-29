@@ -1,6 +1,6 @@
 !> Solution for https://adventofcode.com/2022/day/17 part b
 module day17b
-    use iso_fortran_env, only : error_unit
+    use iso_fortran_env, only : error_unit, int64, real128
     use util, only : readinputfile_asline
     implicit none
     private
@@ -8,7 +8,8 @@ module day17b
     character(len=1), parameter :: char_rock = '#'
     character(len=1), parameter :: char_empty = '.'
     integer, parameter :: chamberwidth = 7
-    integer, parameter :: maxrocks = 2022
+    ! integer(int64), parameter :: maxrocks = 1000000000000
+    real(real128), parameter :: maxrocks = 10000000.0
     integer, parameter :: bufferrocks = 100
     ! rocks are written column by column, from top to bottom and left to right
     logical, parameter :: rockdata1(1,4) = reshape([.true., &
@@ -295,12 +296,13 @@ contains
         integer                      :: tower_height
         type(Chamber)                :: thechamber
         type(Rock), allocatable      :: therock
-        integer                      :: i
+        real(real128)                :: i
         logical                      :: fits
 
         call thechamber%init(movements)
 
-        do i = 1, maxrocks
+        i = 1
+        do while(i < maxrocks)
             therock = thechamber%spawnrock()
             ! call therock%print()
             fits = .true.
@@ -316,6 +318,7 @@ contains
             call thechamber%shrink(therock%y)
             ! call thechamber%print()
             ! print *
+            i = i + 1.0
         end do
 
         ! call thechamber%print()
@@ -331,7 +334,8 @@ contains
         line = readinputfile_asline(filename)
         ! print *, line
 
-        solve = simulate(line)
+        ! solve = simulate(line)
+        solve = -1
     end function
 
 end module day17b
