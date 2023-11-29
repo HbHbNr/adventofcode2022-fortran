@@ -5,11 +5,13 @@ module day18a
     private
 
     integer, parameter :: maxlinelength = 8
+    integer, parameter :: border = 1
 
     type :: Grid3D
         private
 
         logical, allocatable :: space(:,:,:)
+        integer              :: minx, miny, minz, maxx, maxy, maxz
     contains
         procedure :: init       => grid3d_init
         procedure :: countwalls => grid3d_countwalls
@@ -25,36 +27,39 @@ contains
 
         class(Grid3D), intent(inout) :: this
         character(len=*), intent(in) :: cubes(:)
-        integer                      :: i, x, y, z, minx, miny, minz, maxx, maxy, maxz
-        integer, parameter           :: border = 1
+        integer                      :: i, x, y, z
 
         ! find min and max coordinates
         read (cubes(1), *) x, y, z
-        minx = x
-        miny = y
-        minz = z
-        maxx = x
-        maxy = y
-        maxz = z
+        this%minx = x
+        this%miny = y
+        this%minz = z
+        this%maxx = x
+        this%maxy = y
+        this%maxz = z
         do i = 1, size(cubes)
             read (cubes(i), *) x, y, z
-            minx = min(minx, x)
-            miny = min(miny, y)
-            minz = min(minz, z)
-            maxx = max(maxx, x)
-            maxy = max(maxy, y)
-            maxz = max(maxz, z)
+            this%minx = min(this%minx, x)
+            this%miny = min(this%miny, y)
+            this%minz = min(this%minz, z)
+            this%maxx = max(this%maxx, x)
+            this%maxy = max(this%maxy, y)
+            this%maxz = max(this%maxz, z)
         end do
-        allocate(this%space(minx-border:maxx+border, miny-border:maxy+border, minz-border:maxz+border))
+
+        ! allocate and erase 3d grid
+        allocate(this%space(this%minx-border:this%maxx+border, &
+                            this%miny-border:this%maxy+border, &
+                            this%minz-border:this%maxz+border))
         this%space = .false.
-        ! print *, minx, maxx, miny, maxy, minz, maxz
+        ! print *, this%minx, this%maxx, this%miny, this%maxy, this%minz, this%maxz
 
         ! fill space
         do i = 1, size(cubes)
             read (cubes(i), *) x, y, z
             this%space(x, y, z) = .true.
         end do
-        call this%print(this%space)
+        ! call this%print(this%space)
     end subroutine
 
     function grid3d_countwalls(this) result(walls)
@@ -63,26 +68,43 @@ contains
         class(Grid3D), intent(in) :: this
         integer                   :: walls
         logical, allocatable      :: tmpspace(:,:,:)
-        integer                   :: z, y
+        integer                   :: z, y, x
 
+        ! allocate second grid of the same size to store the results
         allocate(tmpspace, mold=this%space)
-        tmpspace = .false.
         walls = 0
-        do z = lbound(this%space, 3), ubound(this%space, 3) - 1
-            ! print *, 'z=', z
-            do y = lbound(this%space, 2), ubound(this%space, 2)
+
+        ! compare each x-column with the neighbour on the next z-level
+        tmpspace = .false.
+        do z = this%minz - border, this%maxz
+            do y = this%miny, this%maxy
                 tmpspace(:,y,z) = this%space(:,y,z) .neqv. this%space(:,y,z+1)
-                walls = walls + count(tmpspace(:,y,z))
             end do
         end do
-        do z = lbound(this%space, 3), ubound(this%space, 3)
-            ! print *, 'z=', z
-            do y = lbound(this%space, 2), ubound(this%space, 2) - 1
+        ! each .true. is a detected wall
+        walls = walls + count(tmpspace)
+
+        ! compare each x-column with the neighbour on the next y-level
+        tmpspace = .false.
+        do z = this%minz, this%maxz
+            do y = this%miny - border, this%maxy
                 tmpspace(:,y,z) = this%space(:,y,z) .neqv. this%space(:,y+1,z)
-                walls = walls + count(tmpspace(:,y,z))
             end do
         end do
-    end function grid3d_countwalls
+        ! each .true. is a detected wall
+        walls = walls + count(tmpspace)
+
+        ! within each x-column, compare each cube with the neighbour on the next x-level
+        do z = this%minz, this%maxz
+            do y = this%miny, this%maxy
+                do x = this%minx - border, this%maxx
+                    if (this%space(x,y,z) .neqv. this%space(x+1,y,z)) then
+                        walls = walls + 1
+                    end if
+                end do
+            end do
+        end do
+    end function
 
     subroutine grid3d_print(this, space)
         implicit none
