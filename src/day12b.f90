@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/12 part b
+!> Solution for https://adventofcode.com/2022/day/12 part b
 module day12b
     use iso_fortran_env, only : error_unit
     use util, only : readinputfile_asstringarray

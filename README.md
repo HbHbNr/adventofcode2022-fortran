@@ -12,7 +12,7 @@ Solutions for https://adventofcode.com/2022/ in pure Fortran with unit testing.
 
 | **Day**      | **14** | **15** | **16** | **17** | **18** | **19** | **20** | **21** | **22** | **23** | **24** | **25** |
 |-------------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
-| **Part One** | ✓      | ✓      | ✓      |        |        |        |         |        |        |        |        |        |
+| **Part One** | ✓      | ✓      | ✓      | ✓      |        |        |         |        |        |        |        |        |
 | **Part Two** | ✓      | ✓      | ✓      |        |        |        |         |        |        |        |        |        |
 
 # Requirements
@@ -22,10 +22,14 @@ Optional for unit testing with the FORTRAN Unit Test Framework (FRUIT):
 * [FRUIT](https://sourceforge.net/projects/fortranxunit/)
 * [FRUITPy](https://github.com/acroucher/FRUITPy) (Python interface to the FRUIT library)
 
-## Building and running the solutions for all days
+## Build and run the solutions
 
     make runall
 
-## Building and running the unit tests for all days
+## Build and run the unit tests
 
     ./fruitpy.sh
+
+## Build with optimized settings and run the benchmark
+
+    make clean && make DEBUG= runbenchmark

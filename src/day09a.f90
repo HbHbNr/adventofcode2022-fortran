@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/9 part a
+!> Solution for https://adventofcode.com/2022/day/9 part a
 module day09a
     use iso_fortran_env, only : int8, error_unit
     use util, only : printioerror, readinputfile_asstringarray

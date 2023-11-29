@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/2 part a
+!> Solution for https://adventofcode.com/2022/day/2 part a
 module day02a
     use util, only : printioerror
     implicit none

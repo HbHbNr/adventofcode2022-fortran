@@ -1,4 +1,4 @@
-!> Solution for https://adventofcode.com/2021/day/11 part b
+!> Solution for https://adventofcode.com/2022/day/11 part b
 module day11b
     use iso_fortran_env, only : int64
     use util, only : printioerror, readinputfile_asstringarray
