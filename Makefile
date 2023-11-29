@@ -372,3 +372,10 @@ $(OBJ)/day17b_test.o: $(OBJ)/day17b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(OBJ)/day17b_test_driver.o: $(OBJ)/day17b_test.o $(OBJ)/day17b.o $(OBJ)/util.o $(OBJ)/fruit.o
 $(BIN)/day17b: $(OBJ)/day17b_main.o $(OBJ)/day17b.o $(OBJ)/util.o
 $(BIN)/day17b_test_driver: $(OBJ)/day17b_test_driver.o $(OBJ)/day17b_test.o $(OBJ)/day17b.o $(OBJ)/util.o $(OBJ)/fruit.o
+
+$(OBJ)/day18a.o: $(OBJ)/util.o
+$(OBJ)/day18a_main.o: $(OBJ)/day18a.o $(OBJ)/util.o
+$(OBJ)/day18a_test.o: $(OBJ)/day18a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(OBJ)/day18a_test_driver.o: $(OBJ)/day18a_test.o $(OBJ)/day18a.o $(OBJ)/util.o $(OBJ)/fruit.o
+$(BIN)/day18a: $(OBJ)/day18a_main.o $(OBJ)/day18a.o $(OBJ)/util.o
+$(BIN)/day18a_test_driver: $(OBJ)/day18a_test_driver.o $(OBJ)/day18a_test.o $(OBJ)/day18a.o $(OBJ)/util.o $(OBJ)/fruit.o
