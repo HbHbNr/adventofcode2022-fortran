@@ -45,46 +45,49 @@ contains
 
         if (minutesleft == 0) return
 
-        if (ores > geode_bot_ore_costs) then
-            if (obsidians > geode_bot_obsidian_costs) then
-                if (debug) print *, minutesleft, ': build geode bot'
-                call rec_find_ql(minutesleft - 1, max_geodes, &
-                                 ores + orebots - geode_bot_ore_costs, &
-                                 clays + claybots, &
-                                 obsidians + obsidianbots - geode_bot_obsidian_costs, &
-                                 geodes + geodebots, &
-                                 orebots, claybots, obsidianbots, geodebots + 1)
+        if (minutesleft > 1) then
+            if (ores > geode_bot_ore_costs) then
+                if (obsidians > geode_bot_obsidian_costs) then
+                    if (debug) print *, minutesleft, ': build geode bot'
+                    call rec_find_ql(minutesleft - 1, max_geodes, &
+                                     ores + orebots - geode_bot_ore_costs, &
+                                     clays + claybots, &
+                                     obsidians + obsidianbots - geode_bot_obsidian_costs, &
+                                     geodes + geodebots, &
+                                     orebots, claybots, obsidianbots, geodebots + 1)
+                end if
             end if
-        end if
-        if (ores > obsidian_bot_ore_costs) then
-            if (clays > obsidian_bot_clay_costs) then
-                if (debug) print *, minutesleft, ': build obsidian bot'
+            if (ores > obsidian_bot_ore_costs) then
+                if (clays > obsidian_bot_clay_costs) then
+                    if (debug) print *, minutesleft, ': build obsidian bot'
+                    call rec_find_ql(minutesleft - 1, max_geodes, &
+                                     ores + orebots - obsidian_bot_ore_costs, &
+                                     clays + claybots - obsidian_bot_clay_costs, &
+                                     obsidians + obsidianbots, &
+                                     geodes + geodebots, &
+                                     orebots, claybots, obsidianbots + 1, geodebots)
+                end if
+            end if
+            if (ores > clay_bot_ore_costs) then
+                if (debug) print *, minutesleft, ': build clay bot'
                 call rec_find_ql(minutesleft - 1, max_geodes, &
-                                 ores + orebots - obsidian_bot_ore_costs, &
-                                 clays + claybots - obsidian_bot_clay_costs, &
+                                 ores + orebots - clay_bot_ore_costs, &
+                                 clays + claybots, &
                                  obsidians + obsidianbots, &
                                  geodes + geodebots, &
-                                 orebots, claybots, obsidianbots + 1, geodebots)
+                                 orebots, claybots + 1, obsidianbots, geodebots)
+            end if
+            if (ores > ore_bot_ore_costs) then
+                if (debug) print *, minutesleft, ': build ore bot'
+                call rec_find_ql(minutesleft - 1, max_geodes, &
+                                 ores + orebots - ore_bot_ore_costs, &
+                                 clays + claybots, &
+                                 obsidians + obsidianbots, &
+                                 geodes + geodebots, &
+                                 orebots + 1, claybots, obsidianbots, geodebots)
             end if
         end if
-        if (ores > clay_bot_ore_costs) then
-            if (debug) print *, minutesleft, ': build clay bot'
-            call rec_find_ql(minutesleft - 1, max_geodes, &
-                             ores + orebots - clay_bot_ore_costs, &
-                             clays + claybots, &
-                             obsidians + obsidianbots, &
-                             geodes + geodebots, &
-                             orebots, claybots + 1, obsidianbots, geodebots)
-        end if
-        if (ores > ore_bot_ore_costs) then
-            if (debug) print *, minutesleft, ': build ore bot'
-            call rec_find_ql(minutesleft - 1, max_geodes, &
-                             ores + orebots - ore_bot_ore_costs, &
-                             clays + claybots, &
-                             obsidians + obsidianbots, &
-                             geodes + geodebots, &
-                             orebots + 1, claybots, obsidianbots, geodebots)
-        end if
+
         if (debug) print *, minutesleft, ': build nothing, just harvest'
         call rec_find_ql(minutesleft - 1, max_geodes, &
                          ores + orebots, &
