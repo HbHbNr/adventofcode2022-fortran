@@ -146,12 +146,12 @@ contains
         lines = readinputfile_asstringarray(filename, maxlinelength)
 
         total_quality_level = 0
-        do i = 1, size(lines)
-            ! if (i == 1) cycle
-            quality_level = find_quality_level(lines(i))
-            total_quality_level = total_quality_level + quality_level
-            exit
-        end do
+        ! do i = 1, size(lines)
+        !     ! if (i == 1) cycle
+        !     quality_level = find_quality_level(lines(i))
+        !     total_quality_level = total_quality_level + quality_level
+        !     exit
+        ! end do
 
         ! return maximum calories
         solve = total_quality_level
